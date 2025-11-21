@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuanLyVatTu_ASP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f0e745da1f4393c415b3479d4d3ae5f71d546c0")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuanLyVatTu_ASP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuanLyVatTu_ASP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

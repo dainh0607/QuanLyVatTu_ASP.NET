@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "F:\\Lập trình web cơ bản - NET107\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj": {}
+    "E:\\QLVT\\QuanLyVatTu_ASP.NET\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj": {}
   },
   "projects": {
-    "F:\\Lập trình web cơ bản - NET107\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj": {
+    "E:\\QLVT\\QuanLyVatTu_ASP.NET\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\Lập trình web cơ bản - NET107\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj",
+        "projectUniqueName": "E:\\QLVT\\QuanLyVatTu_ASP.NET\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj",
         "projectName": "QuanLyVatTu_ASP",
-        "projectPath": "F:\\Lập trình web cơ bản - NET107\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj",
-        "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "F:\\Lập trình web cơ bản - NET107\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP\\obj\\",
+        "projectPath": "E:\\QLVT\\QuanLyVatTu_ASP.NET\\QuanLyVatTu_ASP\\QuanLyVatTu_ASP.csproj",
+        "packagesPath": "C:\\Users\\Gluttony\\.nuget\\packages\\",
+        "outputPath": "E:\\QLVT\\QuanLyVatTu_ASP.NET\\QuanLyVatTu_ASP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Gluttony\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -45,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -75,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
