@@ -1,0 +1,166 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SVN-Gotham', sans-serif;
+}
+
+/* Logo */
+.navbar-brand img {
+    width: 55px;
+    height: 55px;
+    border-radius: 10px;
+}
+
+.back-system {
+    position: absolute;
+    top: 10px;
+    left: 10%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.back-system > a {
+    font-weight: 700;
+    font-size: 15px;
+    color: white;
+    list-style: none;
+    text-decoration: none;
+    margin-left: 13px;
+}
+
+/* Header */
+.header {
+    width: 100vw;
+    height: 75px;
+    background: linear-gradient(to bottom, #265077, #022140, #1E4258);
+    border-bottom: 1px solid #ccc;
+}
+
+/* Sidebar Navbar */
+.navbar {
+    background: linear-gradient(45deg, #265077, #022140, #1E4258);
+    width: 15vw;
+    min-height: 654px;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar nav list */
+.navbar-nav {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+    margin-top: 20px;
+}
+
+.nav-item {
+    width: 100%;
+    padding: 12px 20px 10px 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    border-radius: 20px;
+    list-style: none;
+    position: relative;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: #265077;
+    color: #ffeb3b;
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.nav-item > a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-item i {
+    font-size: 24px;
+    color: white;
+}
+
+.nav-item span {
+    font-size: 12px;
+    color: white;
+}
+
+.navbar-nav > .nav-item:nth-child(5) {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* submenu */
+.sub-menu {
+    width: 175px;
+    flex-direction: column;
+    margin-top: 8px;
+    padding-left: 40px;
+    margin-left: -15px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: max-height 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+    overflow: visible !important;
+}
+
+/* Hiệu ứng từng mục bên trong submenu */
+.sub-menu .nav-item {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    opacity: 0;
+    transform: translateX(-10px);
+}
+
+/* Khi hover cha, submenu bung xuống */
+.navbar-nav li:hover > .sub-menu {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Khi submenu mở, từng item hiện ra */
+.navbar-nav li:hover > .sub-menu .nav-item {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sub-menu .nav-item span {
+    margin-left: 10px;
+}
+
+.sub-menu .nav-item:hover {
+    background-color: #1E4258;
+    transform: scale(1.1);
+}
+
+.container {
+    background-color: #dddddd;
+    width: 1296px;
+    height: 645px;
+    position: absolute;
+    top: 79px;
+    left: 235px;
+    border-radius: 10px;
+}
+
+
