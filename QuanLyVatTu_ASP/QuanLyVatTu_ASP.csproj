@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\admin\images\" />
-    <Folder Include="wwwroot\user\" />
   </ItemGroup>
 
 </Project>
