@@ -1,0 +1,106 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu.VatTuCreateEditViewModel
+@{
+    ViewData["Title"] = "Tạo vật tư mới";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-xxl-10 col-xl-11">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white py-4 px-5">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fa-solid fa-box me-3"></i> Tạo vật tư mới
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form asp-route="them-moi" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Tên vật tư <span class="text-danger">*</span></label>
+                                    <input asp-for="TenVatTu" class="form-control form-control-lg rounded-3" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Mã vật tư</label>
+                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Đơn vị tính <span class="text-danger">*</span></label>
+                                    <input asp-for="DonViTinh" class="form-control form-control-lg rounded-3" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Số lượng tồn</label>
+                                    <input asp-for="SoLuongTon" class="form-control form-control-lg rounded-3" type="number" min="0" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Giá nhập <span class="text-danger">*</span></label>
+                                    <input asp-for="GiaNhap" class="form-control form-control-lg rounded-3 text-end" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Giá bán <span class="text-danger">*</span></label>
+                                    <input asp-for="GiaBan" class="form-control form-control-lg rounded-3 text-end" required />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Loại vật tư <span class="text-danger">*</span></label>
+                                    <select asp-for="MaLoaiVatTu" class="form-select form-select-lg rounded-3" asp-items="ViewBag.LoaiVatTuList" required></select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Nhà cung cấp <span class="text-danger">*</span></label>
+                                    <select asp-for="MaNhaCungCap" class="form-select form-select-lg rounded-3" asp-items="ViewBag.NhaCungCapList" required></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-4 mt-5 pt-4 border-top">
+                            <a asp-route="" class="btn btn-outline-secondary btn-lg px-5 rounded-pill">
+                                <i class="fa-solid fa-ban me-2"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow-sm">
+                                <i class="fa-solid fa-save me-3"></i>Tạo vật tư
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #265077, #1e4258) !important;
+        }
+
+        .form-control-lg, .form-select-lg {
+            border-radius: 12px;
+            padding: 0.8rem 1.3rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #265077;
+        }
+    </style>
+}
