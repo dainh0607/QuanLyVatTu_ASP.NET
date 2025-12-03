@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Thanh toán - MaterialPro";
+}
+
+<div class="checkout-page">
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Thanh toán</h1>
+            <div class="checkout-steps">
+                <div class="step active">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Giỏ hàng</span>
+                </div>
+                <div class="step active">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Thông tin giao hàng</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Thanh toán</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span class="step-label">Hoàn tất</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-content">
+            <div class="checkout-form">
+                <form id="checkoutForm">
+                    <section class="form-section">
+                        <h2>Thông tin giao hàng</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fullName">Họ và tên *</label>
+                                <input type="text" id="fullName" name="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Địa chỉ *</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">Tỉnh/Thành phố *</label>
+                                <select id="city" name="city" required>
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    <option value="hanoi">Hà Nội</option>
+                                    <option value="hcm">TP. Hồ Chí Minh</option>
+                                    <option value="danang">Đà Nẵng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="district">Quận/Huyện *</label>
+                                <select id="district" name="district" required>
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <h2>Phương thức vận chuyển</h2>
+                        <div class="shipping-methods">
+                            <label class="shipping-method">
+                                <input type="radio" name="shipping" value="standard" checked>
+                                <div class="method-info">
+                                    <div class="method-header">
+                                        <span class="method-name">Giao hàng tiêu chuẩn</span>
+                                        <span class="method-price">30.000đ</span>
+                                    </div>
+                                    <span class="method-description">Giao hàng trong 3-5 ngày làm việc</span>
+                                </div>
+                            </label>
+                            <label class="shipping-method">
+                                <input type="radio" name="shipping" value="express">
+                                <div class="method-info">
+                                    <div class="method-header">
+                                        <span class="method-name">Giao hàng nhanh</span>
+                                        <span class="method-price">50.000đ</span>
+                                    </div>
+                                    <span class="method-description">Giao hàng trong 1-2 ngày làm việc</span>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <h2>Phương thức thanh toán</h2>
+                        <div class="payment-methods">
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="cod" checked>
+                                <div class="method-info">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <div class="method-details">
+                                        <span class="method-name">Thanh toán khi nhận hàng (COD)</span>
+                                        <span class="method-description">Thanh toán bằng tiền mặt khi nhận hàng</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="banking">
+                                <div class="method-info">
+                                    <i class="fas fa-university"></i>
+                                    <div class="method-details">
+                                        <span class="method-name">Chuyển khoản ngân hàng</span>
+                                        <span class="method-description">Chuyển khoản qua Internet Banking</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="momo">
+                                <div class="method-info">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <div class="method-details">
+                                        <span class="method-name">Ví MoMo</span>
+                                        <span class="method-description">Thanh toán qua ứng dụng MoMo</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <h2>Ghi chú đơn hàng</h2>
+                        <div class="form-group">
+                            <textarea id="orderNotes" name="orderNotes" placeholder="Ghi chú về đơn hàng của bạn (tùy chọn)" rows="4"></textarea>
+                        </div>
+                    </section>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-card">
+                    <h3>Đơn hàng của bạn</h3>
+                    
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-info">
+                                <span class="item-name">Máy khoan Bosch GSB 13RE x 1</span>
+                                <span class="item-price">1.250.000đ</span>
+                            </div>
+                        </div>
+                        <div class="order-item">
+                            <div class="item-info">
+                                <span class="item-name">Bộ tua vít đa năng x 2</span>
+                                <span class="item-price">700.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Tạm tính:</span>
+                            <span>1.950.000đ</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Phí vận chuyển:</span>
+                            <span>30.000đ</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Giảm giá:</span>
+                            <span class="discount">-50.000đ</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Tổng cộng:</span>
+                            <span class="total-price">1.930.000đ</span>
+                        </div>
+                    </div>
+
+                    <div class="coupon-section">
+                        <div class="coupon-input-group">
+                            <input type="text" placeholder="Nhập mã giảm giá" class="coupon-input">
+                            <button type="button" class="coupon-btn">Áp dụng</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" form="checkoutForm" class="checkout-btn btn-primary">
+                        Đặt hàng
+                    </button>
+
+                    <div class="security-info">
+                        <div class="security-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Thanh toán an toàn</span>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-lock"></i>
+                            <span>Thông tin được bảo mật</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/checkout.css" />
+}
+@section Scripts {
+    <script src="~/user/js/checkout.js"></script>
+}

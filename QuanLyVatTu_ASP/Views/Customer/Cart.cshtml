@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng - QLVT";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+
+}
+
+<div class="cart-page">
+    <div class="container">
+        <h1 class="page-title">Giỏ hàng của bạn</h1>
+
+        <div class="cart-content">
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/80x80" alt="Sản phẩm">
+                    </div>
+                    <div class="item-details">
+                        <h3 class="item-name">Máy khoan Bosch GSB 13RE</h3>
+                        <p class="item-sku">Mã: BOSCH-GSB13RE</p>
+                        <div class="item-price">1.250.000đ</div>
+                    </div>
+                    <div class="item-quantity">
+                        <button class="quantity-btn minus">-</button>
+                        <input type="number" value="1" min="1" class="quantity-input">
+                        <button class="quantity-btn plus">+</button>
+                    </div>
+                    <div class="item-total">1.250.000đ</div>
+                    <button class="item-remove">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+
+                <div class="cart-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/80x80" alt="Sản phẩm">
+                    </div>
+                    <div class="item-details">
+                        <h3 class="item-name">Bộ tua vít đa năng</h3>
+                        <p class="item-sku">Mã: TV-DN-2024</p>
+                        <div class="item-price">350.000đ</div>
+                    </div>
+                    <div class="item-quantity">
+                        <button class="quantity-btn minus">-</button>
+                        <input type="number" value="2" min="1" class="quantity-input">
+                        <button class="quantity-btn plus">+</button>
+                    </div>
+                    <div class="item-total">700.000đ</div>
+                    <button class="item-remove">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <h3>Tóm tắt đơn hàng</h3>
+                <div class="summary-row">
+                    <span>Tạm tính:</span>
+                    <span>1.950.000đ</span>
+                </div>
+                <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span>30.000đ</span>
+                </div>
+                <div class="summary-row">
+                    <span>Giảm giá:</span>
+                    <span class="discount">-50.000đ</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Tổng cộng:</span>
+                    <span class="total-price">1.930.000đ</span>
+                </div>
+
+                <div class="coupon-section">
+                    <input type="text" placeholder="Nhập mã giảm giá" class="coupon-input">
+                    <button class="coupon-btn">Áp dụng</button>
+                </div>
+
+                <button class="checkout-btn btn-primary">
+                    Tiến hành thanh toán
+                </button>
+
+                <div class="continue-shopping">
+                    <a href="/categories" class="continue-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script{
+    <script src="~/user/js/cart.js" ></script>
+}
+@section Styles{
+    <link rel="stylesheet" href="~/user/css/cart.css" />
+}

@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết sản phẩm - QLVT";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="product-detail-page">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Trang chủ</a> /
+            <a href="/categories">Danh mục</a> /
+            <span>Chi tiết sản phẩm</span>
+        </div>
+
+        <div class="product-detail">
+            <div class="product-gallery">
+                <div class="main-image">
+                    <img src="https://via.placeholder.com/500x400" alt="Sản phẩm">
+                </div>
+                <div class="image-thumbnails">
+                    <div class="thumbnail active">
+                        <img src="https://via.placeholder.com/100x80" alt="Thumb 1">
+                    </div>
+                    <div class="thumbnail">
+                        <img src="https://via.placeholder.com/100x80" alt="Thumb 2">
+                    </div>
+                    <div class="thumbnail">
+                        <img src="https://via.placeholder.com/100x80" alt="Thumb 3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-info">
+                <h1 class="product-title">Máy khoan Bosch GSB 13RE Professional</h1>
+                <div class="product-rating">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <span class="rating-text">4.5 (124 đánh giá)</span>
+                </div>
+
+                <div class="product-price">
+                    <span class="current-price">1.250.000đ</span>
+                    <span class="original-price">1.500.000đ</span>
+                    <span class="discount">-17%</span>
+                </div>
+
+                <div class="product-description">
+                    <p>Máy khoan búa Bosch GSB 13RE Professional - công cụ đa năng cho mọi công việc khoan và vặn vít chuyên nghiệp.</p>
+                </div>
+
+                <div class="product-specs">
+                    <h3>Thông số kỹ thuật</h3>
+                    <ul>
+                        <li><strong>Công suất:</strong> 600W</li>
+                        <li><strong>Tốc độ không tải:</strong> 0-2.800 vòng/phút</li>
+                        <li><strong>Chức năng:</strong> Khoan, khoan búa, vặn vít</li>
+                        <li><strong>Trọng lượng:</strong> 1.5 kg</li>
+                    </ul>
+                </div>
+
+                <div class="product-actions">
+                    <div class="quantity-selector">
+                        <label>Số lượng:</label>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn minus">-</button>
+                            <input type="number" value="1" min="1" max="10" class="quantity-input">
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            Thêm vào giỏ hàng
+                        </button>
+                        <button class="btn-secondary buy-now">
+                            <i class="fas fa-bolt"></i>
+                            Mua ngay
+                        </button>
+                        <button class="btn-wishlist">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Giao hàng toàn quốc</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Bảo hành 12 tháng</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-undo-alt"></i>
+                        <span>Đổi trả trong 30 ngày</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-tabs">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="description">Mô tả</button>
+                <button class="tab-btn" data-tab="specs">Thông số</button>
+                <button class="tab-btn" data-tab="reviews">Đánh giá</button>
+            </div>
+
+            <div class="tabs-content">
+                <div class="tab-pane active" id="description">
+                    <h3>Mô tả sản phẩm</h3>
+                    <p>Máy khoan búa Bosch GSB 13RE Professional là công cụ lý tưởng cho các công việc khoan và vặn vít chuyên nghiệp. Với công suất 600W, máy đáp ứng mọi nhu cầu từ cơ bản đến phức tạp.</p>
+                    <ul>
+                        <li>Động cơ mạnh mẽ 600W cho hiệu suất làm việc cao</li>
+                        <li>Tốc độ không tải điều chỉnh từ 0-2.800 vòng/phút</li>
+                        <li>3 chức năng: khoan thường, khoan búa, vặn vít</li>
+                        <li>Thiết kế ergonomic, dễ dàng sử dụng</li>
+                    </ul>
+                </div>
+
+                <div class="tab-pane" id="specs">
+                    <h3>Thông số kỹ thuật chi tiết</h3>
+                    <table class="specs-table">
+                        <tr>
+                            <td>Công suất</td>
+                            <td>600W</td>
+                        </tr>
+                        <tr>
+                            <td>Tốc độ không tải</td>
+                            <td>0-2.800 vòng/phút</td>
+                        </tr>
+                        <tr>
+                            <td>Lực va đập</td>
+                            <td>1.7 J</td>
+                        </tr>
+                        <tr>
+                            <td>Trọng lượng</td>
+                            <td>1.5 kg</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="tab-pane" id="reviews">
+                    <h3>Đánh giá từ khách hàng</h3>
+                    <div class="reviews-list">
+                        <!-- Reviews load ở đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

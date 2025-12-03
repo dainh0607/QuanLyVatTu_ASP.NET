@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Danh mục sản phẩm - QLVT";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+
+}
+
+<div class="categories-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Danh mục sản phẩm</h1>
+            <p>Tất cả sản phẩm chất lượng từ MaterialPro</p>
+        </div>
+
+        <div class="categories-filter">
+            <div class="filter-sidebar">
+                <div class="filter-group">
+                    <h3>Loại sản phẩm</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="tools"> Dụng cụ cầm tay
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="electrical"> Thiết bị điện
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="safety"> Thiết bị an toàn
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="materials"> Vật liệu xây dựng
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Giá</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="0-500000"> Dưới 500,000đ
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="500000-2000000"> 500,000đ - 2,000,000đ
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="2000000-5000000"> 2,000,000đ - 5,000,000đ
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="5000000+"> Trên 5,000,000đ
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="products-content">
+                <div class="products-header">
+                    <div class="products-count">
+                        <span>Hiển thị 24 sản phẩm</span>
+                    </div>
+                    <div class="products-sort">
+                        <select class="sort-select">
+                            <option value="popular">Sắp xếp theo phổ biến</option>
+                            <option value="newest">Mới nhất</option>
+                            <option value="price-low">Giá thấp đến cao</option>
+                            <option value="price-high">Giá cao đến thấp</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-grid">
+                    <!-- Load sản phẩm -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x200" alt="Sản phẩm">
+                            <div class="product-badge">Hot</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Máy khoan Bosch GSB 13RE</h3>
+                            <div class="product-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span>(124)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">1.250.000đ</span>
+                                <span class="original-price">1.500.000đ</span>
+                            </div>
+                            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn next">Tiếp theo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/categories.css" />
+}

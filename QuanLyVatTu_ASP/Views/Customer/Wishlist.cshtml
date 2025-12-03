@@ -1,0 +1,191 @@
+﻿@{
+    ViewData["Title"] = "Danh sách yêu thích - QLVT";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="wishlist-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Danh sách yêu thích</h1>
+            <p>Các sản phẩm bạn đã lưu để xem sau</p>
+        </div>
+
+        <div class="wishlist-content">
+            <div class="wishlist-items">
+                <div class="wishlist-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/150x150" alt="Máy khoan Bosch">
+                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="item-info">
+                        <h3 class="item-name">Máy khoan Bosch GSB 13RE Professional</h3>
+                        <div class="item-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(124 đánh giá)</span>
+                        </div>
+                        <div class="item-price">
+                            <span class="current-price">1.250.000đ</span>
+                            <span class="original-price">1.500.000đ</span>
+                        </div>
+                        <div class="item-stock">
+                            <span class="in-stock">Còn hàng</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-primary add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            Thêm vào giỏ
+                        </button>
+                        <button class="btn-secondary view-details">
+                            Xem chi tiết
+                        </button>
+                    </div>
+                </div>
+
+                <div class="wishlist-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/150x150" alt="Bộ tua vít">
+                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="item-info">
+                        <h3 class="item-name">Bộ tua vít đa năng 32 chi tiết</h3>
+                        <div class="item-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-count">(89 đánh giá)</span>
+                        </div>
+                        <div class="item-price">
+                            <span class="current-price">350.000đ</span>
+                            <span class="original-price">450.000đ</span>
+                        </div>
+                        <div class="item-stock">
+                            <span class="in-stock">Còn hàng</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-primary add-to-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            Thêm vào giỏ
+                        </button>
+                        <button class="btn-secondary view-details">
+                            Xem chi tiết
+                        </button>
+                    </div>
+                </div>
+
+                <div class="wishlist-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/150x150" alt="Máy mài">
+                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="item-info">
+                        <h3 class="item-name">Máy mài góc Makita 9556HN</h3>
+                        <div class="item-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-count">(67 đánh giá)</span>
+                        </div>
+                        <div class="item-price">
+                            <span class="current-price">1.850.000đ</span>
+                            <span class="original-price">2.200.000đ</span>
+                        </div>
+                        <div class="item-stock">
+                            <span class="out-of-stock">Hết hàng</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-primary add-to-cart" disabled>
+                            <i class="fas fa-shopping-cart"></i>
+                            Hết hàng
+                        </button>
+                        <button class="btn-secondary view-details">
+                            Xem chi tiết
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wishlist-sidebar">
+                <div class="sidebar-card">
+                    <h3>Thông tin danh sách</h3>
+                    <div class="wishlist-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tổng sản phẩm:</span>
+                            <span class="stat-value">3</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Tổng giá trị:</span>
+                            <span class="stat-value">3.450.000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>Khuyến mãi đặc biệt</h3>
+                    <div class="promo-banner">
+                        <p>Giảm thêm 10% khi mua 2 sản phẩm từ danh sách yêu thích</p>
+                        <small>Áp dụng đến 31/12/2024</small>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>Gợi ý cho bạn</h3>
+                    <div class="suggested-products">
+                        <div class="suggested-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Sản phẩm gợi ý">
+                            <div class="suggested-info">
+                                <h4>Máy cắt sắt</h4>
+                                <span class="price">890.000đ</span>
+                            </div>
+                        </div>
+                        <div class="suggested-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Sản phẩm gợi ý">
+                            <div class="suggested-info">
+                                <h4>Kìm điện tử</h4>
+                                <span class="price">120.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-wishlist hidden">
+            <div class="empty-icon">
+                <i class="far fa-heart"></i>
+            </div>
+            <h3>Danh sách yêu thích trống</h3>
+            <p>Bạn chưa có sản phẩm nào trong danh sách yêu thích</p>
+            <a href="/categories" class="btn-primary">Khám phá sản phẩm</a>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/wishlist.css" />
+}
+@section Scripts {
+    <script src="~/user/js/wishlist.js"></script>
+}

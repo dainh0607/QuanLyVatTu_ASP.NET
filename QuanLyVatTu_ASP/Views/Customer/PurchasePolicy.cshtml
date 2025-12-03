@@ -1,0 +1,270 @@
+﻿@{
+    ViewData["Title"] = "Chính sách mua hàng - QLVT";
+}
+
+<div class="policy-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Chính sách mua hàng</h1>
+            <p>Thông tin chi tiết về các chính sách mua hàng tại QLVT</p>
+        </div>
+
+        <div class="policy-content">
+            <div class="policy-sidebar">
+                <nav class="policy-nav">
+                    <h3>Nội dung chính sách</h3>
+                    <ul>
+                        <li><a href="#shipping" class="nav-link active">Chính sách vận chuyển</a></li>
+                        <li><a href="#payment" class="nav-link">Chính sách thanh toán</a></li>
+                        <li><a href="#return" class="nav-link">Chính sách đổi trả</a></li>
+                        <li><a href="#warranty" class="nav-link">Chính sách bảo hành</a></li>
+                        <li><a href="#privacy" class="nav-link">Chính sách bảo mật</a></li>
+                        <li><a href="#terms" class="nav-link">Điều khoản sử dụng</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="policy-main">
+                <!-- Shipping Policy -->
+                <section id="shipping" class="policy-section active">
+                    <h2>Chính sách vận chuyển</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-shipping-fast"></i> Phạm vi giao hàng</h3>
+                            <p>Chúng tôi giao hàng toàn quốc cho tất cả các đơn hàng. Thời gian giao hàng có thể thay đổi tùy theo khu vực:</p>
+                            <ul>
+                                <li><strong>Nội thành Hà Nội, TP.HCM:</strong> 1-2 ngày làm việc</li>
+                                <li><strong>Các tỉnh thành khác:</strong> 3-5 ngày làm việc</li>
+                                <li><strong>Vùng sâu vùng xa:</strong> 5-7 ngày làm việc</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-money-bill-wave"></i> Phí vận chuyển</h3>
+                            <p>Phí vận chuyển được tính dựa trên các yếu tố sau:</p>
+                            <ul>
+                                <li>Khoảng cách địa lý từ kho hàng đến địa chỉ giao hàng</li>
+                                <li>Trọng lượng và kích thước đơn hàng</li>
+                                <li>Phương thức vận chuyển được lựa chọn</li>
+                            </ul>
+                            <p><strong>Ưu đãi đặc biệt:</strong> Miễn phí vận chuyển cho đơn hàng từ 5.000.000đ trở lên.</p>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-map-marker-alt"></i> Theo dõi đơn hàng</h3>
+                            <p>Khách hàng có thể theo dõi tình trạng đơn hàng thông qua các phương thức sau:</p>
+                            <ul>
+                                <li>Email xác nhận đơn hàng với mã theo dõi</li>
+                                <li>Trang web chính thức với tính năng tra cứu đơn hàng</li>
+                                <li>Ứng dụng di động QLVT</li>
+                                <li>Tổng đài hỗ trợ khách hàng: <strong>1800 1234</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Payment Policy -->
+                <section id="payment" class="policy-section">
+                    <h2>Chính sách thanh toán</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-credit-card"></i> Phương thức thanh toán</h3>
+                            <p>Chúng tôi chấp nhận các phương thức thanh toán sau:</p>
+                            <div class="payment-methods-grid">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <div>
+                                        <strong>Thanh toán khi nhận hàng (COD)</strong>
+                                        <p>Thanh toán bằng tiền mặt khi nhận hàng</p>
+                                    </div>
+                                </div>
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university"></i>
+                                    <div>
+                                        <strong>Chuyển khoản ngân hàng</strong>
+                                        <p>Chuyển khoản qua Internet Banking</p>
+                                    </div>
+                                </div>
+                                <div class="payment-method-item">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <div>
+                                        <strong>Ví điện tử</strong>
+                                        <p>MoMo, ZaloPay, VNPay</p>
+                                    </div>
+                                </div>
+                                <div class="payment-method-item">
+                                    <i class="fas fa-credit-card"></i>
+                                    <div>
+                                        <strong>Thẻ tín dụng/ghi nợ</strong>
+                                        <p>Visa, MasterCard, JCB</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-shield-alt"></i> Bảo mật thanh toán</h3>
+                            <p>Tất cả các giao dịch thanh toán đều được bảo mật thông qua:</p>
+                            <ul>
+                                <li>Mã hóa SSL 256-bit tiêu chuẩn ngân hàng</li>
+                                <li>Xác thực 2 lớp (2FA) cho giao dịch quan trọng</li>
+                                <li>Tuân thủ nghiêm ngặt tiêu chuẩn bảo mật PCI DSS</li>
+                                <li>Hệ thống giám sát giao dịch 24/7</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Return Policy -->
+                <section id="return" class="policy-section">
+                    <h2>Chính sách đổi trả</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-exchange-alt"></i> Điều kiện đổi trả</h3>
+                            <p>Chúng tôi chấp nhận đổi trả trong vòng <strong>30 ngày</strong> kể từ ngày nhận hàng với các điều kiện sau:</p>
+                            <ul>
+                                <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng</li>
+                                <li>Còn đầy đủ hộp, nhãn mác, phụ kiện đi kèm</li>
+                                <li>Có hóa đơn mua hàng hoặc email xác nhận</li>
+                                <li>Lỗi kỹ thuật từ nhà sản xuất</li>
+                                <li>Sai sót trong quá trình đóng gói, vận chuyển</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-list-ol"></i> Quy trình đổi trả</h3>
+                            <ol>
+                                <li>Liên hệ bộ phận chăm sóc khách hàng qua hotline <strong>1800 1234</strong></li>
+                                <li>Cung cấp thông tin đơn hàng và lý do đổi trả</li>
+                                <li>Nhận hướng dẫn về địa chỉ gửi sản phẩm về</li>
+                                <li>Đóng gói sản phẩm theo hướng dẫn</li>
+                                <li>Gửi sản phẩm về địa chỉ chỉ định</li>
+                                <li>Nhận sản phẩm mới hoặc hoàn tiền trong vòng 7 ngày làm việc</li>
+                            </ol>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-dollar-sign"></i> Chi phí đổi trả</h3>
+                            <ul>
+                                <li><strong>Miễn phí hoàn toàn:</strong> Đối với trường hợp lỗi từ nhà sản xuất hoặc sai sót từ QLVT</li>
+                                <li><strong>Khách hàng chịu phí:</strong> Đối với trường hợp đổi trả không do lỗi sản phẩm (phí vận chuyển 2 chiều)</li>
+                                <li><strong>Hoàn tiền 100%:</strong> Trong trường hợp không thể đổi sản phẩm khác</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Warranty Policy -->
+                <section id="warranty" class="policy-section">
+                    <h2>Chính sách bảo hành</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-calendar-alt"></i> Thời gian bảo hành</h3>
+                            <p>Tùy thuộc vào từng loại sản phẩm, thời gian bảo hành có thể từ <strong>6 tháng đến 24 tháng</strong>:</p>
+                            <ul>
+                                <li><strong>Dụng cụ điện:</strong> 12-24 tháng</li>
+                                <li><strong>Dụng cụ cầm tay:</strong> 6-12 tháng</li>
+                                <li><strong>Thiết bị an toàn:</strong> 12 tháng</li>
+                                <li><strong>Vật liệu xây dựng:</strong> Theo chính sách của nhà sản xuất</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-check-circle"></i> Điều kiện bảo hành</h3>
+                            <ul>
+                                <li>Sản phẩm được mua trực tiếp tại QLVT</li>
+                                <li>Còn trong thời hạn bảo hành được ghi trên phiếu</li>
+                                <li>Có phiếu bảo hành và hóa đơn mua hàng hợp lệ</li>
+                                <li>Hư hỏng do lỗi kỹ thuật từ nhà sản xuất</li>
+                                <li>Tem bảo hành còn nguyên vẹn, không bị rách, mờ</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-times-circle"></i> Trường hợp không được bảo hành</h3>
+                            <ul>
+                                <li>Sản phẩm đã hết hạn bảo hành</li>
+                                <li>Hư hỏng do sử dụng không đúng hướng dẫn</li>
+                                <li>Tự ý sửa chữa, thay đổi cấu trúc sản phẩm</li>
+                                <li>Hư hỏng do thiên tai, hỏa hoạn, các trường hợp bất khả kháng</li>
+                                <li>Sản phẩm bị rơi vỡ, biến dạng do tác động ngoại lực</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Privacy Policy -->
+                <section id="privacy" class="policy-section">
+                    <h2>Chính sách bảo mật</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-database"></i> Thu thập thông tin</h3>
+                            <p>Chúng tôi thu thập thông tin để phục vụ cho các mục đích sau:</p>
+                            <ul>
+                                <li>Xử lý đơn hàng và giao hàng đến đúng địa chỉ</li>
+                                <li>Hỗ trợ khách hàng và giải đáp thắc mắc</li>
+                                <li>Cải thiện chất lượng dịch vụ và trải nghiệm người dùng</li>
+                                <li>Gửi thông tin khuyến mãi, sản phẩm mới (chỉ khi được đồng ý)</li>
+                                <li>Phân tích và nghiên cứu thị trường</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-lock"></i> Bảo vệ thông tin</h3>
+                            <p>Chúng tôi cam kết bảo vệ thông tin khách hàng bằng các biện pháp:</p>
+                            <ul>
+                                <li>Mã hóa dữ liệu nhạy cảm bằng công nghệ tiên tiến</li>
+                                <li>Giới hạn quyền truy cập theo nguyên tắc cần biết</li>
+                                <li>Kiểm tra bảo mật định kỳ và cập nhật hệ thống</li>
+                                <li>Tuân thủ nghiêm ngặt các quy định về bảo vệ dữ liệu</li>
+                                <li>Đào tạo nhân viên về bảo mật thông tin</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Terms of Use -->
+                <section id="terms" class="policy-section">
+                    <h2>Điều khoản sử dụng</h2>
+                    <div class="section-content">
+                        <div class="policy-card">
+                            <h3><i class="fas fa-file-contract"></i> Quyền và trách nhiệm</h3>
+                            <p><strong>Quyền của khách hàng:</strong></p>
+                            <ul>
+                                <li>Được cung cấp thông tin sản phẩm chính xác, đầy đủ</li>
+                                <li>Được hưởng các chính sách bảo hành, đổi trả theo quy định</li>
+                                <li>Được bảo vệ thông tin cá nhân theo chính sách bảo mật</li>
+                                <li>Được hỗ trợ, tư vấn nhiệt tình từ đội ngũ chuyên nghiệp</li>
+                            </ul>
+                            <p><strong>Trách nhiệm của khách hàng:</strong></p>
+                            <ul>
+                                <li>Cung cấp thông tin chính xác khi đặt hàng</li>
+                                <li>Thanh toán đầy đủ theo đúng thỏa thuận</li>
+                                <li>Tuân thủ hướng dẫn sử dụng sản phẩm</li>
+                                <li>Bảo quản các chứng từ mua hàng để được bảo hành</li>
+                            </ul>
+                        </div>
+
+                        <div class="policy-card">
+                            <h3><i class="fas fa-balance-scale"></i> Giải quyết tranh chấp</h3>
+                            <p>Mọi tranh chấp phát sinh sẽ được giải quyết theo trình tự:</p>
+                            <ol>
+                                <li>Thương lượng trực tiếp giữa khách hàng và QLVT</li>
+                                <li>Thông qua trung gian hòa giải (nếu cần)</li>
+                                <li>Đưa ra cơ quan giải quyết tranh chấp có thẩm quyền</li>
+                            </ol>
+                            <p>Mọi khiếu nại sẽ được giải quyết trong thời gian sớm nhất, tối đa không quá 30 ngày làm việc.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/privacy.css" />
+}
+@section Scripts {
+    <script src="~/user/js/policy.js"></script>
+}
