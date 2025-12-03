@@ -27,6 +27,6 @@ app.MapControllerRoute(
 // Route mặc định cho giao diện người dùng
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Customer}/{action=Index}/{id?}");
 
 app.Run();

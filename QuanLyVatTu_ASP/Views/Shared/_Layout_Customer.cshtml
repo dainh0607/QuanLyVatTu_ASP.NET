@@ -19,7 +19,7 @@
                 <div class="nav-brand">
                     <a asp-controller="Home" asp-action="Index" class="logo">
                         <i class="fas fa-tools"></i>
-                        <span>MaterialPro</span>
+                        <span>QLVT</span>
                     </a>
                 </div>
 
@@ -33,7 +33,7 @@
                 </div>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a asp-controller="Home" asp-action="Index" class="nav-link active">
+                        <a asp-controller="Customer" asp-action="Index" class="nav-link active">
                             <i class="fas fa-home"></i>
                             <span>Trang chủ</span>
                         </a>
@@ -45,19 +45,19 @@
                             <i class="fas fa-chevron-down"></i>
                         </a>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item">Loại hàng 1</a>
-                            <a href="#" class="dropdown-item">Loại hàng 2</a>
-                            <a href="#" class="dropdown-item">Loại hàng 3</a>
+                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 1</a>
+                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 2</a>
+                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 3</a>
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a a asp-controller="Customer" asp-action="Categories">
                             <i class="fas fa-fire"></i>
                             <span>Khuyến mãi</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a a asp-controller="Customer" asp-action="About" class="nav-link">
                             <i class="fas fa-info-circle"></i>
                             <span>Về chúng tôi</span>
                         </a>
@@ -109,15 +109,16 @@
                 <div class="footer-section">
                     <h3 class="footer-title">Liên kết nhanh</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Trang chủ</a></li>
-                        <li><a href="#">Sản phẩm</a></li>
-                        <li><a href="#">Khuyến mãi</a></li>
+                        <li><a a asp-controller="Customer" asp-action="Index">Trang chủ</a></li>
+                        <li><a a asp-controller="Customer" asp-action="Categories">Sản phẩm</a></li>
+                        <li><a a asp-controller="Customer" asp-action="Categories">Khuyến mãi</a></li>
                         <li><a href="#">Tin tức</a></li>
-                        <li><a href="#">Liên hệ</a></li>
+                        <li><a a asp-controller="Customer" asp-action="About">Liên hệ</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
+                    <h3 class="footer-title">Danh mục</h3>
                     <h3 class="footer-title">Danh mục</h3>
                     <ul class="footer-links">
                     </ul>
