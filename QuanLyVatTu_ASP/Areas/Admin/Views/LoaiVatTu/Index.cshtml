@@ -1,0 +1,132 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.Admin.LoaiVatTu.LoaiVatTuIndexViewModel
+@{
+    ViewData["Title"] = "Quản lý Loại Vật Tư";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <!-- Thanh tìm kiếm + nút -->
+    <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8">
+                    <div class="d-flex gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <input type="text" class="form-control ps-5 rounded-3" placeholder="Tìm loại vật tư..."
+                                   id="keyword" value="@ViewBag.Keyword">
+                            <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <!-- ĐÃ DÙNG ATTRIBUTE ROUTING -->
+                    <a asp-route="them-moi" class="btn btn-success rounded-pill px-4 shadow-sm">
+                        Thêm mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th width="60" class="text-center">
+                                <input class="form-check-input" type="checkbox" id="checkAll" />
+                            </th>
+                            <th>Mã loại</th>
+                            <th>Tên loại vật tư</th>
+                            <th>Mô tả</th>
+                            <th>Số lượng vật tư</th>
+                            <th>Ngày tạo</th>
+                            <th width="140" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input class="form-check-input chk-item" type="checkbox" value="@item.ID" />
+                                </td>
+                                <td><strong>@item.MaHienThi</strong></td>
+                                <td>@item.TenLoaiVatTu</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.MoTa) ? "—" : item.MoTa)</td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary rounded-pill px-3">@item.SoLuongVatTu</span>
+                                </td>
+                                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center py-3">
+                                    <div class="btn-group" role="group">
+                                        <!-- DÙNG ATTRIBUTE ROUTING -->
+                                        <a asp-route="sua/@item.ID"
+                                           class="btn btn-warning btn-sm rounded-pill px-3">
+                                            Sửa
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm rounded-pill px-3 btn-delete"
+                                                data-url="@Url.Action("xoa", null, new { id = item.ID })">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Items.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-folder2-open display-6 d-block mb-3"></i>
+                                    Chưa có loại vật tư nào
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang – DÙNG ATTRIBUTE ROUTING -->
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
+                <div class="text-muted small">
+                    Hiển thị @(Model.Items.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
+                    đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
+                    trong tổng <strong>@Model.TotalRecords</strong> bản ghi
+                </div>
+                <nav>
+                    <ul class="pagination pagination-modern mb-0">
+                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                            <a class="page-link" asp-route="" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">«</a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link" asp-route="" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-route="" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#checkAll").on("change", function () {
+            $(".chk-item").prop("checked", this.checked);
+        });
+
+        $(document).on("click", ".btn-delete", function () {
+            if (confirm("Xóa loại vật tư này?\nTất cả vật tư thuộc loại này sẽ bị ảnh hưởng!")) {
+                location.href = $(this).data("url");
+            }
+        });
+    </script>
+}

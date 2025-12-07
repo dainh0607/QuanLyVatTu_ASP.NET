@@ -1,0 +1,46 @@
+﻿using QuanLyVatTu_ASP.DataAccess;
+using QuanLyVatTu_ASP.Repositories.Interfaces;
+using QuanLyVatTu_ASP.Repositories.Implementations;
+
+namespace QuanLyVatTu_ASP.Repositories
+{
+    public class UnitOfWork : IUnitOfWork
+    {
+        private readonly ApplicationDbContext _context;
+
+        public IVatTuRepository VatTuRepository { get; private set; }
+        public ILoaiVatTuRepository LoaiVatTuRepository { get; private set; }
+        public INhaCungCapRepository NhaCungCapRepository { get; private set; }
+        public IKhachHangRepository KhachHangRepository { get; private set; }
+        public INhanVienRepository NhanVienRepository { get; private set; }
+        public IDonHangRepository DonHangRepository { get; private set; }
+        public IChiTietDonHangRepository ChiTietDonHangRepository { get; private set; }
+        public IHoaDonRepository HoaDonRepository { get; private set; }
+        public IChiTietHoaDonRepository ChiTietHoaDonRepository { get; private set; }
+
+        public UnitOfWork(ApplicationDbContext context)
+        {
+            _context = context;
+
+            VatTuRepository = new VatTuRepository(_context);
+            LoaiVatTuRepository = new LoaiVatTuRepository(_context);
+            NhaCungCapRepository = new NhaCungCapRepository(_context);
+            KhachHangRepository = new KhachHangRepository(_context);
+            NhanVienRepository = new NhanVienRepository(_context);
+            DonHangRepository = new DonHangRepository(_context);
+            ChiTietDonHangRepository = new ChiTietDonHangRepository(_context);
+            HoaDonRepository = new HoaDonRepository(_context);
+            ChiTietHoaDonRepository = new ChiTietHoaDonRepository(_context);
+        }
+
+        public int Save()
+        {
+            return _context.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
+    }
+}

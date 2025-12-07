@@ -1,0 +1,215 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.DonHangIndexViewModel
+@{
+    ViewData["Title"] = "Quản lý Đơn Hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <!-- Thanh tìm kiếm + nút hành động -->
+    <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8 col-xxl-7">
+                    <div class="d-flex gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <input type="text" class="form-control ps-5 rounded-3"
+                                   placeholder="Nhập từ khóa tìm kiếm..."
+                                   id="keyword"
+                                   value="@ViewBag.Keyword">
+                            <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted"></i>
+                        </div>
+                        <select class="form-select rounded-3" style="min-width: 160px; max-width: 220px;" asp-items="ViewBag.TrangThaiList">
+                            <option value="">Tất cả trạng thái</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xxl-5 text-lg-end">
+                    <!-- DÙNG ATTRIBUTE ROUTING -->
+                    <a asp-route="them-moi" class="btn btn-success rounded-pill px-4 shadow-sm">
+                        Thêm mới
+                    </a>
+                    <button type="button" id="btnDeleteSelected" class="btn btn-danger rounded-pill px-4 shadow-sm">
+                        Xóa đã chọn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng đơn hàng -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th width="60" class="text-center">
+                                <input class="form-check-input" type="checkbox" id="checkAll" />
+                            </th>
+                            <th>Mã Hiển Thị</th>
+                            <th>Mã Khách Hàng</th>
+                            <th>Mã Nhân Viên</th>
+                            <th>Ngày Đặt</th>
+                            <th>Tổng Tiền</th>
+                            <th>Số tiền đặt cọc</th>
+                            <th>Phương thức đặt cọc</th>
+                            <th>Ngày đặt cọc</th>
+                            <th>Trạng thái</th>
+                            <th>Ghi chú</th>
+                            <th>Ngày tạo</th>
+                            <th width="140" class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input class="form-check-input chk-item" type="checkbox" value="@item.ID" />
+                                </td>
+                                <td><strong>@item.MaHienThi</strong></td>
+                                <td>@item.KhachHangId</td>
+                                <td>@item.NhanVienId</td>
+                                <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-end fw-bold text-danger">
+                                    @string.Format("{0:N0} đ", item.TongTien)
+                                </td>
+                                <td class="text-end">
+                                    @(item.SoTienDatCoc > 0 ? string.Format("{0:N0} đ", item.SoTienDatCoc) : "—")
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-white">
+                                        @(item.PhuongThucDatCoc ?? "—")
+                                    </span>
+                                </td>
+                                <td>
+                                    @(item.NgayDatCoc.HasValue? item.NgayDatCoc.Value.ToString("dd/MM/yyyy") : "—")
+                                </td>
+                                <td>
+                                    @{
+                                        var status = (item.TrangThai ?? "").Trim();
+                                        var badgeClass = status switch
+                                        {
+                                            "1" or "Đã xác nhận" => "bg-success",
+                                            "2" or "Đang xử lý" => "bg-warning text-dark",
+                                            "3" or "Đã hủy" => "bg-danger",
+                                            "4" or "Hoàn thành" => "bg-primary",
+                                            "Chờ xác nhận" => "bg-secondary",
+                                            _ => "bg-secondary"
+                                        };
+                                        var tenTrangThai = status switch
+                                        {
+                                            "1" or "Đã xác nhận" => "Đã xác nhận",
+                                            "2" or "Đang xử lý" => "Đang xử lý",
+                                            "3" or "Đã hủy" => "Đã hủy",
+                                            "4" or "Hoàn thành" => "Hoàn thành",
+                                            "Chờ xác nhận" => "Chờ xác nhận",
+                                            _ => "Chưa xác định"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass px-3 py-2">@tenTrangThai</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.GhiChu))
+                                    {
+                                        <span class="text-primary" style="cursor: help;" title="@item.GhiChu">Xem</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center py-3">
+                                    <div class="btn-group" role="group">
+                                        <!-- DÙNG ATTRIBUTE ROUTING -->
+                                        <a asp-route="sua/@item.ID"
+                                           class="btn btn-outline-primary btn-sm" title="Chi tiết">
+                                            Chi tiết
+                                        </a>
+                                        <a asp-route="sua/@item.ID"
+                                           class="btn btn-outline-warning btn-sm" title="Sửa">
+                                            Sửa
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm btn-delete"
+                                                data-url="@Url.Action("xoa", null, new { id = item.ID })">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Items.Any())
+                        {
+                            <tr>
+                                <td colspan="13" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox display-6 d-block mb-3"></i>
+                                    Không có đơn hàng nào
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang – DÙNG ATTRIBUTE ROUTING -->
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
+                <div class="text-muted small">
+                    Hiển thị @(Model.Items.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
+                    đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
+                    trong tổng <strong>@Model.TotalRecords</strong> bản ghi
+                </div>
+                <nav>
+                    <ul class="pagination pagination-modern mb-0">
+                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                            <a class="page-link" asp-route="" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">«</a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                <a class="page-link" asp-route="" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-route="" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/admin/css/DonHang.css" />
+}
+
+@section Scripts {
+    <script>
+        $("#checkAll").on("change", function () {
+            $(".chk-item").prop("checked", this.checked);
+        });
+
+        $("#btnDeleteSelected").on("click", function () {
+            var selectedIds = $(".chk-item:checked").map(function () { return this.value; }).get();
+            if (selectedIds.length === 0) {
+                alert("Vui lòng chọn ít nhất một đơn hàng để xóa!");
+                return;
+            }
+            if (confirm(`Bạn có chắc muốn xóa ${selectedIds.length} đơn hàng đã chọn không?`)) {
+                var form = $('<form method="post" action="@Url.Action("xoa-nhieu")">');
+                selectedIds.forEach(id => {
+                    form.append(`<input type="hidden" name="ids" value="${id}" />`);
+                });
+                $('body').append(form);
+                form.submit();
+            }
+        });
+
+        $(document).on("click", ".btn-delete", function () {
+            if (confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
+                location.href = $(this).data("url");
+            }
+        });
+    </script>
+}

@@ -1,0 +1,106 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien.NhanVienCreateEditViewModel
+@{
+    ViewData["Title"] = "Tạo nhân viên mới";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-xxl-9 col-xl-10">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white py-4 px-5">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fa-solid fa-user-plus me-3"></i> Tạo nhân viên mới
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                    <input asp-for="HoTen" class="form-control form-control-lg rounded-3" required />
+                                    <span asp-validation-for="HoTen" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Ngày sinh <span class="text-danger">*</span></label>
+                                    <input asp-for="NgaySinh" class="form-control form-control-lg rounded-3" type="date" required />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">CCCD <span class="text-danger">*</span></label>
+                                    <input asp-for="CCCD" class="form-control form-control-lg rounded-3" maxlength="12" required />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" required />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Tài khoản đăng nhập <span class="text-danger">*</span></label>
+                                    <input asp-for="TaiKhoan" class="form-control form-control-lg rounded-3" required />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
+                                    <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" required />
+                                    <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Vai trò <span class="text-danger">*</span></label>
+                                    <select asp-for="VaiTro" class="form-select form-select-lg rounded-3" required>
+                                        <option value="">-- Chọn vai trò --</option>
+                                        <option value="Quản trị">Quản trị</option>
+                                        <option value="Nhân viên">Nhân viên</option>
+                                        <option value="Kế toán">Kế toán</option>
+                                        <option value="Thủ kho">Thủ kho</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-4 mt-5 pt-4 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-5 rounded-pill">
+                                <i class="fa-solid fa-ban me-2"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow-sm">
+                                <i class="fa-solid fa-save me-3"></i>Tạo nhân viên
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #265077, #1e4258) !important;
+        }
+
+        .form-control-lg, .form-select-lg {
+            border-radius: 12px;
+            padding: 0.8rem 1.3rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #265077;
+        }
+    </style>
+}
