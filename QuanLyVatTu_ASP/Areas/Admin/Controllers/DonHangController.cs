@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels;
 using QuanLyVatTu_ASP.DataAccess;
@@ -9,7 +10,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/don-hang")]
-    public class DonHangController : Controller
+    public class DonHangController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
 

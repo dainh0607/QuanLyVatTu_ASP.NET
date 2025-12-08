@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.Admin.LoaiVatTu;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.LoaiVatTu;
@@ -9,7 +10,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/loai-vat-tu")]
-    public class LoaiVatTuController : Controller
+    public class LoaiVatTuController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
         private const int PageSize = 10;

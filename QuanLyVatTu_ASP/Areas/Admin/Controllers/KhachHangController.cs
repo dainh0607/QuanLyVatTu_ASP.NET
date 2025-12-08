@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels;
 using Microsoft.EntityFrameworkCore;
-using BCryptNet = BCrypt.Net.BCrypt;
-using QuanLyVatTu_ASP.DataAccess;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
+using QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels;
+using QuanLyVatTu_ASP.DataAccess;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/khach-hang")]
-    public class KhachHangController : Controller
+    public class KhachHangController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
         private const int PageSize = 10;

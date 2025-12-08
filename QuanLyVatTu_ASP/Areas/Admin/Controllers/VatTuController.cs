@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
+using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu;
 using QuanLyVatTu_ASP.DataAccess;
-using QuanLyVatTu_ASP.Areas.Admin.Models;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/vat-tu")]
-    public class VatTuController : Controller
+    public class VatTuController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
         private const int PageSize = 10;

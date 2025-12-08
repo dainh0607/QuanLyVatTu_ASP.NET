@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
+using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhaCungCap;
 using QuanLyVatTu_ASP.DataAccess;
-using QuanLyVatTu_ASP.Areas.Admin.Models;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/nha-cung-cap")]
-    public class NhaCungCapController : Controller
+    public class NhaCungCapController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
         private const int PageSize = 10;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels;
 using QuanLyVatTu_ASP.DataAccess;
@@ -8,7 +9,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/hoa-don")]
-    public class HoaDonController : Controller
+    public class HoaDonController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
 

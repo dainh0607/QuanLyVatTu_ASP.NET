@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.ThongKe;
 using QuanLyVatTu_ASP.DataAccess;
 using System;
@@ -12,7 +13,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/thong-ke")]
-    public class ThongKeController : Controller
+    public class ThongKeController : AdminBaseController
     {
         private readonly ApplicationDbContext _context;
 
