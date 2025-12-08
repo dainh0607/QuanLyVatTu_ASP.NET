@@ -6,13 +6,9 @@ using QuanLyVatTu_ASP.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-=======
-// Đăng ký DbContext
->>>>>>> 2ea3a480951a442c48eb813038cee3aae618c5b1
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
 
@@ -27,22 +23,17 @@ builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>(
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 
-<<<<<<< HEAD
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromDays(7);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".QuanLyVatTu.Session";
 });
 
-
-=======
 builder.Services.AddHttpContextAccessor();
 
-// ❗❗❗ TẤT CẢ AddScoped/AddDbContext PHẢI ĐỨNG TRƯỚC builder.Build()
->>>>>>> 2ea3a480951a442c48eb813038cee3aae618c5b1
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

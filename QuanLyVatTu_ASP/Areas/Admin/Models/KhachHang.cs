@@ -2,9 +2,8 @@
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
-    public class KhachHang : BaseEntity
     [Table("KhachHang")]
-    public class KhachHang
+    public class KhachHang : BaseEntity
     {
         public string MaHienThi => $"KH{ID:000}";
         public string HoTen { get; set; } = null!;

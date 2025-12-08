@@ -9,5 +9,10 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
         public NhanVienRepository(ApplicationDbContext context) : base(context)
         {
         }
+        public NhanVien GetByLogin(string email, string password)
+        {
+            return _context.NhanViens
+                .FirstOrDefault(x => (x.Email == email || x.TaiKhoan == email) && x.MatKhau == password);
+        }
     }
 }
