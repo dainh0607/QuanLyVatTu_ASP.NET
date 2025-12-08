@@ -20,7 +20,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         [Display(Name = "Ngày đặt")]
         public DateTime NgayDat { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập tổng tiền")]
         [Display(Name = "Tổng tiền")]
         public decimal TongTien { get; set; }
 

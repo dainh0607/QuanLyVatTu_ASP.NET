@@ -1,93 +1,99 @@
 ﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien.NhanVienIndexViewModel
 @{
     ViewData["Title"] = "Quản lý Nhân Viên";
-    Layout = "_AdminLayout";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="container-fluid py-4">
-    <!-- Thanh tìm kiếm + nút -->
     <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
         <div class="card-body py-3">
             <div class="row align-items-center g-3">
                 <div class="col-lg-8">
-                    <div class="d-flex gap-2">
+                    <form asp-action="Index" asp-controller="NhanVien" method="get" class="d-flex gap-2">
                         <div class="position-relative flex-grow-1">
-                            <input type="text" class="form-control ps-5 rounded-3" placeholder="Tìm nhân viên, CCCD, vai trò..."
-                                   id="keyword" value="@ViewBag.Keyword">
+                            <input type="text" class="form-control ps-5 rounded-3"
+                                   placeholder="Tìm tên, CCCD, vai trò..."
+                                   name="keyword" value="@ViewBag.Keyword">
                             <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted"></i>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Tìm</button>
+                    </form>
                 </div>
                 <div class="col-lg-4 text-lg-end">
-                    <a asp-action="Create" class="btn btn-success rounded-pill px-4 shadow-sm">
-                        Thêm mới
+                    <a asp-action="Create" asp-controller="NhanVien" class="btn btn-success rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-person-plus-fill me-1"></i> Thêm mới
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bảng danh sách -->
     <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="bg-light">
                         <tr>
-                            <th width="60" class="text-center">
-                                <input class="form-check-input" type="checkbox" id="checkAll" />
-                            </th>
+                            <th width="50" class="text-center">#</th>
                             <th>Mã NV</th>
                             <th>Họ tên</th>
                             <th>Ngày sinh</th>
                             <th>CCCD</th>
-                            <th>Số điện thoại</th>
-                            <th>Email</th>
+                            <th>Liên hệ</th>
                             <th>Vai trò</th>
                             <th>Ngày tạo</th>
-                            <th width="140" class="text-center">Thao tác</th>
+                            <th width="120" class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.Items)
+                        @if (Model.Items.Any())
                         {
-                            <tr>
-                                <td class="text-center">
-                                    <input class="form-check-input chk-item" type="checkbox" value="@item.ID" />
-                                </td>
-                                <td><strong>@item.MaHienThi</strong></td>
-                                <td>@item.HoTen</td>
-                                <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td>
-                                <td>@item.CCCD</td>
-                                <td>@item.SoDienThoai</td>
-                                <td>@(item.Email ?? "—")</td>
-                                <td>
-                                    <span class="badge @(item.VaiTro == "Quản trị" ? "bg-danger" : "bg-primary") rounded-pill px-3">
-                                        @item.VaiTro
-                                    </span>
-                                </td>
-                                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
-                                <td class="text-center py-3">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.ID"
-                                           class="btn btn-warning btn-sm rounded-pill px-3">
-                                            Sửa
-                                        </a>
-                                        <button type="button"
-                                                data-url="@Url.Action("Delete", "NhanVien", new { id = item.ID })"
-                                                class="btn btn-danger btn-sm rounded-pill px-3 btn-delete">
-                                            Xóa
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td class="text-center text-muted">@item.ID</td>
+                                    <td><strong>@item.MaHienThi</strong></td>
+                                    <td class="fw-bold text-primary">@item.HoTen</td>
+                                    <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.CCCD</td>
+                                    <td>
+                                        <div><i class="bi bi-telephone me-1 text-muted"></i> @item.SoDienThoai</div>
+                                        @if (!string.IsNullOrEmpty(item.Email))
+                                        {
+                                            <div class="small text-muted"><i class="bi bi-envelope me-1"></i> @item.Email</div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @(item.VaiTro == "Quản trị" ? "bg-danger" : "bg-primary") rounded-pill px-3">
+                                            @item.VaiTro
+                                        </span>
+                                    </td>
+                                    <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a asp-action="Edit" asp-controller="NhanVien" asp-route-id="@item.ID"
+                                               class="btn btn-warning btn-sm rounded-pill px-3" title="Sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+
+                                            <form asp-action="Delete" asp-controller="NhanVien" asp-route-id="@item.ID" method="post"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa nhân viên: @item.HoTen?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3" title="Xóa">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
-                        @if (!Model.Items.Any())
+                        else
                         {
                             <tr>
-                                <td colspan="10" class="text-center py-5 text-muted">
-                                    <i class="bi bi-people display-6 d-block mb-3"></i>
-                                    Chưa có nhân viên nào
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people display-4 d-block mb-3"></i>
+                                    Không tìm thấy dữ liệu phù hợp
                                 </td>
                             </tr>
                         }
@@ -95,44 +101,32 @@
                 </table>
             </div>
 
-            <!-- Phân trang -->
-            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
-                <div class="text-muted small">
-                    Hiển thị @(Model.Items.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
-                    đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
-                    trong tổng <strong>@Model.TotalRecords</strong> bản ghi
-                </div>
-                <nav>
-                    <ul class="pagination pagination-modern mb-0">
-                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">«</a>
-                        </li>
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+            @if (Model.TotalPages > 1)
+            {
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-0">
+                    <div class="text-muted small">
+                        Trang <strong>@Model.PageIndex</strong> / @Model.TotalPages
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link rounded-start-pill" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">Trước</a>
                             </li>
-                        }
-                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                            <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">»</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                <a class="page-link rounded-end-pill" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">Sau</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $("#checkAll").on("change", function () {
-            $(".chk-item").prop("checked", this.checked);
-        });
-
-        $(document).on("click", ".btn-delete", function () {
-            if (confirm("Xóa nhân viên này?")) {
-                location.href = "@Url.Action("Delete", "NhanVien")/" + $(this).data("id");
-            }
-        });
-    </script>
-}

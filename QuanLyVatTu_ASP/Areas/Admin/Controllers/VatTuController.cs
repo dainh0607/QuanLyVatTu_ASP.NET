@@ -45,7 +45,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             var total = await query.CountAsync();
 
             var items = await query
-                .OrderBy(x => x.TenVatTu)
+                .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize)
                 .Select(x => new VatTuIndexViewModel.ItemViewModel
@@ -79,9 +79,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [HttpGet("them-moi")]
         public async Task<IActionResult> Create()
         {
-            ViewBag.LoaiVatTuList = new SelectList(await _context.LoaiVatTus.Select(l => new { l.ID, l.TenLoaiVatTu }).ToListAsync(), "ID", "TenLoaiVatTu");
-            ViewBag.NhaCungCapList = new SelectList(await _context.NhaCungCaps.Select(n => new { n.ID, n.TenNhaCungCap }).ToListAsync(), "ID", "TenNhaCungCap");
-
+            await PrepareViewBag();
             return View(new VatTuCreateEditViewModel());
         }
 
@@ -90,6 +88,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VatTuCreateEditViewModel model)
         {
+            if (await _context.VatTus.AnyAsync(x => x.TenVatTu == model.TenVatTu))
+            {
+                ModelState.AddModelError("TenVatTu", "Tên vật tư này đã tồn tại trong kho.");
+            }
+
             if (ModelState.IsValid)
             {
                 var vt = new VatTu
@@ -106,11 +109,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
                 _context.VatTus.Add(vt);
                 await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Thêm vật tư thành công";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.LoaiVatTuList = new SelectList(await _context.LoaiVatTus.Select(l => new { l.ID, l.TenLoaiVatTu }).ToListAsync(), "ID", "TenLoaiVatTu", model.MaLoaiVatTu);
-            ViewBag.NhaCungCapList = new SelectList(await _context.NhaCungCaps.Select(n => new { n.ID, n.TenNhaCungCap }).ToListAsync(), "ID", "TenNhaCungCap", model.MaNhaCungCap);
+            await PrepareViewBag(model.MaLoaiVatTu, model.MaNhaCungCap);
             return View(model);
         }
 
@@ -133,9 +137,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 MaNhaCungCap = vt.MaNhaCungCap
             };
 
-            ViewBag.LoaiVatTuList = new SelectList(await _context.LoaiVatTus.Select(l => new { l.ID, l.TenLoaiVatTu }).ToListAsync(), "ID", "TenLoaiVatTu", model.MaLoaiVatTu);
-            ViewBag.NhaCungCapList = new SelectList(await _context.NhaCungCaps.Select(n => new { n.ID, n.TenNhaCungCap }).ToListAsync(), "ID", "TenNhaCungCap", model.MaNhaCungCap);
-
+            await PrepareViewBag(model.MaLoaiVatTu, model.MaNhaCungCap);
             return View(model);
         }
 
@@ -145,6 +147,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id, VatTuCreateEditViewModel model)
         {
             if (id != model.Id) return BadRequest();
+
+            if (await _context.VatTus.AnyAsync(x => x.TenVatTu == model.TenVatTu && x.ID != id))
+            {
+                ModelState.AddModelError("TenVatTu", "Tên vật tư đã được sử dụng.");
+            }
 
             if (ModelState.IsValid)
             {
@@ -160,11 +167,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 vt.MaNhaCungCap = model.MaNhaCungCap;
 
                 await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Cập nhật vật tư thành công";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.LoaiVatTuList = new SelectList(await _context.LoaiVatTus.Select(l => new { l.ID, l.TenLoaiVatTu }).ToListAsync(), "ID", "TenLoaiVatTu", model.MaLoaiVatTu);
-            ViewBag.NhaCungCapList = new SelectList(await _context.NhaCungCaps.Select(n => new { n.ID, n.TenNhaCungCap }).ToListAsync(), "ID", "TenNhaCungCap", model.MaNhaCungCap);
+            await PrepareViewBag(model.MaLoaiVatTu, model.MaNhaCungCap);
             return View(model);
         }
 
@@ -174,12 +182,35 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var vt = await _context.VatTus.FindAsync(id);
-            if (vt != null)
+            if (vt == null)
             {
-                _context.VatTus.Remove(vt);
-                await _context.SaveChangesAsync();
+                TempData["Error"] = "Vật tư không tồn tại";
+                return RedirectToAction(nameof(Index));
             }
+
+            bool inDonHang = await _context.ChiTietDonHangs.AnyAsync(ct => ct.MaVatTu == id);
+            bool inHoaDon = await _context.ChiTietHoaDons.AnyAsync(ct => ct.MaVatTu == id);
+
+            if (inDonHang || inHoaDon)
+            {
+                TempData["Error"] = "Không thể xóa! Vật tư này đã phát sinh giao dịch (Đơn hàng/Hóa đơn).";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.VatTus.Remove(vt);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Đã xóa vật tư khỏi kho";
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PrepareViewBag(int? selectedLoai = null, int? selectedNCC = null)
+        {
+            ViewBag.LoaiVatTuList = new SelectList(await _context.LoaiVatTus
+                .Select(l => new { l.ID, l.TenLoaiVatTu }).ToListAsync(), "ID", "TenLoaiVatTu", selectedLoai);
+
+            ViewBag.NhaCungCapList = new SelectList(await _context.NhaCungCaps
+                .Select(n => new { n.ID, n.TenNhaCungCap }).ToListAsync(), "ID", "TenNhaCungCap", selectedNCC);
         }
     }
 }

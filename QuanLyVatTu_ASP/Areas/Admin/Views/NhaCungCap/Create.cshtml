@@ -1,7 +1,7 @@
 ﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhaCungCap.NhaCungCapCreateEditViewModel
 @{
     ViewData["Title"] = "Tạo nhà cung cấp mới";
-    Layout = "_AdminLayout";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="container-fluid py-5">
@@ -14,14 +14,14 @@
                     </h3>
                 </div>
                 <div class="card-body p-5">
-                    <form asp-action="them-moi" method="post">
+                    <form asp-action="Create" asp-controller="NhaCungCap" method="post">
                         @Html.AntiForgeryToken()
 
                         <div class="row g-4">
                             <div class="col-lg-8">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Tên nhà cung cấp <span class="text-danger">*</span></label>
-                                    <input asp-for="TenNhaCungCap" class="form-control form-control-lg rounded-3" required />
+                                    <input asp-for="TenNhaCungCap" class="form-control form-control-lg rounded-3" placeholder="Nhập tên công ty/nhà cung cấp..." required />
                                     <span asp-validation-for="TenNhaCungCap" class="text-danger"></span>
                                 </div>
                             </div>
@@ -29,26 +29,29 @@
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Mã nhà cung cấp</label>
                                     <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
+                                    <small class="text-muted fst-italic">* Tự động tạo</small>
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Email</label>
-                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" />
+                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="contact@company.com" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số điện thoại</label>
-                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" />
+                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="028..." />
+                                    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Địa chỉ</label>
-                                    <textarea asp-for="DiaChi" class="form-control rounded-3" rows="3"></textarea>
+                                    <textarea asp-for="DiaChi" class="form-control rounded-3" rows="3" placeholder="Địa chỉ trụ sở..."></textarea>
                                 </div>
                             </div>
                         </div>

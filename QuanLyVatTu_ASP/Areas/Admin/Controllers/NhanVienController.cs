@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien;
 using QuanLyVatTu_ASP.DataAccess;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
@@ -42,7 +42,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             var total = await query.CountAsync();
 
             var items = await query
-                .OrderBy(x => x.HoTen)
+                .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize)
                 .Select(x => new NhanVienIndexViewModel.ItemViewModel
@@ -77,7 +77,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             return View(new NhanVienCreateEditViewModel
             {
-                NgaySinh = DateTime.Now.AddYears(-25)
+                NgaySinh = DateTime.Now.AddYears(-22)
             });
         }
 
@@ -86,6 +86,21 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(NhanVienCreateEditViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.MatKhau))
+                ModelState.AddModelError("MatKhau", "Vui lòng nhập mật khẩu.");
+
+            if (await _context.NhanViens.AnyAsync(x => x.CCCD == model.CCCD))
+                ModelState.AddModelError("CCCD", "CCCD này đã tồn tại.");
+
+            if (await _context.NhanViens.AnyAsync(x => x.SoDienThoai == model.SoDienThoai))
+                ModelState.AddModelError("SoDienThoai", "Số điện thoại này đã tồn tại.");
+
+            if (!string.IsNullOrEmpty(model.Email) && await _context.NhanViens.AnyAsync(x => x.Email == model.Email))
+                ModelState.AddModelError("Email", "Email này đã tồn tại.");
+
+            if (await _context.NhanViens.AnyAsync(x => x.TaiKhoan == model.TaiKhoan))
+                ModelState.AddModelError("TaiKhoan", "Tài khoản đăng nhập đã tồn tại.");
+
             if (ModelState.IsValid)
             {
                 var nhanVien = new NhanVien
@@ -96,13 +111,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                     SoDienThoai = model.SoDienThoai,
                     Email = model.Email,
                     TaiKhoan = model.TaiKhoan,
-                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
+                    MatKhau = BCryptNet.HashPassword(model.MatKhau),
                     VaiTro = model.VaiTro,
                     NgayTao = DateTime.Now
                 };
 
                 _context.NhanViens.Add(nhanVien);
                 await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Thêm nhân viên thành công";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -126,7 +143,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 Email = nhanVien.Email,
                 TaiKhoan = nhanVien.TaiKhoan,
                 VaiTro = nhanVien.VaiTro
-                // Không trả về MatKhau
             };
 
             return View(model);
@@ -138,6 +154,21 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id, NhanVienCreateEditViewModel model)
         {
             if (id != model.Id) return BadRequest();
+
+            if (string.IsNullOrWhiteSpace(model.MatKhau))
+                ModelState.Remove("MatKhau");
+
+            if (await _context.NhanViens.AnyAsync(x => x.CCCD == model.CCCD && x.ID != id))
+                ModelState.AddModelError("CCCD", "CCCD đã được sử dụng bởi nhân viên khác.");
+
+            if (await _context.NhanViens.AnyAsync(x => x.SoDienThoai == model.SoDienThoai && x.ID != id))
+                ModelState.AddModelError("SoDienThoai", "SĐT đã được sử dụng bởi nhân viên khác.");
+
+            if (!string.IsNullOrEmpty(model.Email) && await _context.NhanViens.AnyAsync(x => x.Email == model.Email && x.ID != id))
+                ModelState.AddModelError("Email", "Email đã được sử dụng bởi nhân viên khác.");
+
+            if (await _context.NhanViens.AnyAsync(x => x.TaiKhoan == model.TaiKhoan && x.ID != id))
+                ModelState.AddModelError("TaiKhoan", "Tài khoản này đã tồn tại.");
 
             if (ModelState.IsValid)
             {
@@ -154,10 +185,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
                 if (!string.IsNullOrEmpty(model.MatKhau))
                 {
-                    nhanVien.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
+                    nhanVien.MatKhau = BCryptNet.HashPassword(model.MatKhau);
                 }
 
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật thông tin thành công";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -170,11 +202,24 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var nhanVien = await _context.NhanViens.FindAsync(id);
-            if (nhanVien != null)
+            if (nhanVien == null)
             {
-                _context.NhanViens.Remove(nhanVien);
-                await _context.SaveChangesAsync();
+                TempData["Error"] = "Nhân viên không tồn tại";
+                return RedirectToAction(nameof(Index));
             }
+
+            bool hasDonHang = await _context.DonHang.AnyAsync(d => d.NhanVienId == id);
+
+            if (hasDonHang)
+            {
+                TempData["Error"] = "Không thể xóa! Nhân viên này đã có lịch sử lập đơn hàng.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.NhanViens.Remove(nhanVien);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Đã xóa nhân viên";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,7 +1,7 @@
 ﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien.NhanVienCreateEditViewModel
 @{
     ViewData["Title"] = "Tạo nhân viên mới";
-    Layout = "_AdminLayout";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="container-fluid py-5">
@@ -14,47 +14,52 @@
                     </h3>
                 </div>
                 <div class="card-body p-5">
-                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                    <form asp-action="Create" asp-controller="NhanVien" method="post" class="needs-validation" novalidate>
                         @Html.AntiForgeryToken()
 
                         <div class="row g-4">
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                                    <input asp-for="HoTen" class="form-control form-control-lg rounded-3" required />
+                                    <input asp-for="HoTen" class="form-control form-control-lg rounded-3" placeholder="Nhập họ tên nhân viên..." required />
                                     <span asp-validation-for="HoTen" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Ngày sinh <span class="text-danger">*</span></label>
                                     <input asp-for="NgaySinh" class="form-control form-control-lg rounded-3" type="date" required />
+                                    <span asp-validation-for="NgaySinh" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">CCCD <span class="text-danger">*</span></label>
-                                    <input asp-for="CCCD" class="form-control form-control-lg rounded-3" maxlength="12" required />
+                                    <input asp-for="CCCD" class="form-control form-control-lg rounded-3" maxlength="12" placeholder="Số căn cước công dân..." required />
+                                    <span asp-validation-for="CCCD" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" required />
+                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="Số điện thoại liên hệ..." required />
+                                    <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Email</label>
-                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" />
+                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="email@company.com" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Tài khoản đăng nhập <span class="text-danger">*</span></label>
-                                    <input asp-for="TaiKhoan" class="form-control form-control-lg rounded-3" required />
+                                    <input asp-for="TaiKhoan" class="form-control form-control-lg rounded-3" placeholder="Username..." required />
+                                    <span asp-validation-for="TaiKhoan" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
-                                    <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" required />
+                                    <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" placeholder="Nhập mật khẩu..." required />
                                     <span asp-validation-for="MatKhau" class="text-danger small"></span>
                                 </div>
 
@@ -67,6 +72,7 @@
                                         <option value="Kế toán">Kế toán</option>
                                         <option value="Thủ kho">Thủ kho</option>
                                     </select>
+                                    <span asp-validation-for="VaiTro" class="text-danger small"></span>
                                 </div>
                             </div>
                         </div>
