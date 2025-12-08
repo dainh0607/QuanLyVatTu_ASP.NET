@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using QuanLyVatTu.Areas.Admin.Controllers;
+using QuanLyVatTu_ASP.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels;
 using QuanLyVatTu_ASP.DataAccess;

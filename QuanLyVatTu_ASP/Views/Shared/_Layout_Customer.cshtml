@@ -1,165 +1,105 @@
 ﻿<!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MaterialPro - Vật tư chuyên nghiệp</title>
+    <title>@ViewData["Title"] - LAB08</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="~/user/css/site.css" rel="stylesheet">
-
-    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header class="header">
-        <nav class="navbar">
-            <div class="container flex-between">
-                <div class="nav-brand">
-                    <a asp-controller="Home" asp-action="Index" class="logo">
-                        <i class="fas fa-tools"></i>
-                        <span>QLVT</span>
-                    </a>
-                </div>
 
-                <div class="nav-search">
-                    <form class="search-form">
-                        <input type="text" placeholder="Tìm kiếm vật tư, thiết bị..." class="search-input">
-                        <button type="submit" class="search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a asp-controller="Customer" asp-action="Index" class="nav-link active">
-                            <i class="fas fa-home"></i>
-                            <span>Trang chủ</span>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-boxes"></i>
-                            <span>Danh mục</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 1</a>
-                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 2</a>
-                            <a a asp-controller="Customer" asp-action="Categories">Loại hàng 3</a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a a asp-controller="Customer" asp-action="Categories">
-                            <i class="fas fa-fire"></i>
-                            <span>Khuyến mãi</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a a asp-controller="Customer" asp-action="About" class="nav-link">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Về chúng tôi</span>
-                        </a>
-                    </li>
-                </ul>
 
-                <div class="nav-actions">
-                    <button class="action-btn cart-btn" a asp-controller="Customer" asp-action="Cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                    <button class="action-btn user-btn" a asp-controller="Customer" asp-action="Profile">
-                        <i class="fas fa-user"></i>
-                    </button>
-                </div>
+    <header>
+        <div class="top-header">
+            <div class="logo">Quản lý cửa hàng vật tư</div>
 
-                <button class="mobile-menu-btn">
-                    <i class="fas fa-bars"></i>
-                </button>
+            <div class="search-box">
+                <input type="text" placeholder="Tìm kiếm sản phẩm..." />
+                <button><i class="fa fa-search"></i></button>
             </div>
+
+            <div class="header-icons">
+                <a href="#"><i class="fa-regular fa-heart"></i></a>
+                <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
+
+                <a class="btn login" href="/Account/Login">Đăng nhập</a>
+                <a class="btn register" href="/Account/Register">Đăng ký</a>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <ul class="nav-menu">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-boxes"></i>
+                        <span>Danh mục</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">Loại hàng 1</a>
+                        <a href="#" class="dropdown-item">Loại hàng 2</a>
+                        <a href="#" class="dropdown-item">Loại hàng 3</a>
+                    </div>
+                </li>
+
+                <li><a href="#" class="nav-link">Giới thiệu</a></li>
+                <li><a href="#" class="nav-link">Liên hệ</a></li>
+            </ul>
         </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main role="main">
+
+    <div class="content">
         @RenderBody()
-    </main>
+    </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-tools"></i>
-                        <span>MaterialPro</span>
-                    </div>
-                    <p class="footer-description">
-                        Chuyên cung cấp vật tư, thiết bị và dụng cụ công nghiệp chất lượng cao.
-                        Đối tác tin cậy cho mọi công trình.
-                    </p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
+    <footer>
+        <div class="footer-container">
 
-                <div class="footer-section">
-                    <h3 class="footer-title">Liên kết nhanh</h3>
-                    <ul class="footer-links">
-                        <li><a a asp-controller="Customer" asp-action="Index">Trang chủ</a></li>
-                        <li><a a asp-controller="Customer" asp-action="Categories">Sản phẩm</a></li>
-                        <li><a a asp-controller="Customer" asp-action="Categories">Khuyến mãi</a></li>
-                        <li><a href="#">Tin tức</a></li>
-                        <li><a a asp-controller="Customer" asp-action="About">Liên hệ</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h3 class="footer-title">Danh mục</h3>
-                    <h3 class="footer-title">Danh mục</h3>
-                    <ul class="footer-links">
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h3 class="footer-title">Liên hệ</h3>
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>123 Đường ABC, Quận 1, TP.HCM</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <span>+84 28 1234 5678</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>info@materialpro.vn</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Thứ 2 - Thứ 7: 8:00 - 18:00</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="ft-column">
+                <h4>Liên hệ</h4>
+                <p>Liên hệ trong giờ làm việc</p>
+                <p>SDT/Zalo: 0302370432</p>
+                <p>Mail: dainhtb01722@gmail.com</p>
             </div>
 
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2024 QLVT. Tất cả quyền được bảo lưu.</p>
-                    <div class="footer-bottom-links">
-                        <a href="#">Chính sách bảo mật</a>
-                        <a href="#">Điều khoản sử dụng</a>
-                        <a href="#">Chính sách vận chuyển</a>
-                    </div>
-                </div>
+            <div class="ft-column">
+                <h4>Về chúng tôi</h4>
+                <p>Giới thiệu</p>
+                <p>Liên hệ</p>
+                <p>FAQs</p>
+            </div>
+
+            <div class="ft-column">
+                <h4>Chính sách</h4>
+                <p>Hướng dẫn mua hàng</p>
+                <p>Điều khoản thanh toán</p>
+                <p>Giao hàng - vận chuyển</p>
+                <p>Chính sách đặt cọc</p>
+                <p>Chính sách bảo hành</p>
+            </div>
+
+            <div class="ft-column">
+                <h4>Hợp tác</h4>
+                <p>Tuyển dụng</p>
+                <p>Chính sách đại lý</p>
+                <p>Chương trình cộng tác viên</p>
+                <p>Nhượng quyền thương hiệu</p>
+                <p>Hợp tác phân phối</p>
             </div>
         </div>
+
+        <p style="text-align:center;color:#fff;margin-top:20px;">
+            © 2025 - Quản lý vật tư
+        </p>
     </footer>
-    <script src="~/user/js/site.js"></script>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-
 </html>
