@@ -1,0 +1,137 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.HoaDonDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết hóa đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-end mb-3 no-print">
+        <a asp-action="Index" class="btn btn-secondary rounded-pill me-2">Quay lại</a>
+        <button onclick="window.print()" class="btn btn-primary rounded-pill"><i class="bi bi-printer"></i> In hóa đơn</button>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-0 p-5 bg-white mx-auto" style="max-width: 900px; min-height: 1000px;" id="invoice-area">
+
+        <div class="d-flex border-bottom border-warning border-3 pb-3 mb-4">
+            <div class="me-4">
+                <div style="width: 80px; height: 80px; background-color: #fff3cd; border: 1px solid #ffecb5; border-radius: 8px;"></div>
+            </div>
+            <div>
+                <h4 class="fw-bold text-uppercase mb-1" style="color: #265077;">@Model.TenCongTy</h4>
+                <div class="small text-secondary mb-1">MST: @Model.MSTCongTy</div>
+                <div class="small text-secondary mb-1">Địa chỉ: @Model.DiaChiCongTy</div>
+                <div class="small text-secondary">Hotline: 0909 000 000 • Email: contact@vlxdabc.vn</div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h2 class="fw-bold text-uppercase mb-2" style="color: #265077;">HÓA ĐƠN GIÁ TRỊ GIA TĂNG (VAT)</h2>
+            <div class="text-muted small">Mẫu số: 01GTKT • Ký hiệu: AA/23E • Số: <span class="text-danger fw-bold">@Model.MaHoaDon</span></div>
+            <div class="text-muted small">Ngày lập: @Model.NgayLap.ToString("dd/MM/yyyy")</div>
+        </div>
+
+        <div class="p-4 mb-4 rounded-3" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
+            <div class="row g-2">
+                <div class="col-12"><strong>Đơn vị mua hàng:</strong> @Model.TenKhachHang.ToUpper()</div>
+                <div class="col-12"><strong>MST:</strong> @Model.MSTKhachHang</div>
+                <div class="col-12"><strong>Địa chỉ:</strong> @Model.DiaChiKhachHang</div>
+                <div class="col-12"><strong>Phương thức thanh toán:</strong> @Model.PhuongThucThanhToan</div>
+                <div class="col-12"><strong>Số tài khoản:</strong> 123 456 789 - Vietcombank</div>
+            </div>
+        </div>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+                <thead class="text-white" style="background-color: #f59f00;">
+                    <tr>
+                        <th class="text-center" width="50">STT</th>
+                        <th>Tên hàng hóa</th>
+                        <th class="text-center" width="80">ĐVT</th>
+                        <th class="text-center" width="80">SL</th>
+                        <th class="text-end" width="120">Đơn giá</th>
+                        <th class="text-end" width="140">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ChiTiet)
+                    {
+                        <tr>
+                            <td class="text-center">@item.STT.ToString("00")</td>
+                            <td>@item.TenVatTu</td>
+                            <td class="text-center">@item.DVT</td>
+                            <td class="text-center">@item.SoLuong</td>
+                            <td class="text-end">@item.DonGia.ToString("N0")</td>
+                            <td class="text-end">@item.ThanhTien.ToString("N0")</td>
+                        </tr>
+                    }
+                    @for (int i = 0; i < Math.Max(0, 5 - Model.ChiTiet.Count); i++)
+                    {
+                        <tr style="height: 40px;"><td colspan="6"></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end mb-5">
+            <div class="col-md-5">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">Cộng tiền hàng:</span>
+                    <span class="fw-bold">@Model.TongTienHang.ToString("N0")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                    <span class="text-secondary">Thuế GTGT (10%):</span>
+                    <span class="fw-bold">@Model.ThueGTGT.ToString("N0")</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="fw-bold fs-5 text-dark">Tổng thanh toán:</span>
+                    <span class="fw-bold fs-4" style="color: #f59f00;">@Model.TongThanhToan.ToString("N0")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center mt-auto">
+            <div class="col-6">
+                <div style="height: 100px; width: 100px; border: 1px solid #dee2e6; margin: 0 auto; display:flex; align-items:center; justify-content:center; border-radius: 8px;">
+                    <span class="text-muted small">QR Code</span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold mb-5">Người bán hàng</div>
+                <div class="mt-5 pt-4 text-muted fst-italic">(Ký, ghi rõ họ tên)</div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 pt-3 border-top text-muted small fst-italic">
+            Đây là hóa đơn giá trị gia tăng. Mọi thay đổi phải được xác nhận bằng chữ ký số của người bán.
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS cho in ấn */
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        #invoice-area, #invoice-area * {
+            visibility: visible;
+        }
+        #invoice-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0 !important;
+            box-shadow: none !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+        /* Giữ màu background khi in */
+        .table thead th {
+            background-color: #f59f00 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>

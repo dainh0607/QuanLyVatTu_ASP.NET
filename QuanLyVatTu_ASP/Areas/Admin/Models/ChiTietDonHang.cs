@@ -1,4 +1,6 @@
-﻿namespace QuanLyVatTu_ASP.Areas.Admin.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class ChiTietDonHang
     {
@@ -8,9 +10,14 @@
         public int SoLuong { get; set; }
         public decimal? SoTienDatCoc { get; set; }
         public decimal DonGia { get; set; }
-        public decimal ThanhTien => SoLuong * DonGia;
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal ThanhTien { get; set; }
+
+        [ForeignKey("MaDonHang")]
         public DonHang DonHang { get; set; } = null!;
+
+        [ForeignKey("MaVatTu")]
         public VatTu VatTu { get; set; } = null!;
     }
 }

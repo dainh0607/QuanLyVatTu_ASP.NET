@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels;
+using Microsoft.EntityFrameworkCore;
+using BCryptNet = BCrypt.Net.BCrypt;
 using QuanLyVatTu_ASP.DataAccess;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 
@@ -88,7 +89,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                     SoDienThoai = model.SoDienThoai,
                     DiaChi = model.DiaChi,
                     TaiKhoan = model.TaiKhoan,
-                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
+                    MatKhau = BCryptNet.HashPassword(model.MatKhau),
                     DangNhapGoogle = false,
                     NgayTao = DateTime.Now
                 };
@@ -142,7 +143,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
                 if (!string.IsNullOrEmpty(model.MatKhau))
                 {
-                    kh.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
+                    kh.MatKhau = BCryptNet.HashPassword(model.MatKhau);
                 }
 
                 await _context.SaveChangesAsync();

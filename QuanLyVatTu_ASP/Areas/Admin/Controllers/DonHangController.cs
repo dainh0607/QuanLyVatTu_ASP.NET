@@ -24,14 +24,18 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             if (page < 1) page = 1;
 
-            var query = _context.DonHang.AsQueryable();
+            var query = _context.DonHang
+                .Include(d => d.KhachHang)
+                .Include(d => d.NhanVien)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.Trim();
                 query = query.Where(x =>
                     x.MaHienThi.Contains(keyword) ||
-                    (x.GhiChu != null && x.GhiChu.Contains(keyword)));
+                    (x.GhiChu != null && x.GhiChu.Contains(keyword)) ||
+                    x.KhachHang.HoTen.Contains(keyword));
                 ViewBag.Keyword = keyword;
             }
 
@@ -46,8 +50,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 {
                     ID = x.ID,
                     MaHienThi = x.MaHienThi ?? "DH" + x.ID.ToString("0000"),
-                    KhachHangId = x.KhachHangId,
-                    NhanVienId = x.NhanVienId,
+                    
+                    TenKhachHang = x.KhachHang.HoTen, 
+                    TenNhanVien = x.NhanVien != null ? x.NhanVien.HoTen : "", 
+
                     NgayDat = x.NgayDat,
                     TongTien = x.TongTien,
                     SoTienDatCoc = x.SoTienDatCoc ?? 0,
@@ -95,7 +101,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 var entity = new DonHang
                 {
                     KhachHangId = model.KhachHangId,
-                    NhanVienId = model.NhanVienId ?? 0,
+                    NhanVienId = model.NhanVienId ?? 0, 
                     NgayDat = model.NgayDat,
                     TongTien = model.TongTien,
                     SoTienDatCoc = model.SoTienDatCoc,
@@ -127,7 +133,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             {
                 Id = entity.ID,
                 MaHienThi = entity.MaHienThi,
-                KhachHangId = entity.KhachHangId,
+                KhachHangId = entity.KhachHangId ?? 0,
                 NhanVienId = entity.NhanVienId,
                 NgayDat = entity.NgayDat,
                 TongTien = entity.TongTien,
@@ -159,7 +165,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 entity.KhachHangId = model.KhachHangId;
                 entity.NhanVienId = model.NhanVienId ?? 0;
                 entity.NgayDat = model.NgayDat;
-                entity.TongTien = model.TongTien;
+
                 entity.SoTienDatCoc = model.SoTienDatCoc;
                 entity.PhuongThucDatCoc = model.PhuongThucDatCoc;
                 entity.NgayDatCoc = model.NgayDatCoc;

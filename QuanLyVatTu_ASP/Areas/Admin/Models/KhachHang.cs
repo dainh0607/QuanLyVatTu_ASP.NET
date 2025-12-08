@@ -1,4 +1,6 @@
-﻿namespace QuanLyVatTu_ASP.Areas.Admin.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class KhachHang : BaseEntity
     {
@@ -9,7 +11,10 @@
         public string? DiaChi { get; set; }
         public string TaiKhoan { get; set; } = null!;
         public string MatKhau { get; set; } = null!;
+
+        [NotMapped]
         public bool DangNhapGoogle { get; set; } = false;
+        [NotMapped]
         public string? MaGheGoogle { get; set; }
     }
 }

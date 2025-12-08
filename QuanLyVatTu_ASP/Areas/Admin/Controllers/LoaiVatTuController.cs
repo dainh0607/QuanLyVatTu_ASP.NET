@@ -25,7 +25,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             if (page < 1) page = 1;
 
-            var query = _context.LoaiVatTus.AsQueryable();
+            var query = _context.LoaiVatTus.Include(x => x.VatTus).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
@@ -40,7 +40,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             var total = await query.CountAsync();
 
             var items = await query
-                .OrderBy(x => x.TenLoaiVatTu)
+                .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize)
                 .Select(x => new LoaiVatTuIndexViewModel.ItemViewModel
@@ -78,6 +78,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LoaiVatTuCreateEditViewModel model)
         {
+            if (await _context.LoaiVatTus.AnyAsync(x => x.TenLoaiVatTu == model.TenLoaiVatTu))
+            {
+                ModelState.AddModelError("TenLoaiVatTu", "Tên loại vật tư này đã tồn tại");
+            }
+
             if (ModelState.IsValid)
             {
                 var loai = new LoaiVatTu
@@ -89,6 +94,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
                 _context.LoaiVatTus.Add(loai);
                 await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Thêm mới thành công";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -119,6 +126,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             if (id != model.Id) return BadRequest();
 
+            // FIX 3: Kiểm tra trùng tên (trừ chính nó)
+            if (await _context.LoaiVatTus.AnyAsync(x => x.TenLoaiVatTu == model.TenLoaiVatTu && x.ID != id))
+            {
+                ModelState.AddModelError("TenLoaiVatTu", "Tên loại vật tư đã được sử dụng");
+            }
+
             if (ModelState.IsValid)
             {
                 var loai = await _context.LoaiVatTus.FindAsync(id);
@@ -128,6 +141,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 loai.MoTa = model.MoTa;
 
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật thành công";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -139,12 +153,26 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var loai = await _context.LoaiVatTus.FindAsync(id);
-            if (loai != null)
+            var loai = await _context.LoaiVatTus
+                .Include(x => x.VatTus)
+                .FirstOrDefaultAsync(x => x.ID == id);
+
+            if (loai == null)
             {
-                _context.LoaiVatTus.Remove(loai);
-                await _context.SaveChangesAsync();
+                TempData["Error"] = "Loại vật tư không tồn tại";
+                return RedirectToAction(nameof(Index));
             }
+
+            if (loai.VatTus != null && loai.VatTus.Any())
+            {
+                TempData["Error"] = $"Không thể xóa! Có {loai.VatTus.Count} vật tư đang thuộc loại này.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.LoaiVatTus.Remove(loai);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Đã xóa loại vật tư";
             return RedirectToAction(nameof(Index));
         }
     }

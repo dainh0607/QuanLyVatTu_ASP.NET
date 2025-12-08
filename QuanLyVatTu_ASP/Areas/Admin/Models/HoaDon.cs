@@ -1,23 +1,30 @@
-﻿namespace QuanLyVatTu_ASP.Areas.Admin.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class HoaDon : BaseEntity
     {
+        [ForeignKey("DonHang")]
         public int MaDonHang { get; set; }
+
+        [ForeignKey("NhanVien")]
         public int MaNhanVien { get; set; }
+
+        [ForeignKey("KhachHang")]
         public int MaKhachHang { get; set; }
+
+        [Column("NgayLap")]
         public DateTime NgayLap { get; set; } = DateTime.Now;
 
-        // Tổng tiền hàng hóa trước thuế
         public decimal TongTienTruocThue { get; set; }
-
-        // Tỷ lệ thuế GTGT (0 hoặc 10)
         public decimal TyLeThueGTGT { get; set; } = 10;
 
-        // Tiền thuế GTGT = TongTienTruocThue * TyLeThueGTGT / 100
-        public decimal? TienThueGTGT { get; private set; }
+        // Cấu hình Computed để EF biết cột này do DB (Trigger) xử lý
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal? TienThueGTGT { get; set; } 
 
-        // Tổng tiền sau thuế + thuế - chiết khấu
-        public decimal? TongTienSauThue { get; private set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal? TongTienSauThue { get; set; }
 
         public decimal ChietKhau { get; set; } = 0;
         public decimal SoTienDatCoc { get; set; } = 0;
@@ -31,11 +38,5 @@
 
         public ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; } = new List<ChiTietHoaDon>();
 
-        // Phương thức tự động tính thuế (gọi trước khi SaveChanges)
-        public void TinhThueVaTongTien()
-        {
-            TienThueGTGT = Math.Round(TongTienTruocThue * TyLeThueGTGT / 100, 0);
-            TongTienSauThue = Math.Round(TongTienTruocThue + TienThueGTGT.Value - ChietKhau, 0);
-        }
     }
 }
