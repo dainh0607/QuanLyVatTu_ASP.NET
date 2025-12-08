@@ -1,32 +1,65 @@
-﻿.policy-page {
-    padding: var(--spacing-2xl) 0;
+﻿:root {
+    /* Màu chủ đạo - Xanh & Đen */
+    --primary-blue: #2563eb;
+    --blue-dark: #1e40af;
+    --blue-light: #3b82f6;
+    --blue-soft: #eff6ff;
+    /* Màu đen và xám */
+    --black: #111827;
+    --gray-dark: #374151;
+    --gray-medium: #6b7280;
+    --gray-light: #d1d5db;
+    --gray-lighter: #f3f4f6;
+    --white: #ffffff;
+    /* Màu nhấn */
+    --accent-red: #ef4444;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    /* Kích thước */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    /* Font size */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    /* Border radius - Giảm độ bo góc */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    /* Box shadow - Giảm shadow */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.policy-page {
+    padding: 2rem 0;
 }
 
 .policy-content {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: var(--spacing-2xl);
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
 }
 
-.policy-sidebar {
+.policy-nav {
+    background: var(--white);
+    padding: 1.5rem;
     position: sticky;
     top: 100px;
     height: fit-content;
 }
 
-.policy-nav {
-    background: var(--white);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
-}
-
     .policy-nav h3 {
-        font-size: var(--font-size-lg);
-        color: var(--gray-dark);
-        margin-bottom: var(--spacing-lg);
-        padding-bottom: var(--spacing-md);
-        border-bottom: 2px solid var(--blue-soft);
+        color: var(--black);
+        margin-bottom: 1rem;
     }
 
     .policy-nav ul {
@@ -34,146 +67,74 @@
     }
 
     .policy-nav li {
-        margin-bottom: var(--spacing-sm);
+        margin-bottom: 0.5rem;
     }
 
-    .policy-nav .nav-link {
-        display: block;
-        padding: var(--spacing-md);
+    .policy-nav a {
         color: var(--gray-medium);
         text-decoration: none;
-        border-radius: var(--border-radius-md);
-        transition: all 0.3s;
-        border-left: 3px solid transparent;
+        display: block;
+        padding: 0.5rem;
+        transition: color 0.2s;
     }
 
-        .policy-nav .nav-link:hover,
-        .policy-nav .nav-link.active {
-            background: var(--blue-soft);
+        .policy-nav a.active,
+        .policy-nav a:hover {
             color: var(--primary-blue);
-            border-left-color: var(--primary-blue);
+            font-weight: 500;
         }
 
 .policy-main {
     background: var(--white);
-    padding: var(--spacing-2xl);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
+    padding: 2rem;
 }
 
 .policy-section {
-    display: none;
+    margin-bottom: 3rem;
 }
 
-    .policy-section.active {
-        display: block;
-    }
-
     .policy-section h2 {
-        font-size: var(--font-size-2xl);
-        color: var(--gray-dark);
-        margin-bottom: var(--spacing-xl);
-        padding-bottom: var(--spacing-md);
+        color: var(--black);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
         border-bottom: 2px solid var(--primary-blue);
     }
 
-.section-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-}
-
 .policy-card {
-    padding: var(--spacing-xl);
-    background: var(--gray-lighter);
-    border-radius: var(--border-radius-lg);
-    border-left: 4px solid var(--primary-blue);
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: var(--blue-soft);
 }
 
     .policy-card h3 {
-        font-size: var(--font-size-lg);
-        color: var(--gray-dark);
-        margin-bottom: var(--spacing-md);
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        gap: var(--spacing-sm);
-    }
-
-        .policy-card h3 i {
-            color: var(--primary-blue);
-        }
-
-    .policy-card p {
-        line-height: 1.6;
-        margin-bottom: var(--spacing-md);
-        color: var(--gray-medium);
-    }
-
-    .policy-card ul,
-    .policy-card ol {
-        margin-bottom: var(--spacing-md);
-        padding-left: var(--spacing-lg);
-    }
-
-    .policy-card li {
-        margin-bottom: var(--spacing-sm);
-        line-height: 1.6;
-        color: var(--gray-medium);
-    }
-
-    .policy-card strong {
-        color: var(--gray-dark);
+        gap: 0.5rem;
     }
 
 .payment-methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
 .payment-method-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    gap: 1rem;
+    padding: 1rem;
     background: var(--white);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--gray-light);
 }
-
-    .payment-method-item i {
-        font-size: var(--font-size-xl);
-        color: var(--primary-blue);
-        width: 40px;
-    }
-
-    .payment-method-item strong {
-        display: block;
-        margin-bottom: var(--spacing-xs);
-    }
-
-    .payment-method-item p {
-        margin: 0;
-        font-size: var(--font-size-sm);
-        color: var(--gray-medium);
-    }
 
 @media (max-width: 768px) {
     .policy-content {
         grid-template-columns: 1fr;
     }
 
-    .policy-sidebar {
+    .policy-nav {
         position: static;
-        order: 2;
-    }
-
-    .policy-main {
-        order: 1;
-        padding: var(--spacing-lg);
-    }
-
-    .payment-methods-grid {
-        grid-template-columns: 1fr;
     }
 }

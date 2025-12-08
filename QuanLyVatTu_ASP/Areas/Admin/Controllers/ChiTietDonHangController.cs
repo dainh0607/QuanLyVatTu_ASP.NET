@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using QuanLyVatTu_ASP.Areas.Admin.Controllers;
+using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels;
 using QuanLyVatTu_ASP.DataAccess;
@@ -129,7 +128,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 var tongTien = await _context.ChiTietDonHangs
                     .Where(ct => ct.MaDonHang == maDonHang)
                     .SumAsync(ct => ct.SoLuong * ct.DonGia);
-                
+
                 donHang.TongTien = tongTien;
                 _context.Update(donHang);
                 await _context.SaveChangesAsync();
