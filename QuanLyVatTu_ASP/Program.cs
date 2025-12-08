@@ -25,6 +25,8 @@ builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>(
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 
+builder.Services.AddHttpContextAccessor();
+
 // ❗❗❗ TẤT CẢ AddScoped/AddDbContext PHẢI ĐỨNG TRƯỚC builder.Build()
 var app = builder.Build();
 

@@ -1,13 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Trang Chủ - QLVT";
     Layout = "~/Views/Shared/_Layout_Customer.cshtml";
-
 }
 <section class="hero">
     <div class="container">
         <h1>Vật Tư Chất Lượng - Giá Tốt Nhất</h1>
         <p>Chuyên cung cấp vật tư, thiết bị công nghiệp và dụng cụ chuyên nghiệp</p>
-        <a href="#" class="btn-primary">Mua sắm ngay</a>
+        <a asp-controller="Customer" asp-action="Categories" class="btn-primary">Mua sắm ngay</a>
     </div>
 </section>
 <section class="features">
@@ -50,8 +49,213 @@
     <div class="container">
         <h2 class="section-title">Sản phẩm nổi bật</h2>
         <div class="products-grid">
-            <!-- Load sản phẩm -->
-
+            @if (ViewBag.VatTuNoiBat != null && ViewBag.VatTuNoiBat.Count > 0)
+            {
+                foreach (var product in ViewBag.VatTuNoiBat)
+                {
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="@(!string.IsNullOrEmpty(product.HinhAnh) ? product.HinhAnh : "/user/images/default-product.jpg")" alt="@product.TenVatTu">
+                            @if (product.SoLuongTon == 0)
+                            {
+                                <div class="product-badge out-of-stock">Hết hàng</div>
+                            }
+                            else if (product.GiaBan < product.GiaNhap * 1.2m)
+                            {
+                                <div class="product-badge sale">Giảm giá</div>
+                            }
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">@product.TenVatTu</h3>
+                            <div class="product-category">@product.LoaiVatTu?.TenLoai</div>
+                            <div class="product-price">
+                                <span class="current-price">@product.GiaBan.ToString("N0")đ</span>
+                                @if (product.GiaBan < product.GiaNhap * 1.2m)
+                                {
+                                    <span class="original-price">@((product.GiaNhap * 1.2m).ToString("N0"))đ</span>
+                                }
+                            </div>
+                            <div class="product-stock">
+                                @if (product.SoLuongTon > 0)
+                                {
+                                    <span class="in-stock">Còn @product.SoLuongTon @product.DonViTinh</span>
+                                }
+                                else
+                                {
+                                    <span class="out-of-stock">Hết hàng</span>
+                                }
+                            </div>
+                            <div class="product-actions">
+                                <a asp-controller="Customer" asp-action="ProductDetail" asp-route-id="@product.Id" class="view-details-btn">Xem chi tiết</a>
+                                <button class="add-to-cart-btn" data-product-id="@product.Id" @(product.SoLuongTon == 0 ? "disabled" : "")>
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="no-products">Hiện chưa có sản phẩm nổi bật.</p>
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a asp-controller="Customer" asp-action="Categories" class="btn-secondary">Xem tất cả sản phẩm</a>
         </div>
     </div>
 </section>
+
+@section Styles {
+    <style>
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #2563eb;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .product-badge.sale {
+            background: #ef4444;
+        }
+
+        .product-badge.out-of-stock {
+            background: #6b7280;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            height: 40px;
+            overflow: hidden;
+        }
+
+        .product-category {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            margin-bottom: 10px;
+        }
+
+        .current-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .original-price {
+            font-size: 14px;
+            color: #9ca3af;
+            text-decoration: line-through;
+            margin-left: 8px;
+        }
+
+        .product-stock {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .in-stock {
+            color: #10b981;
+        }
+
+        .out-of-stock {
+            color: #ef4444;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-details-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .view-details-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .add-to-cart-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .no-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+    </style>
+}
