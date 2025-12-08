@@ -6,9 +6,13 @@ using QuanLyVatTu_ASP.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+=======
+// Đăng ký DbContext
+>>>>>>> 2ea3a480951a442c48eb813038cee3aae618c5b1
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
 
@@ -23,6 +27,7 @@ builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>(
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 
+<<<<<<< HEAD
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -33,6 +38,11 @@ builder.Services.AddSession(options =>
 });
 
 
+=======
+builder.Services.AddHttpContextAccessor();
+
+// ❗❗❗ TẤT CẢ AddScoped/AddDbContext PHẢI ĐỨNG TRƯỚC builder.Build()
+>>>>>>> 2ea3a480951a442c48eb813038cee3aae618c5b1
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -54,11 +64,11 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=DonHang}/{action=Index}/{id?}");
 
 // Route mặc định (Customer)
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Customer}/{action=Index}/{id?}");
 
 app.Run();
