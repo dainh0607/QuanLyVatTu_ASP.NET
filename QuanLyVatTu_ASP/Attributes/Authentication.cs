@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace QuanLyVatTu.Attributes
+namespace QuanLyVatTu_ASP.Attributes
 {
     public class Authentication : ActionFilterAttribute
     {
@@ -16,7 +16,8 @@ namespace QuanLyVatTu.Attributes
                     new RouteValueDictionary
                     {
                         { "Controller", "Account" },
-                        { "Action", "Auth" }
+                        { "Action", "Login" },
+                        { "Area", "" }
                     });
                 return;
             }
@@ -36,6 +37,7 @@ namespace QuanLyVatTu.Attributes
                     });
                 }
             }
+            base.OnActionExecuting(context);
         }
     }
 }

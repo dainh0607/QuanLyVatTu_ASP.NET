@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Repositories;
 
 namespace QuanLyVatTu_ASP.Controllers
@@ -7,62 +9,108 @@ namespace QuanLyVatTu_ASP.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        // Inject UnitOfWork để truy cập CSDL
         public AccountController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Auth()
+        [HttpGet]
+        public IActionResult Login()
         {
+            // Nếu đã đăng nhập rồi thì chuyển hướng
+            if (HttpContext.Session.GetString("Role") == "Admin")
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+
+            if (HttpContext.Session.GetString("Role") == "Customer")
+                return RedirectToAction("Index", "Home");
+
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(string email, string password)
         {
-            // 1. GỌI HÀM TÌM NHÂN VIÊN VỪA VIẾT
+            // Tìm Nhân viên
             var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
-
             if (nhanVien != null)
             {
                 HttpContext.Session.SetString("UserName", nhanVien.HoTen);
                 HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
 
-                string role = "Employee";
-                if (nhanVien.VaiTro == "Quản lý") role = "Admin";
-
+                string role = (nhanVien.VaiTro == "Quản lý") ? "Admin" : "Employee";
                 HttpContext.Session.SetString("Role", role);
 
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
 
-            // 2. GỌI HÀM TÌM KHÁCH HÀNG VỪA VIẾT
+            // Tìm Khách hàng
             var khachHang = _unitOfWork.KhachHangRepository.GetByLogin(email, password);
-
             if (khachHang != null)
             {
                 HttpContext.Session.SetString("UserName", khachHang.HoTen);
+                HttpContext.Session.SetString("Email", khachHang.Email ?? "");
                 HttpContext.Session.SetString("Role", "Customer");
 
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            // 3. THẤT BẠI
             ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác";
-            return View("Auth");
+            return View();
         }
 
-        // Action Đăng xuất (Cần thiết khi dùng Session)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(string hoTen, string email, string password, string confirmPassword)
+        {
+            if (password != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                return View("Login");
+            }
+
+            try
+            {
+                string taiKhoanTuDong = email.Split('@')[0];
+                string randomSuffix = new Random().Next(1000, 9999).ToString();
+
+                var newKhach = new QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
+                {
+                    HoTen = hoTen,
+                    Email = email,
+                    MatKhau = password,
+                    DiaChi = "",
+                    SoDienThoai = "",
+
+                    MaHienThi = "KH" + randomSuffix,
+                    TaiKhoan = taiKhoanTuDong,
+                    NgayTao = DateTime.Now,
+
+                    // --- ĐÂY LÀ ĐĂNG KÝ THƯỜNG, KHÔNG PHẢI GOOGLE ---
+                    DangNhapGoogle = false
+                };
+
+                _unitOfWork.KhachHangRepository.Add(newKhach);
+                _unitOfWork.Save();
+
+                ViewBag.Success = "Đăng ký thành công! Vui lòng đăng nhập.";
+                return View("Login");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Lỗi đăng ký: " + ex.Message;
+                if (ex.InnerException != null)
+                {
+                    ViewBag.Error += " | Chi tiết: " + ex.InnerException.Message;
+                }
+                return View("Login");
+            }
+        }
+
         public IActionResult Logout()
         {
-            // Xóa toàn bộ Session
             HttpContext.Session.Clear();
-            HttpContext.Session.Remove("UserName");
-            HttpContext.Session.Remove("Role");
-
-            // Quay về trang đăng nhập
-            return RedirectToAction("Auth");
+            return RedirectToAction("Login");
         }
     }
 }

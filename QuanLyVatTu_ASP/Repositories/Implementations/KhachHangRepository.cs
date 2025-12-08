@@ -1,5 +1,4 @@
-﻿// File: Repositories/Implementations/KhachHangRepository.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.DataAccess;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
@@ -13,6 +12,12 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
         public KhachHangRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public KhachHang GetByLogin(string email, string password)
+        {
+            return _context.KhachHangs
+                .FirstOrDefault(x => (x.Email == email || x.TaiKhoan == email) && x.MatKhau == password);
         }
 
         public async Task<KhachHang> GetByEmailAsync(string email)
@@ -32,23 +37,24 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             return await _context.KhachHangs
                 .FirstOrDefaultAsync(kh => kh.MaHienThi == maHienThi);
         }
+
         public async Task<KhachHang> GetByIdAsync(int id)
         {
             return await _context.KhachHangs
                 .FirstOrDefaultAsync(kh => kh.ID == id);
         }
+
         public async Task<KhachHang> UpdateAsync(KhachHang khachHang)
         {
             _context.KhachHangs.Update(khachHang);
             await _context.SaveChangesAsync();
+
             return khachHang;
         }
 
-
-        public KhachHang GetByLogin(string email, string password)
+        public void Add(KhachHang khachHang)
         {
-            return _context.KhachHangs
-                .FirstOrDefault(x => (x.Email == email || x.TaiKhoan == email) && x.MatKhau == password);
+            _context.KhachHangs.Add(khachHang);
         }
     }
 }

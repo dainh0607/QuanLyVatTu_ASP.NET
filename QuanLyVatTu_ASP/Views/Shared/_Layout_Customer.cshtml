@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - LAB08</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
 </head>
 <body>
 
@@ -23,8 +24,21 @@
                 <a href="#"><i class="fa-regular fa-heart"></i></a>
                 <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
 
-                <a class="btn login" href="/Account/Login">Đăng nhập</a>
-                <a class="btn register" href="/Account/Register">Đăng ký</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span class="text-dark">Chào, @User.Identity.Name</span>
+                    <a class="btn login" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("NhanVien"))
+                    {
+                        <a class="btn btn-warning" asp-area="Admin" asp-controller="Home" asp-action="Index">Trang Quản Trị</a>
+                    }
+                }
+                else
+                {
+                    <a class="btn login" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                    <a class="btn register" asp-controller="Account" asp-action="Register">Đăng ký</a>
+                }
             </div>
         </div>
 

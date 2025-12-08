@@ -1,5 +1,4 @@
-﻿// File: Repositories/Implementations/KhachHangRepository.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.DataAccess;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
@@ -14,5 +13,6 @@ namespace QuanLyVatTu_ASP.Repositories.Interfaces
         Task<KhachHang> GetByIdAsync(int id);
         Task<KhachHang> UpdateAsync(KhachHang khachHang);
         KhachHang GetByLogin(string email, string password);
+        void Add(KhachHang khachHang);
     }
 }

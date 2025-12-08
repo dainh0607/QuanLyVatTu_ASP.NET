@@ -12,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
 
+// --- Đăng ký Repository (Giữ nguyên) ---
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVatTuRepository, VatTuRepository>();
 builder.Services.AddScoped<ILoaiVatTuRepository, LoaiVatTuRepository>();
@@ -26,13 +27,14 @@ builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromDays(7);
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".QuanLyVatTu.Session";
 });
 
 builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 
@@ -48,18 +50,13 @@ app.UseStaticFiles();
 app.UseSession();
 
 app.UseRouting();
-app.UseAuthorization();
-
-// app.UseAuthentication();
-// app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=DonHang}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// Route mặc định (Customer)
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Customer}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
