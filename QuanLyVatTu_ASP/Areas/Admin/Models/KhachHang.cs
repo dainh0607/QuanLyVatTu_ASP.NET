@@ -3,7 +3,6 @@
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     [Table("KhachHang")]
-
     public class KhachHang : BaseEntity
     {
         public string MaHienThi => $"KH{ID:000}";

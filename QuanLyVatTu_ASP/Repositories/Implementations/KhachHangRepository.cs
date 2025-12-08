@@ -43,5 +43,12 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             await _context.SaveChangesAsync();
             return khachHang;
         }
+
+
+        public KhachHang GetByLogin(string email, string password)
+        {
+            return _context.KhachHangs
+                .FirstOrDefault(x => (x.Email == email || x.TaiKhoan == email) && x.MatKhau == password);
+        }
     }
 }

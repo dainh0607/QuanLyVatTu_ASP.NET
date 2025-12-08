@@ -21,54 +21,34 @@ namespace QuanLyVatTu_ASP.Controllers
         [HttpPost]
         public IActionResult Login(string email, string password)
         {
-            // ---------------------------------------------------------
-            // 1. KIỂM TRA BẢNG NHÂN VIÊN (Ưu tiên Admin/Nhân viên)
-            // ---------------------------------------------------------
-            // Lấy danh sách nhân viên và lọc (Giả sử Repository có hàm GetAll hoặc Get)
-            // Lưu ý: Logic check Password hiện tại là text thuần (chưa mã hóa)
-            var nhanVien = _unitOfWork.NhanVienRepository.GetAll()
-                .FirstOrDefault(u => (u.Email == email || u.TaiKhoan == email) && u.MatKhau == password);
+            // 1. GỌI HÀM TÌM NHÂN VIÊN VỪA VIẾT
+            var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
 
             if (nhanVien != null)
             {
-                // Lưu thông tin cơ bản vào Session
                 HttpContext.Session.SetString("UserName", nhanVien.HoTen);
                 HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
 
-                // --- LOGIC PHÂN QUYỀN (MAPPING ROLE) ---
-                // Chuyển đổi từ tiếng Việt trong DB sang Key tiếng Anh để code dễ xử lý
-                string role = "Employee"; // Mặc định là nhân viên thường
-                if (nhanVien.VaiTro == "Quản lý")
-                {
-                    role = "Admin";
-                }
+                string role = "Employee";
+                if (nhanVien.VaiTro == "Quản lý") role = "Admin";
 
-                // Lưu Role vào Session để Attribute [Authentication] kiểm tra sau này
                 HttpContext.Session.SetString("Role", role);
 
-                // Chuyển hướng vào khu vực Admin
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
 
-            // ---------------------------------------------------------
-            // 2. KIỂM TRA BẢNG KHÁCH HÀNG (Nếu không phải nhân viên)
-            // ---------------------------------------------------------
-            var khachHang = _unitOfWork.KhachHangRepository.GetAll()
-                .FirstOrDefault(u => (u.Email == email || u.TaiKhoan == email) && u.MatKhau == password);
+            // 2. GỌI HÀM TÌM KHÁCH HÀNG VỪA VIẾT
+            var khachHang = _unitOfWork.KhachHangRepository.GetByLogin(email, password);
 
             if (khachHang != null)
             {
-                // Lưu Session cho khách hàng
                 HttpContext.Session.SetString("UserName", khachHang.HoTen);
                 HttpContext.Session.SetString("Role", "Customer");
 
-                // Chuyển hướng ra trang chủ (Layout Khách hàng)
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            // ---------------------------------------------------------
-            // 3. ĐĂNG NHẬP THẤT BẠI
-            // ---------------------------------------------------------
+            // 3. THẤT BẠI
             ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác";
             return View("Auth");
         }

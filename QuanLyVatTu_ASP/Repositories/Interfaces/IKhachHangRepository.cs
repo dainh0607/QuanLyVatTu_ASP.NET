@@ -13,5 +13,6 @@ namespace QuanLyVatTu_ASP.Repositories.Interfaces
         Task<KhachHang> GetByMaHienThiAsync(string maHienThi);
         Task<KhachHang> GetByIdAsync(int id);
         Task<KhachHang> UpdateAsync(KhachHang khachHang);
+        KhachHang GetByLogin(string email, string password);
     }
 }
