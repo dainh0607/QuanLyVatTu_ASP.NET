@@ -33,10 +33,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-<<<<<<< HEAD
 
-=======
->>>>>>> 276b84c989889bd0b974b291d7efc9f81bad1792
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
