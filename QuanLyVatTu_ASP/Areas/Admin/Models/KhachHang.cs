@@ -6,6 +6,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
     [Table("KhachHang")]
     public class KhachHang : BaseEntity
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string MaHienThi { get; set; }
 
         [Required]

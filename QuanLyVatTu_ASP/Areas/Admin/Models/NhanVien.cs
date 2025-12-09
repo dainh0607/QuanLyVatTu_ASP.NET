@@ -1,4 +1,6 @@
-﻿namespace QuanLyVatTu_ASP.Areas.Admin.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class NhanVien : BaseEntity
     {

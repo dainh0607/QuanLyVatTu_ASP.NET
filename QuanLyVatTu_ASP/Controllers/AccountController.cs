@@ -74,22 +74,17 @@ namespace QuanLyVatTu_ASP.Controllers
 
             try
             {
+                var khachCu = _unitOfWork.KhachHangRepository.GetByLogin(email, "");
                 string taiKhoanTuDong = email.Split('@')[0];
-                string randomSuffix = new Random().Next(1000, 9999).ToString();
-
                 var newKhach = new QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
                 {
                     HoTen = hoTen,
                     Email = email,
-                    MatKhau = password,
+                    MatKhau = BCrypt.Net.BCrypt.HashPassword(password),
                     DiaChi = "",
                     SoDienThoai = "",
-
-                    MaHienThi = "KH" + randomSuffix,
                     TaiKhoan = taiKhoanTuDong,
                     NgayTao = DateTime.Now,
-
-                    // --- ĐÂY LÀ ĐĂNG KÝ THƯỜNG, KHÔNG PHẢI GOOGLE ---
                     DangNhapGoogle = false
                 };
 
@@ -101,11 +96,15 @@ namespace QuanLyVatTu_ASP.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Lỗi đăng ký: " + ex.Message;
-                if (ex.InnerException != null)
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("UNIQUE KEY constraint"))
                 {
-                    ViewBag.Error += " | Chi tiết: " + ex.InnerException.Message;
+                    ViewBag.Error = "Email này đã được sử dụng. Vui lòng chọn email khác!";
                 }
+                else
+                {
+                    ViewBag.Error = "Lỗi đăng ký: " + ex.Message;
+                }
+
                 return View("Login");
             }
         }
