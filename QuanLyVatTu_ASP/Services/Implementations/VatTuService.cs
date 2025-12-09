@@ -27,7 +27,6 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.Trim();
-                // BÂY GIỜ ĐÃ CÓ THỂ TÌM KIẾM THEO MaHienThi TRONG DB
                 query = query.Where(x =>
                     x.MaHienThi.Contains(keyword) ||
                     x.TenVatTu.Contains(keyword) ||
@@ -39,13 +38,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var total = await query.CountAsync();
 
             var items = await query
-                .OrderByDescending(x => x.NgayTao) // SQL có cột NgayTao, sắp xếp vô tư
+                .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(x => new VatTuIndexViewModel.ItemViewModel
                 {
-                    ID = x.ID,
-                    MaHienThi = x.MaHienThi, // Lấy trực tiếp từ DB, không cần $"VT..."
+                    MaHienThi = x.MaHienThi,
                     TenVatTu = x.TenVatTu,
                     DonViTinh = x.DonViTinh,
                     GiaNhap = x.GiaNhap,
@@ -148,7 +146,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (inDonHang || inHoaDon)
             {
-                return "Không thể xóa! Vật tư này đã phát sinh giao dịch.";
+                return "Không thể xóa! Vật tư này đã phát sinh giao dịch (Đơn hàng/Hóa đơn).";
             }
 
             _context.VatTus.Remove(vt);
