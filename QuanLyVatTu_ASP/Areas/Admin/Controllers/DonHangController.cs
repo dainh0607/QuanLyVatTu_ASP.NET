@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu.Areas.Admin.Controllers;
-using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels;
-using QuanLyVatTu_ASP.DataAccess;
+using QuanLyVatTu_ASP.Services.Interfaces;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
@@ -12,79 +10,34 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     [Route("admin/don-hang")]
     public class DonHangController : AdminBaseController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDonHangService _donHangService;
 
-        public DonHangController(ApplicationDbContext context)
+        public DonHangController(IDonHangService donHangService)
         {
-            _context = context;
+            _donHangService = donHangService;
         }
 
-        // GET: /admin/don-hang
+        private async Task LoadDropdownData(int? selectedKhachHangId = null, int? selectedNhanVienId = null)
+        {
+            var khList = await _donHangService.GetKhachHangLookupAsync();
+            var nvList = await _donHangService.GetNhanVienLookupAsync();
+
+            ViewBag.KhachHangList = new SelectList(khList, "ID", "HoTen", selectedKhachHangId);
+            ViewBag.NhanVienList = new SelectList(nvList, "ID", "HoTen", selectedNhanVienId);
+        }
+
         [HttpGet("", Name = "AdminDonHang")]
         public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
-            if (page < 1) page = 1;
-
-            var query = _context.DonHang
-                .Include(d => d.KhachHang)
-                .Include(d => d.NhanVien)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                keyword = keyword.Trim();
-                query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    (x.GhiChu != null && x.GhiChu.Contains(keyword)) ||
-                    x.KhachHang.HoTen.Contains(keyword));
-                ViewBag.Keyword = keyword;
-            }
-
-            int pageSize = 10;
-            var total = await query.CountAsync();
-
-            var items = await query
-                .OrderByDescending(x => x.NgayTao)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(x => new DonHangIndexViewModel.ItemViewModel
-                {
-                    ID = x.ID,
-                    MaHienThi = x.MaHienThi ?? "DH" + x.ID.ToString("0000"),
-                    
-                    TenKhachHang = x.KhachHang.HoTen, 
-                    TenNhanVien = x.NhanVien != null ? x.NhanVien.HoTen : "", 
-
-                    NgayDat = x.NgayDat,
-                    TongTien = x.TongTien,
-                    SoTienDatCoc = x.SoTienDatCoc ?? 0,
-                    PhuongThucDatCoc = x.PhuongThucDatCoc,
-                    NgayDatCoc = x.NgayDatCoc,
-                    TrangThai = string.IsNullOrWhiteSpace(x.TrangThai) ? "Chờ xác nhận" : x.TrangThai,
-                    GhiChu = x.GhiChu,
-                    NgayTao = x.NgayTao
-                })
-                .ToListAsync();
-
-            var model = new DonHangIndexViewModel
-            {
-                Items = items,
-                PageIndex = page,
-                PageSize = pageSize,
-                TotalRecords = total,
-                TotalPages = (int)Math.Ceiling(total / (double)pageSize)
-            };
-
+            var model = await _donHangService.GetAllPagingAsync(keyword, page, 10);
+            ViewBag.Keyword = keyword;
             return View(model);
         }
 
-        // GET: /admin/don-hang/them-moi
         [HttpGet("them-moi")]
         public async Task<IActionResult> Create()
         {
-            ViewBag.KhachHangList = new SelectList(await _context.KhachHangs.Select(k => new { k.ID, k.HoTen }).ToListAsync(), "ID", "HoTen");
-            ViewBag.NhanVienList = new SelectList(await _context.NhanViens.Select(n => new { n.ID, n.HoTen }).ToListAsync(), "ID", "HoTen");
-
+            await LoadDropdownData(); // Load dropdown
             return View(new DonHangCreateEditViewModel
             {
                 NgayDat = DateTime.Now,
@@ -92,66 +45,32 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             });
         }
 
-        // POST: /admin/don-hang/them-moi
         [HttpPost("them-moi")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DonHangCreateEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var entity = new DonHang
-                {
-                    KhachHangId = model.KhachHangId,
-                    NhanVienId = model.NhanVienId ?? 0, 
-                    NgayDat = model.NgayDat,
-                    TongTien = model.TongTien,
-                    SoTienDatCoc = model.SoTienDatCoc,
-                    PhuongThucDatCoc = model.PhuongThucDatCoc,
-                    NgayDatCoc = model.NgayDatCoc,
-                    TrangThai = model.TrangThai ?? "Chờ xác nhận",
-                    GhiChu = model.GhiChu,
-                    NgayTao = DateTime.Now
-                };
-
-                _context.DonHang.Add(entity);
-                await _context.SaveChangesAsync();
+                await _donHangService.CreateAsync(model);
+                TempData["Success"] = "Tạo đơn hàng thành công";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.KhachHangList = new SelectList(await _context.KhachHangs.Select(k => new { k.ID, k.HoTen }).ToListAsync(), "ID", "HoTen", model.KhachHangId);
-            ViewBag.NhanVienList = new SelectList(await _context.NhanViens.Select(n => new { n.ID, n.HoTen }).ToListAsync(), "ID", "HoTen", model.NhanVienId);
+            // Nếu lỗi validate -> Load lại dropdown để không bị lỗi View
+            await LoadDropdownData(model.KhachHangId, model.NhanVienId);
             return View(model);
         }
 
-        // GET: /admin/don-hang/sua/5
         [HttpGet("sua/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var entity = await _context.DonHang.FindAsync(id);
-            if (entity == null) return NotFound();
+            var model = await _donHangService.GetByIdForEditAsync(id);
+            if (model == null) return NotFound();
 
-            var model = new DonHangCreateEditViewModel
-            {
-                Id = entity.ID,
-                MaHienThi = entity.MaHienThi,
-                KhachHangId = entity.KhachHangId ?? 0,
-                NhanVienId = entity.NhanVienId,
-                NgayDat = entity.NgayDat,
-                TongTien = entity.TongTien,
-                SoTienDatCoc = entity.SoTienDatCoc,
-                PhuongThucDatCoc = entity.PhuongThucDatCoc,
-                NgayDatCoc = entity.NgayDatCoc,
-                TrangThai = entity.TrangThai ?? "Chờ xác nhận",
-                GhiChu = entity.GhiChu
-            };
-
-            ViewBag.KhachHangList = new SelectList(await _context.KhachHangs.Select(k => new { k.ID, k.HoTen }).ToListAsync(), "ID", "HoTen", model.KhachHangId);
-            ViewBag.NhanVienList = new SelectList(await _context.NhanViens.Select(n => new { n.ID, n.HoTen }).ToListAsync(), "ID", "HoTen", model.NhanVienId);
-
+            await LoadDropdownData(model.KhachHangId, model.NhanVienId);
             return View(model);
         }
 
-        // POST: /admin/don-hang/sua/5
         [HttpPost("sua/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DonHangCreateEditViewModel model)
@@ -160,39 +79,23 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var entity = await _context.DonHang.FindAsync(id);
-                if (entity == null) return NotFound();
+                var success = await _donHangService.UpdateAsync(id, model);
+                if (!success) return NotFound();
 
-                entity.KhachHangId = model.KhachHangId;
-                entity.NhanVienId = model.NhanVienId ?? 0;
-                entity.NgayDat = model.NgayDat;
-
-                entity.SoTienDatCoc = model.SoTienDatCoc;
-                entity.PhuongThucDatCoc = model.PhuongThucDatCoc;
-                entity.NgayDatCoc = model.NgayDatCoc;
-                entity.TrangThai = model.TrangThai ?? "Chờ xác nhận";
-                entity.GhiChu = model.GhiChu;
-
-                await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật đơn hàng thành công";
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.KhachHangList = new SelectList(await _context.KhachHangs.Select(k => new { k.ID, k.HoTen }).ToListAsync(), "ID", "HoTen", model.KhachHangId);
-            ViewBag.NhanVienList = new SelectList(await _context.NhanViens.Select(n => new { n.ID, n.HoTen }).ToListAsync(), "ID", "HoTen", model.NhanVienId);
+            await LoadDropdownData(model.KhachHangId, model.NhanVienId);
             return View(model);
         }
 
-        // POST: /admin/don-hang/xoa/5
         [HttpPost("xoa/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _context.DonHang.FindAsync(id);
-            if (entity != null)
-            {
-                _context.DonHang.Remove(entity);
-                await _context.SaveChangesAsync();
-            }
+            await _donHangService.DeleteAsync(id);
+            TempData["Success"] = "Đã xóa đơn hàng";
             return RedirectToAction(nameof(Index));
         }
     }

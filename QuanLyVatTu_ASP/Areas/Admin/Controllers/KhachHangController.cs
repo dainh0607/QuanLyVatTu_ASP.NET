@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu.Areas.Admin.Controllers;
-using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels;
-using QuanLyVatTu_ASP.DataAccess;
-using BCryptNet = BCrypt.Net.BCrypt;
+using QuanLyVatTu_ASP.Services.Interfaces;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
@@ -12,158 +9,91 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     [Route("admin/khach-hang")]
     public class KhachHangController : AdminBaseController
     {
-        private readonly ApplicationDbContext _context;
-        private const int PageSize = 10;
+        private readonly IKhachHangService _khachHangService;
 
-        public KhachHangController(ApplicationDbContext context)
+        public KhachHangController(IKhachHangService khachHangService)
         {
-            _context = context;
+            _khachHangService = khachHangService;
         }
 
-        // GET: /admin/khach-hang
         [HttpGet("")]
         public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
-            if (page < 1) page = 1;
-
-            var query = _context.KhachHangs.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                keyword = keyword.Trim();
-                query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.HoTen.Contains(keyword) ||
-                    x.Email.Contains(keyword) ||
-                    (x.SoDienThoai != null && x.SoDienThoai.Contains(keyword)));
-                ViewBag.Keyword = keyword;
-            }
-
-            var total = await query.CountAsync();
-
-            var items = await query
-                .OrderByDescending(x => x.NgayTao)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
-                .Select(x => new KhachHangIndexViewModel.ItemViewModel
-                {
-                    ID = x.ID,
-                    MaHienThi = x.MaHienThi,
-                    HoTen = x.HoTen,
-                    Email = x.Email,
-                    SoDienThoai = x.SoDienThoai,
-                    DiaChi = x.DiaChi,
-                    NgayTao = x.NgayTao
-                })
-                .ToListAsync();
-
-            var model = new KhachHangIndexViewModel
-            {
-                Items = items,
-                PageIndex = page,
-                PageSize = PageSize,
-                TotalRecords = total,
-                TotalPages = (int)Math.Ceiling(total / (double)PageSize)
-            };
-
+            var model = await _khachHangService.GetAllPagingAsync(keyword, page, 10);
+            ViewBag.Keyword = keyword;
             return View(model);
         }
 
-        // GET: /admin/khach-hang/them-moi
         [HttpGet("them-moi")]
         public IActionResult Create()
         {
             return View(new KhachHangCreateEditViewModel());
         }
 
-        // POST: /admin/khach-hang/them-moi
         [HttpPost("them-moi")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KhachHangCreateEditViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var kh = new KhachHang
-                {
-                    HoTen = model.HoTen,
-                    Email = model.Email,
-                    SoDienThoai = model.SoDienThoai,
-                    DiaChi = model.DiaChi,
-                    TaiKhoan = model.TaiKhoan,
-                    MatKhau = BCryptNet.HashPassword(model.MatKhau),
-                    DangNhapGoogle = false,
-                    NgayTao = DateTime.Now
-                };
+            if (!ModelState.IsValid) return View(model);
 
-                _context.KhachHangs.Add(kh);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+            // Gọi Service
+            var errorMessage = await _khachHangService.CreateAsync(model);
+
+            if (errorMessage != null)
+            {
+                ModelState.AddModelError("", errorMessage);
+                return View(model);
             }
 
-            return View(model);
+            TempData["Success"] = "Thêm khách hàng thành công";
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: /admin/khach-hang/sua/5
         [HttpGet("sua/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var kh = await _context.KhachHangs.FindAsync(id);
-            if (kh == null) return NotFound();
-
-            var model = new KhachHangCreateEditViewModel
-            {
-                Id = kh.ID,
-                HoTen = kh.HoTen,
-                Email = kh.Email,
-                SoDienThoai = kh.SoDienThoai,
-                DiaChi = kh.DiaChi,
-                TaiKhoan = kh.TaiKhoan
-                // Không trả về MatKhau
-            };
-
+            var model = await _khachHangService.GetByIdForEditAsync(id);
+            if (model == null) return NotFound();
             return View(model);
         }
 
-        // POST: /admin/khach-hang/sua/5
         [HttpPost("sua/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, KhachHangCreateEditViewModel model)
         {
             if (id != model.Id) return BadRequest();
 
-            if (ModelState.IsValid)
+            // Nếu không nhập mật khẩu -> Xóa validate để giữ pass cũ
+            if (string.IsNullOrWhiteSpace(model.MatKhau)) ModelState.Remove("MatKhau");
+
+            if (!ModelState.IsValid) return View(model);
+
+            // Gọi Service
+            var errorMessage = await _khachHangService.UpdateAsync(id, model);
+
+            if (errorMessage != null)
             {
-                var kh = await _context.KhachHangs.FindAsync(id);
-                if (kh == null) return NotFound();
-
-                kh.HoTen = model.HoTen;
-                kh.Email = model.Email;
-                kh.SoDienThoai = model.SoDienThoai;
-                kh.DiaChi = model.DiaChi;
-                kh.TaiKhoan = model.TaiKhoan;
-
-                if (!string.IsNullOrEmpty(model.MatKhau))
-                {
-                    kh.MatKhau = BCryptNet.HashPassword(model.MatKhau);
-                }
-
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", errorMessage);
+                return View(model);
             }
 
-            return View(model);
+            TempData["Success"] = "Cập nhật khách hàng thành công";
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: /admin/khach-hang/xoa/5
         [HttpPost("xoa/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var kh = await _context.KhachHangs.FindAsync(id);
-            if (kh != null)
+            var errorMessage = await _khachHangService.DeleteAsync(id);
+
+            if (errorMessage != null)
             {
-                _context.KhachHangs.Remove(kh);
-                await _context.SaveChangesAsync();
+                TempData["Error"] = errorMessage;
+            }
+            else
+            {
+                TempData["Success"] = "Đã xóa khách hàng";
             }
             return RedirectToAction(nameof(Index));
         }

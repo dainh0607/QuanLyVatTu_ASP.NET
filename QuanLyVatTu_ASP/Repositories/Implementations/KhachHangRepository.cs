@@ -1,8 +1,8 @@
-﻿// File: Repositories/Implementations/KhachHangRepository.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.DataAccess;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
+using BCrypt.Net;
 
 namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
@@ -34,10 +34,30 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
         {
             return await _context.KhachHangs.FirstOrDefaultAsync(u => u.MaHienThi == maHienThi);
         }
+
         public KhachHang GetByLogin(string loginInput, string password)
         {
-            return _context.KhachHangs
-                .FirstOrDefault(u => (u.Email == loginInput || u.TaiKhoan == loginInput) && u.MatKhau == password);
+            var user = _context.KhachHangs
+                .FirstOrDefault(x => x.Email == loginInput || x.TaiKhoan == loginInput);
+
+            if (user == null) return null;
+
+            bool isPasswordValid = false;
+            try
+            {
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.MatKhau);
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (isPasswordValid)
+            {
+                return user;
+            }
+
+            return null;
         }
 
         public void Add(KhachHang khachHang)
@@ -48,11 +68,13 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
         public async Task<KhachHang> UpdateAsync(KhachHang khachHang)
         {
             var existingUser = await _context.KhachHangs.FindAsync(khachHang.MaHienThi);
+
             if (existingUser != null)
             {
                 existingUser.HoTen = khachHang.HoTen;
                 existingUser.SoDienThoai = khachHang.SoDienThoai;
                 existingUser.DiaChi = khachHang.DiaChi;
+
                 _context.KhachHangs.Update(existingUser);
             }
             return existingUser;

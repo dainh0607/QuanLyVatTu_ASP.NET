@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu.Areas.Admin.Controllers;
-using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhaCungCap;
-using QuanLyVatTu_ASP.DataAccess;
+using QuanLyVatTu_ASP.Services.Interfaces;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
@@ -11,61 +9,19 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     [Route("admin/nha-cung-cap")]
     public class NhaCungCapController : AdminBaseController
     {
-        private readonly ApplicationDbContext _context;
-        private const int PageSize = 10;
+        private readonly INhaCungCapService _nccService;
 
-        public NhaCungCapController(ApplicationDbContext context)
+        public NhaCungCapController(INhaCungCapService nccService)
         {
-            _context = context;
+            _nccService = nccService;
         }
 
         // GET: /admin/nha-cung-cap
         [HttpGet("")]
         public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
-            if (page < 1) page = 1;
-
-            var query = _context.NhaCungCaps.Include(x => x.VatTus).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                keyword = keyword.Trim();
-                query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.TenNhaCungCap.Contains(keyword) ||
-                    (x.Email != null && x.Email.Contains(keyword)) ||
-                    (x.SoDienThoai != null && x.SoDienThoai.Contains(keyword)));
-                ViewBag.Keyword = keyword;
-            }
-
-            var total = await query.CountAsync();
-
-            var items = await query
-                .OrderByDescending(x => x.NgayTao)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
-                .Select(x => new NhaCungCapIndexViewModel.ItemViewModel
-                {
-                    ID = x.ID,
-                    MaHienThi = x.MaHienThi,
-                    TenNhaCungCap = x.TenNhaCungCap,
-                    Email = x.Email,
-                    SoDienThoai = x.SoDienThoai,
-                    DiaChi = x.DiaChi,
-                    SoLuongVatTuCungCap = x.VatTus.Count,
-                    NgayTao = x.NgayTao
-                })
-                .ToListAsync();
-
-            var model = new NhaCungCapIndexViewModel
-            {
-                Items = items,
-                PageIndex = page,
-                PageSize = PageSize,
-                TotalRecords = total,
-                TotalPages = (int)Math.Ceiling(total / (double)PageSize)
-            };
-
+            var model = await _nccService.GetAllPagingAsync(keyword, page, 10);
+            ViewBag.Keyword = keyword;
             return View(model);
         }
 
@@ -81,33 +37,23 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(NhaCungCapCreateEditViewModel model)
         {
-            if (!string.IsNullOrEmpty(model.Email) && await _context.NhaCungCaps.AnyAsync(x => x.Email == model.Email))
-            {
-                ModelState.AddModelError("Email", "Email này đã tồn tại trong hệ thống.");
-            }
-            if (await _context.NhaCungCaps.AnyAsync(x => x.TenNhaCungCap == model.TenNhaCungCap))
-            {
-                ModelState.AddModelError("TenNhaCungCap", "Tên nhà cung cấp này đã tồn tại.");
-            }
-
             if (ModelState.IsValid)
             {
-                var ncc = new NhaCungCap
-                {
-                    TenNhaCungCap = model.TenNhaCungCap,
-                    Email = model.Email,
-                    SoDienThoai = model.SoDienThoai,
-                    DiaChi = model.DiaChi,
-                    NgayTao = DateTime.Now
-                };
+                var error = await _nccService.CreateAsync(model);
 
-                _context.NhaCungCaps.Add(ncc);
-                await _context.SaveChangesAsync();
+                if (error != null)
+                {
+                    // Logic xử lý lỗi để hiển thị đúng chỗ
+                    if (error.Contains("Email")) ModelState.AddModelError("Email", error);
+                    else if (error.Contains("Tên")) ModelState.AddModelError("TenNhaCungCap", error);
+                    else ModelState.AddModelError("", error);
+
+                    return View(model);
+                }
 
                 TempData["Success"] = "Thêm nhà cung cấp thành công";
                 return RedirectToAction(nameof(Index));
             }
-
             return View(model);
         }
 
@@ -115,18 +61,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [HttpGet("sua/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var ncc = await _context.NhaCungCaps.FindAsync(id);
-            if (ncc == null) return NotFound();
-
-            var model = new NhaCungCapCreateEditViewModel
-            {
-                Id = ncc.ID,
-                TenNhaCungCap = ncc.TenNhaCungCap,
-                Email = ncc.Email,
-                SoDienThoai = ncc.SoDienThoai,
-                DiaChi = ncc.DiaChi
-            };
-
+            var model = await _nccService.GetByIdForEditAsync(id);
+            if (model == null) return NotFound();
             return View(model);
         }
 
@@ -136,32 +72,23 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id, NhaCungCapCreateEditViewModel model)
         {
             if (id != model.Id) return BadRequest();
-            if (!string.IsNullOrEmpty(model.Email) &&
-                await _context.NhaCungCaps.AnyAsync(x => x.Email == model.Email && x.ID != id))
-            {
-                ModelState.AddModelError("Email", "Email này đã được sử dụng bởi nhà cung cấp khác.");
-            }
-
-            if (await _context.NhaCungCaps.AnyAsync(x => x.TenNhaCungCap == model.TenNhaCungCap && x.ID != id))
-            {
-                ModelState.AddModelError("TenNhaCungCap", "Tên nhà cung cấp này đã tồn tại.");
-            }
 
             if (ModelState.IsValid)
             {
-                var ncc = await _context.NhaCungCaps.FindAsync(id);
-                if (ncc == null) return NotFound();
+                var error = await _nccService.UpdateAsync(id, model);
 
-                ncc.TenNhaCungCap = model.TenNhaCungCap;
-                ncc.Email = model.Email;
-                ncc.SoDienThoai = model.SoDienThoai;
-                ncc.DiaChi = model.DiaChi;
+                if (error != null)
+                {
+                    if (error.Contains("Email")) ModelState.AddModelError("Email", error);
+                    else if (error.Contains("Tên")) ModelState.AddModelError("TenNhaCungCap", error);
+                    else ModelState.AddModelError("", error);
 
-                await _context.SaveChangesAsync();
+                    return View(model);
+                }
+
                 TempData["Success"] = "Cập nhật thành công";
                 return RedirectToAction(nameof(Index));
             }
-
             return View(model);
         }
 
@@ -170,26 +97,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var ncc = await _context.NhaCungCaps
-                .Include(x => x.VatTus)
-                .FirstOrDefaultAsync(x => x.ID == id);
+            var error = await _nccService.DeleteAsync(id);
 
-            if (ncc == null)
+            if (error != null)
             {
-                TempData["Error"] = "Nhà cung cấp không tồn tại";
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = error;
+            }
+            else
+            {
+                TempData["Success"] = "Đã xóa nhà cung cấp";
             }
 
-            if (ncc.VatTus != null && ncc.VatTus.Any())
-            {
-                TempData["Error"] = $"Không thể xóa! Nhà cung cấp này đang cung cấp {ncc.VatTus.Count} vật tư.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            _context.NhaCungCaps.Remove(ncc);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Đã xóa nhà cung cấp";
             return RedirectToAction(nameof(Index));
         }
     }

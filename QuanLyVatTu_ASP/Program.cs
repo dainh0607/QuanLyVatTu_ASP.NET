@@ -3,6 +3,8 @@ using QuanLyVatTu_ASP.DataAccess;
 using QuanLyVatTu_ASP.Repositories;
 using QuanLyVatTu_ASP.Repositories.Implementations;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
+using QuanLyVatTu_ASP.Services.Interfaces;
+using QuanLyVatTu_ASP.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
 
-// --- Đăng ký Repository (Giữ nguyên) ---
+// Đăng ký Repository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVatTuRepository, VatTuRepository>();
 builder.Services.AddScoped<ILoaiVatTuRepository, LoaiVatTuRepository>();
@@ -23,6 +25,18 @@ builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>();
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
+
+
+//Đăng ký services
+builder.Services.AddScoped<INhanVienService, NhanVienService>();
+builder.Services.AddScoped<IKhachHangService, KhachHangService>();
+builder.Services.AddScoped<IDonHangService, DonHangService>();
+builder.Services.AddScoped<IChiTietDonHangService, ChiTietDonHangService>();
+builder.Services.AddScoped<IHoaDonService, HoaDonService>();
+builder.Services.AddScoped<ILoaiVatTuService, LoaiVatTuService>();
+builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
+builder.Services.AddScoped<IVatTuService, VatTuService>();
+builder.Services.AddScoped<IThongKeService, ThongKeService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
