@@ -1,44 +1,42 @@
 ﻿:root {
-    /* Màu chủ đạo - Xanh & Đen */
-    --primary-blue: #2563eb;
-    --blue-dark: #1e40af;
-    --blue-light: #3b82f6;
-    --blue-soft: #eff6ff;
-    /* Màu đen và xám */
-    --black: #111827;
-    --gray-dark: #374151;
-    --gray-medium: #6b7280;
-    --gray-light: #d1d5db;
-    --gray-lighter: #f3f4f6;
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-light: #6ea8fe;
+    --accent: #ff6b00;
+    --accent-dark: #e85c00;
+    --dark: #222;
+    --darker: #111;
+    --light: #f8f9fa;
+    --lighter: #fdfdfd;
+    --gray: #6c757d;
+    --gray-light: #dee2e6;
+    --gray-dark: #495057;
     --white: #ffffff;
-    /* Màu nhấn */
-    --accent-red: #ef4444;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    /* Kích thước */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 0.75rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    /* Font size */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
-    --font-size-3xl: 1.875rem;
-    /* Border radius - Giảm độ bo góc */
-    --border-radius-sm: 4px;
-    --border-radius-md: 6px;
-    --border-radius-lg: 8px;
-    /* Box shadow - Giảm shadow */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --black: #000000;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px; /* Đã đổi từ 6px sang 8px */
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-round: 50px;
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+    /* Container (Duy trì cho mục đích tương thích) */
+    --container-max: 1200px;
+    --container-padding: 20px;
 }
+
 .categories-page {
     padding: 2rem 0;
 }
@@ -55,6 +53,9 @@
     position: sticky;
     top: 100px;
     height: fit-content;
+    /* Thêm styling đồng bộ */
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .filter-group {
@@ -62,10 +63,10 @@
 }
 
     .filter-group h3 {
-        color: var(--black);
+        color: var(--dark); /* Đã đổi từ var(--black) sang var(--dark) */
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--blue-soft);
+        border-bottom: 2px solid var(--gray-light); /* Đã đổi từ var(--blue-soft) sang var(--gray-light) */
     }
 
 .filter-option {
@@ -83,17 +84,23 @@
 
 .product-card {
     background: var(--white);
-    transition: transform 0.2s;
+    /* Thêm styling đồng bộ */
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
     .product-card:hover {
         transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
     }
 
 .product-image {
     height: 200px;
     overflow: hidden;
-    background: var(--gray-lighter);
+    background: var(--gray-light); /* Đã đổi từ var(--gray-lighter) sang var(--gray-light) */
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
 }
 
     .product-image img {
@@ -108,7 +115,7 @@
 
 .product-name {
     font-size: 1rem;
-    color: var(--black);
+    color: var(--dark); /* Đã đổi từ var(--black) sang var(--dark) */
     margin-bottom: 0.5rem;
 }
 
@@ -118,11 +125,11 @@
 
 .current-price {
     font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
 }
 
 .original-price {
-    color: var(--gray-medium);
+    color: var(--gray); /* Đã đổi từ var(--gray-medium) sang var(--gray) */
     text-decoration: line-through;
     margin-left: 0.5rem;
 }
@@ -130,13 +137,18 @@
 .add-to-cart-btn {
     width: 100%;
     padding: 0.75rem;
-    background: var(--primary-blue);
+    background: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
     color: var(--white);
     border: none;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md); /* Đã đổi từ var(--border-radius-md) sang var(--radius-md) */
     cursor: pointer;
     margin-top: 0.5rem;
+    transition: background-color var(--transition-fast);
 }
+
+    .add-to-cart-btn:hover {
+        background: var(--primary-dark);
+    }
 
 @media (max-width: 768px) {
     .categories-filter {

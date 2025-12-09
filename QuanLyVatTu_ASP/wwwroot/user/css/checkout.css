@@ -1,44 +1,42 @@
 ﻿:root {
-    /* Màu chủ đạo - Xanh & Đen */
-    --primary-blue: #2563eb;
-    --blue-dark: #1e40af;
-    --blue-light: #3b82f6;
-    --blue-soft: #eff6ff;
-    /* Màu đen và xám */
-    --black: #111827;
-    --gray-dark: #374151;
-    --gray-medium: #6b7280;
-    --gray-light: #d1d5db;
-    --gray-lighter: #f3f4f6;
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-light: #6ea8fe;
+    --accent: #ff6b00;
+    --accent-dark: #e85c00;
+    --dark: #222;
+    --darker: #111;
+    --light: #f8f9fa;
+    --lighter: #fdfdfd;
+    --gray: #6c757d;
+    --gray-light: #dee2e6;
+    --gray-dark: #495057;
     --white: #ffffff;
-    /* Màu nhấn */
-    --accent-red: #ef4444;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    /* Kích thước */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 0.75rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    /* Font size */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
-    --font-size-3xl: 1.875rem;
-    /* Border radius - Giảm độ bo góc */
-    --border-radius-sm: 4px;
-    --border-radius-md: 6px;
-    --border-radius-lg: 8px;
-    /* Box shadow - Giảm shadow */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --black: #000000;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px; /* Đã đổi từ 6px sang 8px */
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-round: 50px;
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+    /* Container */
+    --container-max: 1200px;
+    --container-padding: 20px;
 }
+
 .checkout-page {
     padding: 2rem 0;
 }
@@ -53,11 +51,11 @@
     display: flex;
     align-items: center;
     margin: 0 1rem;
-    color: var(--gray-medium);
+    color: var(--gray); /* Đã đổi từ var(--gray-medium) sang var(--gray) */
 }
 
     .step.active {
-        color: var(--primary-blue);
+        color: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
         font-weight: 600;
     }
 
@@ -74,7 +72,7 @@
 }
 
 .step.active .step-number {
-    background: var(--primary-blue);
+    background: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
 }
 
 .checkout-content {
@@ -86,6 +84,8 @@
 .checkout-form {
     background: var(--white);
     padding: 2rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
 }
 
 .form-section {
@@ -113,7 +113,7 @@
         width: 100%;
         padding: 0.75rem;
         border: 1px solid var(--gray-light);
-        border-radius: var(--border-radius-md);
+        border-radius: var(--radius-md); /* Đã đổi từ var(--border-radius-md) sang var(--radius-md) */
     }
 
 .shipping-methods,
@@ -128,7 +128,7 @@
     padding: 1rem;
     margin-bottom: 0.5rem;
     border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md); /* Đã đổi từ var(--border-radius-md) sang var(--radius-md) */
     cursor: pointer;
 }
 
@@ -137,6 +137,8 @@
     padding: 2rem;
     position: sticky;
     top: 100px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
 }
 
 .order-items {
@@ -147,7 +149,7 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--gray-lighter);
+    border-bottom: 1px solid var(--gray-light); /* Đã đổi từ var(--gray-lighter) sang var(--gray-light) */
 }
 
 .order-totals {
@@ -167,6 +169,23 @@
     font-weight: 700;
     font-size: 1.125rem;
 }
+
+.place-order-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    margin: 1rem 0 0;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+    .place-order-btn:hover {
+        background: var(--primary-dark);
+    }
 
 @media (max-width: 768px) {
     .checkout-content {
