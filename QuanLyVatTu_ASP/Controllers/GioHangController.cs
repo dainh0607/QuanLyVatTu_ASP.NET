@@ -43,9 +43,9 @@ namespace QuanLyVatTu_ASP.Controllers
             {
                 cart.Add(new CartItem
                 {
-                    VatTuId = vatTu.ID,
+                    VatTuId = vatTu.Id,
                     TenVatTu = vatTu.TenVatTu,
-                    DonGia = (double)vatTu.GiaBan,
+                    DonGia = (decimal)vatTu.GiaBan,
                     SoLuong = quantity,
                 });
             }

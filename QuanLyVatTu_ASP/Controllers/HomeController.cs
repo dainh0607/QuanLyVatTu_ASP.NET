@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _unitOfWork.VatTuRepository.GetAllAsync();
-            var featuredProducts = products.OrderByDescending(p => p.ID).Take(8).ToList();
+            var featuredProducts = products.OrderByDescending(p => p.Id).Take(8).ToList();
 
             return View(featuredProducts);
         }

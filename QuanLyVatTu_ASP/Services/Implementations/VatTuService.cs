@@ -42,7 +42,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 .Take(pageSize)
                 .Select(x => new VatTuIndexViewModel.ItemViewModel
                 {
-                    ID = x.ID,
+                    ID = x.Id,
                     MaHienThi = x.MaHienThi,
                     TenVatTu = x.TenVatTu,
                     DonViTinh = x.DonViTinh,
@@ -72,7 +72,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             return new VatTuCreateEditViewModel
             {
-                Id = vt.ID,
+                Id = vt.Id,
                 TenVatTu = vt.TenVatTu,
                 DonViTinh = vt.DonViTinh,
                 GiaNhap = vt.GiaNhap,
@@ -112,7 +112,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var vt = await _context.VatTus.FindAsync(id);
             if (vt == null) return "Vật tư không tồn tại";
 
-            if (await _context.VatTus.AnyAsync(x => x.TenVatTu == model.TenVatTu && x.ID != id))
+            if (await _context.VatTus.AnyAsync(x => x.TenVatTu == model.TenVatTu && x.Id != id))
             {
                 return "Tên vật tư đã được sử dụng.";
             }

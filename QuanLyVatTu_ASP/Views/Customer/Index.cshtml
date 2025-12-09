@@ -26,7 +26,7 @@
                 {
                     <div class="product-card">
                         <div class="product-image">
-                            <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">
+                            <a href="@Url.Action("Detail", "SanPham", new { id = product.Id })">
 
                             </a>
 
@@ -41,7 +41,7 @@
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">
-                                <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
+                                <a href="@Url.Action("Detail", "SanPham", new { id = product.Id })">@product.TenVatTu</a>
                             </h3>
                             <div class="product-category">@product.LoaiVatTu?.TenLoaiVatTu</div>
                             <div class="product-price">
@@ -58,11 +58,11 @@
                                 }
                             </div>
                             <div class="product-actions">
-                                <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })" class="view-details-btn">Xem chi tiết</a>
+                                <a href="@Url.Action("Detail", "SanPham", new { id = product.Id })" class="view-details-btn">Xem chi tiết</a>
 
                                 @if (product.SoLuongTon > 0)
                                 {
-                                    <button class="add-to-cart-btn" onclick="addToCartIndex(@product.ID)">
+                                    <button class="add-to-cart-btn" onclick="addToCartIndex(@product.Id)">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
                                 }
