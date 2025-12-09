@@ -19,7 +19,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
             if (loaiId.HasValue)
             {
-                products = products.Where(p => p.MaLoaiVatTu == loaiId.Value);
+                products = products.Where(p => p.ID == loaiId.Value);
             }
             ViewBag.Categories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
 
@@ -29,7 +29,7 @@ namespace QuanLyVatTu_ASP.Controllers
         {
             var product = await _unitOfWork.VatTuRepository.GetByIdAsync(id);
             if (product == null) return NotFound();
-            var category = await _unitOfWork.LoaiVatTuRepository.GetByIdAsync(product.MaLoaiVatTu);
+            var category = await _unitOfWork.LoaiVatTuRepository.GetByIdAsync(product.ID);
             ViewBag.TenLoai = category?.TenLoaiVatTu;
 
             return View(product);

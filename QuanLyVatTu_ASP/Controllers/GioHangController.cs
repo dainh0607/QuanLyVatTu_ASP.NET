@@ -45,7 +45,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     VatTuId = vatTu.ID,
                     TenVatTu = vatTu.TenVatTu,
-                    DonGia = (double)vatTu.GiaBan,
+                    DonGia = (decimal)vatTu.GiaBan,
                     SoLuong = quantity,
                 });
             }
