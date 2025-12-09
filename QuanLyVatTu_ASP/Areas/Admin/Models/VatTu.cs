@@ -23,7 +23,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public decimal GiaBan { get; set; }
 
         public int SoLuongTon { get; set; }
-        public string? MoTa { get; set; }
+
+        [NotMapped]
+        public string? MoTa
+        {
+            // Trả về Mô tả của Loại vật tư (nếu LoaiVatTu không null)
+            get { return LoaiVatTu?.MoTa; }
+        }
 
         public DateTime? NgayTao { get; set; }
 

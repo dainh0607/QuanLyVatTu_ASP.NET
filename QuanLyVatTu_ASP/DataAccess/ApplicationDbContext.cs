@@ -100,6 +100,10 @@ namespace QuanLyVatTu_ASP.DataAccess
             modelBuilder.Entity<ChiTietDonHang>()
              .Property(p => p.ThanhTien)
              .HasComputedColumnSql();
+
+            modelBuilder.Entity<ChiTietDonHang>()
+            .Property(p => p.ThanhTien)
+            .HasComputedColumnSql("[SoLuong] * [DonGia]");
         }
     }
 }

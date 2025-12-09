@@ -67,7 +67,11 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         public async Task<VatTuCreateEditViewModel> GetByIdForEditAsync(int id)
         {
-            var vt = await _context.VatTus.FindAsync(id);
+            var vt = await _context.VatTus
+                    .Include(v => v.LoaiVatTu)
+                    .Include(v => v.NhaCungCap)
+                    .FirstOrDefaultAsync(x => x.ID == id);
+
             if (vt == null) return null;
 
             return new VatTuCreateEditViewModel
