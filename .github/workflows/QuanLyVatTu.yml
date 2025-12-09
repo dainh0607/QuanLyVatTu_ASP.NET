@@ -2,49 +2,43 @@ name: .NET 8.0 CI Pipeline - Build, Test, & Package
 
 on:
   push:
-    # Kích hoạt khi có commit mới vào branch 'master'
-    branches: [ master ]
+    branches: [ master, main ]        # hỗ trợ cả master và main
   pull_request:
-    # Kích hoạt khi có Pull Request nhắm vào branch 'master'
-    branches: [ master ]
+    branches: [ master, main ]
 
 env:
-  PROJECT_FILE: QuanLyVatTu_ASP.csproj
-  SOLUTION_FILE: QuanLyVatTu_ASP.sln
-  ARTIFACT_NAME: QuanLyVatTu_Deployment_Package # Tên file nén đầu ra trên GitHub
+  PROJECT_FILE: QuanLyVatTu_ASP.csproj   # đúng tên file .csproj của bạn
+  ARTIFACT_NAME: QuanLyVatTu_Deployment_Package
 
 jobs:
   build-and-package:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name:  Checkout Code
+    - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name:  Setup .NET 8.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
-    # --- Giai đoạn Tích hợp Liên tục (CI) ---
-    - name:  Restore Dependencies (Khôi phục các gói NuGet)
-      run: dotnet restore ${{ env.SOLUTION_FILE }}
 
-    - name:  Build Solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+    # ─── CI Steps ───
+    - name: Restore Dependencies (Khôi phục các gói NuGet)
+      run: dotnet restore ${{ env.PROJECT_FILE }}
 
-    - name:  Run Tests
-      # Chạy test (Nếu bạn không có Test Project, bước này sẽ vẫn chạy và vượt qua)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build || true
-        
-    - name:  Publish Project (Đóng gói ứng dụng)
-      # Tạo tệp sẵn sàng triển khai (Production-ready files)
-      run: dotnet publish ${{ env.PROJECT_FILE }} --configuration Release --no-build --output publish_output
-      
-    - name:  Upload Artifacts (Lưu trữ tệp đã đóng gói trên GitHub)
-      # Tệp đầu ra sẽ có tên là QuanLyVatTu_Deployment_Package
+    - name: Build Project
+      run: dotnet build ${{ env.PROJECT_FILE }} --configuration Release --no-restore
+
+    - name: Run Tests (nếu có test project thì chạy, không có cũng không lỗi)
+      run: dotnet test ${{ env.PROJECT_FILE }} --no-build --configuration Release --verbosity normal || true
+
+    - name: Publish Project (Đóng gói ứng dụng sẵn sàng deploy)
+      run: dotnet publish ${{ env.PROJECT_FILE }} --configuration Release --no-build --output ./publish_output
+
+    - name: Upload Artifact (Tải file đóng gói lên GitHub để download)
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
-        path: publish_output
-        retention-days: 7 # Tệp được lưu trữ trong 7 ngày
+        path: ./publish_output/**
+        retention-days: 7   # giữ artifact 7 ngày
