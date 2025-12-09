@@ -18,11 +18,13 @@ namespace QuanLyVatTu_ASP.Controllers
         public IActionResult Login()
         {
             // Nếu đã đăng nhập rồi thì chuyển hướng
-            if (HttpContext.Session.GetString("Role") == "Admin")
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            // Admin/Employee -> Vào trang Quản lý đơn hàng
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Employee")
+                return RedirectToRoute("AdminDonHang"); // <-- Dùng RedirectToRoute
 
+            // Customer -> Vào trang chủ
             if (HttpContext.Session.GetString("Role") == "Customer")
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home", new { area = "" }); // <-- Customer về Home
 
             return View();
         }
@@ -31,7 +33,7 @@ namespace QuanLyVatTu_ASP.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(string email, string password)
         {
-            // Tìm Nhân viên
+            // 1. Tìm Nhân viên
             var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
             if (nhanVien != null)
             {
@@ -41,10 +43,10 @@ namespace QuanLyVatTu_ASP.Controllers
                 string role = (nhanVien.VaiTro == "Quản lý") ? "Admin" : "Employee";
                 HttpContext.Session.SetString("Role", role);
 
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToRoute("AdminDonHang");
             }
 
-            // Tìm Khách hàng
+            // 2. Tìm Khách hàng
             var khachHang = _unitOfWork.KhachHangRepository.GetByLogin(email, password);
             if (khachHang != null)
             {
@@ -52,6 +54,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 HttpContext.Session.SetString("Email", khachHang.Email ?? "");
                 HttpContext.Session.SetString("Role", "Customer");
 
+                // Khách hàng thì về Trang chủ (Home) chứ không vào Admin
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 

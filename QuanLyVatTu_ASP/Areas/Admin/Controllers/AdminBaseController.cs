@@ -5,7 +5,7 @@ using QuanLyVatTu_ASP.Attributes;
 namespace QuanLyVatTu.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin,Employee")]
+    [Authentication]
     public class AdminBaseController : Controller
     {
     }

@@ -20,7 +20,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         }
 
         // GET: /admin/don-hang
-        [HttpGet("")]
+        [HttpGet("", Name = "AdminDonHang")]
         public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
             if (page < 1) page = 1;

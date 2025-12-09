@@ -6,60 +6,10 @@
     <title>@ViewData["Title"] - Quản lý vật tư</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
-<<<<<<< HEAD
     <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
-</head>
-<body>
-
-
-    <header>
-        <div class="top-header">
-            <div class="logo">Quản lý cửa hàng vật tư</div>
-
-            <div class="search-box">
-                <input type="text" placeholder="Tìm kiếm sản phẩm..." />
-                <button><i class="fa fa-search"></i></button>
-            </div>
-
-            <div class="header-icons">
-                <a href="#"><i class="fa-regular fa-heart"></i></a>
-                <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <span class="text-dark">Chào, @User.Identity.Name</span>
-                    <a class="btn login" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-
-                    @if (User.IsInRole("Admin") || User.IsInRole("NhanVien"))
-                    {
-                        <a class="btn btn-warning" asp-area="Admin" asp-controller="Home" asp-action="Index">Trang Quản Trị</a>
-                    }
-                }
-                else
-                {
-                    <a class="btn login" asp-controller="Account" asp-action="Login">Đăng nhập</a>
-                    <a class="btn register" asp-controller="Account" asp-action="Register">Đăng ký</a>
-                }
-            </div>
-        </div>
-
-        <nav class="menu">
-            <ul class="nav-menu">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-boxes"></i>
-                        <span>Danh mục</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item">Loại hàng 1</a>
-                        <a href="#" class="dropdown-item">Loại hàng 2</a>
-                        <a href="#" class="dropdown-item">Loại hàng 3</a>
-=======
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-    <!-- Header -->
     <header class="main-header">
         <div class="container-fluid">
             <div class="top-header">
@@ -72,7 +22,6 @@
                             <i class="fas fa-tools"></i>
                             <span>Quản lý vật tư</span>
                         </a>
->>>>>>> 9fadc74562a49830b3705cc0175eb23b43f30862
                     </div>
                 </div>
 
@@ -86,7 +35,6 @@
                             </button>
                         </form>
                         <div class="search-suggestions" id="searchSuggestions">
-                            <!-- Gợi ý tìm kiếm sẽ hiện ở đây -->
                         </div>
                     </div>
                 </div>
@@ -148,7 +96,6 @@
                 </div>
             </div>
 
-            <!-- Main Navigation -->
             <nav class="main-nav" id="mainNav">
                 <div class="nav-container">
                     <ul class="nav-menu">
@@ -240,7 +187,6 @@
         </div>
     </header>
 
-    <!-- Quick Access Bar (Mobile) -->
     <div class="quick-access-bar">
         <a href="/" class="quick-item">
             <i class="fas fa-home"></i>
@@ -261,17 +207,12 @@
         </a>
     </div>
 
-    <!-- Main Content -->
     <main class="main-content">
-
-
-        <!-- Page Content -->
         <div class="container page-container">
             @RenderBody()
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="main-footer">
         <div class="container">
             <div class="footer-top">
@@ -362,7 +303,6 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
