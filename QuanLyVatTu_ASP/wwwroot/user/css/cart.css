@@ -20,6 +20,161 @@
     --spacing-sm: 0.75rem;
     --spacing-md: 1rem;
     --spacing-lg: 1.5rem;
+    : root
+
+{
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-light: #6ea8fe;
+    --accent: #ff6b00;
+    --accent-dark: #e85c00;
+    --dark: #222;
+    --darker: #111;
+    --light: #f8f9fa;
+    --lighter: #fdfdfd;
+    --gray: #6c757d;
+    --gray-light: #dee2e6;
+    --gray-dark: #495057;
+    --white: #ffffff;
+    --black: #000000;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px; /* Đã đổi từ 6px sang 8px */
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-round: 50px;
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+    /* Container */
+    --container-max: 1200px;
+    --container-padding: 20px;
+}
+
+.cart-page {
+    padding: 2rem 0;
+}
+
+.cart-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.cart-items {
+    background: var(--white);
+    /* Thêm styling đồng bộ */
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gray-light); /* Đã đổi từ var(--gray-lighter) sang var(--gray-light) */
+}
+
+.item-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--dark); /* Đã đổi từ var(--black) sang var(--dark) */
+}
+
+.item-price {
+    font-weight: 600;
+    color: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
+}
+
+.item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-total {
+    font-weight: 700;
+    color: var(--dark); /* Đã đổi từ var(--black) sang var(--dark) */
+}
+
+.cart-summary {
+    background: var(--white);
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    /* Thêm styling đồng bộ */
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+    .summary-row.total {
+        border-top: 1px solid var(--gray-light);
+        margin-top: 1rem;
+        padding-top: 1rem;
+        font-weight: 700;
+    }
+
+.total-price {
+    color: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
+    font-size: 1.25rem;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary); /* Đã đổi từ var(--primary-blue) sang var(--primary) */
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md); /* Đã đổi từ var(--border-radius-md) sang var(--radius-md) */
+    font-weight: 600;
+    margin: 1rem 0;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+    .checkout-btn:hover {
+        background: var(--primary-dark);
+    }
+
+@media (max-width: 768px) {
+    .cart-content {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .item-image {
+        justify-self: center;
+    }
+}
+
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
     /* Font size */

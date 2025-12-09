@@ -12,11 +12,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string MaHienThi { get; set; }
 
         [Required]
-
-        [Required]
-        public string MaHienThi { get; set; }
-
-        [Required]
         public string TenVatTu { get; set; }
 
         public string DonViTinh { get; set; }

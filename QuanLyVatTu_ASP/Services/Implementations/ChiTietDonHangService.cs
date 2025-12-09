@@ -26,7 +26,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 string s = search.Trim().ToLower();
                 query = query.Where(v =>
-                    v.Id.ToString().Contains(s) ||
+                    v.ID.ToString().Contains(s) ||
                     v.TenVatTu.ToLower().Contains(s) ||
                     (v.LoaiVatTu != null && v.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(s)));
             }
@@ -34,8 +34,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var dsVatTu = await query
                 .Select(v => new VatTuSelectItem
                 {
-                    MaVatTu = v.Id,
-                    MaCode = v.Id.ToString("VT000"),
+                    MaVatTu = v.ID,
+                    MaCode = v.ID.ToString("VT000"),
                     TenVatTu = v.TenVatTu,
                     TenLoai = v.LoaiVatTu != null ? v.LoaiVatTu.TenLoaiVatTu : "Chưa phân loại",
                     SoLuongTon = v.SoLuongTon,
