@@ -1,0 +1,68 @@
+﻿@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="categories-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Sản phẩm</h1>
+        </div>
+
+        <div class="categories-filter">
+            <div class="filter-sidebar">
+                <h3>Danh mục</h3>
+                <ul class="list-group">
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (var cat in ViewBag.Categories as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>)
+                        {
+                            <li class="list-group-item"><a href="/SanPham?loaiId=@cat.ID">@cat.TenLoaiVatTu</a></li>
+                        }
+                    }
+                </ul>
+            </div>
+
+            <div class="products-content">
+                <div class="products-grid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="product-card">
+                            <div class="product-image">
+                                <a href="@Url.Action("Detail", "SanPham", new { id = item.Id })">
+                                    
+
+
+
+                                </a>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">
+                                    <a href="@Url.Action("Detail", "SanPham", new { id = item.Id })">@item.TenVatTu</a>
+                                </h3>
+                                <div class="product-price">
+                                    <span class="current-price">@item.GiaBan.ToString("N0")đ</span>
+                                </div>
+                                <button class="add-to-cart-btn" onclick="quickAdd(@item.Id)">Thêm vào giỏ</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function quickAdd(id) {
+             $.post('/GioHang/AddToCart', { productId: id, quantity: 1 }, function(res) {
+                if(res.success) alert(res.message);
+            });
+        }
+    </script>
+}
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/categories.css" />
+}

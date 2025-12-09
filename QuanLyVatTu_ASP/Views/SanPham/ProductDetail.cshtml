@@ -1,0 +1,91 @@
+﻿@model QuanLyVatTu_ASP.Areas.Admin.Models.VatTu
+@{
+    ViewData["Title"] = Model.TenVatTu;
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="product-detail-page">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Trang chủ</a> / <a href="/SanPham">Sản phẩm</a> / <span>@Model.TenVatTu</span>
+        </div>
+
+        <div class="product-detail">
+            <div class="product-gallery">
+                <div class="main-image">
+
+
+
+
+
+                </div>
+            </div>
+
+            <div class="product-info">
+                <h1 class="product-title">@Model.TenVatTu</h1>
+
+                <div class="product-price">
+                    <span class="current-price">@Model.GiaBan.ToString("N0")đ</span>
+                </div>
+
+                <div class="product-description">
+                    <p>@Model.MoTa</p>
+                </div>
+
+                <div class="product-specs">
+                    <ul>
+                        <li><strong>Đơn vị tính:</strong> @Model.DonViTinh</li>
+                        <li>
+                            <strong>Tình trạng:</strong>
+                            @if (Model.SoLuongTon > 0)
+                            {
+                                <span class="text-success">Còn hàng (@Model.SoLuongTon)</span>
+                            }
+                            else
+                            {
+
+                                <span class="text-danger">Hết hàng</span>
+                            }
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="product-actions">
+                    @if (Model.SoLuongTon > 0)
+                    {
+                        <div class="quantity-selector">
+                            <label>Số lượng:</label>
+                            <input type="number" id="qty" value="1" min="1" max="@Model.SoLuongTon" class="form-control" style="width: 80px; display:inline-block">
+                        </div>
+                        <div class="action-buttons mt-3">
+                            <button class="btn-primary add-to-cart" onclick="addToCart(@Model.Id)">
+                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" disabled>Tạm hết hàng</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function addToCart(id) {
+            var qty = $('#qty').val();
+            $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
+                if(res.success) {
+                    alert(res.message);
+                    // Có thể update icon giỏ hàng ở header
+                }
+            });
+        }
+    </script>
+}
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/ProductDetail.css" />
+}

@@ -1,0 +1,84 @@
+﻿@using QuanLyVatTu_ASP.Models.ViewModels
+@model QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+    var cart = ViewBag.Cart as List<CartItem>;
+    decimal total = ViewBag.Total != null ? (decimal)ViewBag.Total : 0;
+}
+
+<div class="checkout-page">
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Thanh toán</h1>
+        </div>
+
+        <div class="checkout-content">
+            <div class="checkout-form">
+                <form id="checkoutForm" method="post" action="@Url.Action("ProcessCheckout", "ThanhToan")">
+                    <section class="form-section">
+                        <h2>Thông tin giao hàng</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input type="text" value="@Model.HoTen" readonly class="form-control" style="background-color: #f0f0f0;">
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại nhận hàng *</label>
+                                <input type="tel" name="soDienThoai" value="@Model.SoDienThoai" required class="form-control">
+                            </div>
+                             <div class="form-group full-width">
+                                <label>Email</label>
+                                <input type="email" value="@Model.Email" readonly class="form-control" style="background-color: #f0f0f0;">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Địa chỉ nhận hàng *</label>
+                                <input type="text" name="diaChi" value="@Model.DiaChi" required class="form-control" placeholder="Số nhà, đường, phường/xã...">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <h2>Ghi chú đơn hàng</h2>
+                        <div class="form-group">
+                            <textarea name="ghiChu" placeholder="Ghi chú về đơn hàng (Ví dụ: Giao giờ hành chính)" rows="4" class="form-control"></textarea>
+                        </div>
+                    </section>
+                    
+                    <button type="submit" class="checkout-btn btn-primary mt-4">Đặt hàng</button>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-card">
+                    <h3>Đơn hàng của bạn</h3>
+                    <div class="order-items">
+                        @if (cart != null)
+                        {
+                            foreach (var item in cart)
+                            {
+                                <div class="order-item">
+                                    <div class="item-info">
+                                        <span class="item-name">@item.TenVatTu <strong>x @item.SoLuong</strong></span>
+                                        <span class="item-price">@item.ThanhTien.ToString("N0")đ</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <div class="order-totals">
+                        <div class="total-row grand-total">
+                            <span>Tổng cộng:</span>
+                            <span class="total-price">@total.ToString("N0")đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/checkout.css" />
+}

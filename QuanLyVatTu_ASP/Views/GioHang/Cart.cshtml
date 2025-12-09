@@ -1,0 +1,80 @@
+﻿@using QuanLyVatTu_ASP.Models.ViewModels
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng - QLVT";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="cart-page">
+    <div class="container">
+        <h1 class="page-title">Giỏ hàng của bạn</h1>
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="empty-cart text-center py-5">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <p>Giỏ hàng của bạn đang trống.</p>
+                <a href="/SanPham" class="btn btn-primary">Mua sắm ngay</a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-content">
+                <div class="cart-items">
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item" data-id="@item.VatTuId">
+                            <div class="item-image">
+                                <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? "/user/images/default.jpg" : item.HinhAnh)" alt="@item.TenVatTu">
+                            </div>
+                            <div class="item-details">
+                                <h3 class="item-name">@item.TenVatTu</h3>
+                                <div class="item-price">@item.DonGia.ToString("N0")đ</div>
+                            </div>
+                            <div class="item-quantity">
+                                <button class="quantity-btn minus" onclick="updateCart(@item.VatTuId, -1)">-</button>
+                                <input type="number" value="@item.SoLuong" min="1" readonly class="quantity-input">
+                                <button class="quantity-btn plus" onclick="updateCart(@item.VatTuId, 1)">+</button>
+                            </div>
+                            <div class="item-total">@item.ThanhTien.ToString("N0")đ</div>
+                            <a href="@Url.Action("RemoveFromCart", "GioHang", new { productId = item.VatTuId })" class="item-remove">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="cart-summary">
+                    <h3>Tóm tắt đơn hàng</h3>
+                    <div class="summary-row total">
+                        <span>Tổng cộng:</span>
+                        <span class="total-price">@Model.Sum(x => x.ThanhTien).ToString("N0")đ</span>
+                    </div>
+
+                    <a href="@Url.Action("Checkout", "ThanhToan")" class="checkout-btn btn-primary text-center d-block text-decoration-none">
+                        Tiến hành thanh toán
+                    </a>
+
+                    <div class="continue-shopping">
+                        <a href="/SanPham" class="continue-link">
+                            <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateCart(id, change) {
+             $.post('/GioHang/AddToCart', { productId: id, quantity: change }, function(res){
+                 if(res.success) location.reload();
+             });
+        }
+    </script>
+}
+@section Styles {
+    <link rel="stylesheet" href="~/user/css/cart.css" />
+}

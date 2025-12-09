@@ -1,14 +1,24 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using QuanLyVatTu_ASP.Repositories;
+using QuanLyVatTu_ASP.Repositories.Interfaces;
 
-namespace QuanLyVatTu_ASP.DTO.Controllers
+namespace QuanLyVatTu_ASP.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
 
-        public IActionResult Index()
+        public HomeController(IUnitOfWork unitOfWork)
         {
-            return View();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var products = await _unitOfWork.VatTuRepository.GetAllAsync();
+            var featuredProducts = products.OrderByDescending(p => p.ID).Take(8).ToList();
+
+            return View(featuredProducts);
         }
     }
 }
