@@ -23,12 +23,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                keyword = keyword.Trim();
+                keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.TenNhaCungCap.Contains(keyword) ||
-                    (x.Email != null && x.Email.Contains(keyword)) ||
-                    (x.SoDienThoai != null && x.SoDienThoai.Contains(keyword)));
+                   
+                    x.TenNhaCungCap.ToLower().Contains(keyword) ||
+                    (x.Email != null && x.Email.ToLower().Contains(keyword)) ||
+                    (x.SoDienThoai != null && x.SoDienThoai.ToLower().Contains(keyword)));
             }
 
             var total = await query.CountAsync();

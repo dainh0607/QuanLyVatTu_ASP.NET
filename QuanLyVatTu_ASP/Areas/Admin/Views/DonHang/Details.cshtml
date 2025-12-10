@@ -30,13 +30,14 @@
                 </div>
 
                 <div class="p-3 bg-light border-bottom">
-                    <form asp-action="ChiTiet" asp-controller="ChiTietDonHang" method="get" class="d-flex gap-2">
+                    <form asp-action="Details" asp-controller="ChiTietDonHang" method="get" class="d-flex gap-2">
                         <input type="hidden" name="id" value="@Model.MaDonHang" />
                         <input name="search" class="form-control rounded-3" placeholder="Tìm tên, mã vật tư..." value="@Model.SearchTerm" />
-                        <button class="btn btn-primary rounded-3" type="submit"><i class="bi bi-search"></i></button>
+                        <button class="btn btn-primary rounded-3 text-nowrap" type="submit">
+                            <i class="bi bi-search me-1"></i>Tìm kiếm
+                        </button>
                     </form>
                 </div>
-
                 <div class="card-body p-0">
                     <div style="max-height: 60vh; overflow-y: auto;">
                         <table class="table table-hover mb-0 align-middle">
@@ -143,7 +144,8 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-end fw-bold text-danger">
-                                                    @item.ThanhTien.ToString("N0")
+                                                    @* Giả định ThanhTien là thuộc tính tính toán trong ViewModel *@
+                                                    @((item.SoLuong * item.DonGia).ToString("N0"))
                                                 </td>
                                             </tr>
                                         }
