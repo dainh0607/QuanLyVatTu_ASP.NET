@@ -132,6 +132,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     DVT = ct.VatTu.DonViTinh,
                     SoLuong = ct.SoLuong,
                     DonGia = ct.DonGia,
+                    ThanhTien = ct.SoLuong * ct.DonGia
                 }).ToList()
             };
         }

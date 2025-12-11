@@ -27,11 +27,11 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                keyword = keyword.Trim();
+                keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    (x.GhiChu != null && x.GhiChu.Contains(keyword)) ||
-                    x.KhachHang.HoTen.Contains(keyword));
+                    x.MaHienThi.ToLower().Contains(keyword) ||
+                    (x.GhiChu != null && x.GhiChu.ToLower().Contains(keyword)) ||
+                    x.KhachHang.HoTen.ToLower().Contains(keyword));
             }
 
             var total = await query.CountAsync();

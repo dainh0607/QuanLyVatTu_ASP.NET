@@ -23,13 +23,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                keyword = keyword.Trim();
+                keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.HoTen.Contains(keyword) ||
-                    x.CCCD.Contains(keyword) ||
-                    x.SoDienThoai.Contains(keyword) ||
-                    x.VaiTro.Contains(keyword));
+                    
+                    x.HoTen.ToLower().Contains(keyword) ||
+                    x.CCCD.ToLower().Contains(keyword) ||
+                    x.SoDienThoai.ToLower().Contains(keyword) ||
+                    x.VaiTro.ToLower().Contains(keyword));
             }
 
             var total = await query.CountAsync();
