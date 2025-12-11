@@ -18,7 +18,7 @@ namespace QuanLyVatTu_ASP.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult GioHang()
         {
             var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
 
@@ -79,5 +79,11 @@ namespace QuanLyVatTu_ASP.Controllers
             }
             return Json(new { success = true });
         }
+        public IActionResult Wishlist()
+        {
+
+            return View();
+        }
+
     }
 }

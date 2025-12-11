@@ -66,7 +66,7 @@
     </div>
 </div>
 
-@section Scripts {
+
     <script>
         function updateCart(id, change) {
              $.post('/GioHang/AddToCart', { productId: id, quantity: change }, function(res){
@@ -74,7 +74,4 @@
              });
         }
     </script>
-}
-@section Styles {
     <link rel="stylesheet" href="~/user/css/cart.css" />
-}

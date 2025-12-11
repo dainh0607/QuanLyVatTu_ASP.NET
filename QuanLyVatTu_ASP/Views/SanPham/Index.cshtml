@@ -54,7 +54,7 @@
     </div>
 </div>
 
-@section Scripts {
+
     <script>
         function quickAdd(id) {
              $.post('/GioHang/AddToCart', { productId: id, quantity: 1 }, function(res) {
@@ -62,7 +62,5 @@
             });
         }
     </script>
-}
-@section Styles {
+
     <link rel="stylesheet" href="~/user/css/categories.css" />
-}
