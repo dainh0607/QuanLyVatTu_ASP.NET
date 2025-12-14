@@ -10,6 +10,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string MaHienThi { get; set; }
+        
 
         [Required]
         public string TenVatTu { get; set; }

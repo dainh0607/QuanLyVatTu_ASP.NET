@@ -1,6 +1,4 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
+﻿<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Quản lý vật tư</title>
@@ -41,18 +39,18 @@
 
                 <div class="header-right">
                     <div class="header-icons">
-                        <a href="/Wishlist" class="icon-link" title="Yêu thích">
+                        <a href="/GioHang/Wishlist" class="icon-link" title="Yêu thích">
                             <i class="fa-regular fa-heart"></i>
                             <span class="badge">0</span>
                         </a>
-                        <a href="/Cart" class="icon-link cart-icon" title="Giỏ hàng">
+                        <a href="/GioHang/GioHang" class="icon-link cart-icon" title="Giỏ hàng">
                             <i class="fa-solid fa-cart-shopping"></i>
                             <span class="badge cart-count">0</span>
                         </a>
-                        <a href="/Account/Profile" class="icon-link" title="Tài khoản">
+                        <a href="/Customer/Profile" class="icon-link" title="Tài khoản">
                             <i class="fa-regular fa-user"></i>
                         </a>
-                        <a href="/Account/Orders" class="icon-link" title="Đơn hàng">
+                        <a href="/Customer/Orders" class="icon-link" title="Đơn hàng">
                             <i class="fas fa-clipboard-list"></i>
                         </a>
 
@@ -65,13 +63,13 @@
                                     <i class="fas fa-chevron-down"></i>
                                 </a>
                                 <div class="dropdown-menu user-menu">
-                                    <a href="/Account/Profile" class="dropdown-item">
+                                    <a href="/Customer/Profile" class="dropdown-item">
                                         <i class="fas fa-user"></i> Thông tin tài khoản
                                     </a>
-                                    <a href="/Account/Orders" class="dropdown-item">
+                                    <a href="/Customer/Orders" class="dropdown-item">
                                         <i class="fas fa-box"></i> Đơn hàng của tôi
                                     </a>
-                                    <a href="/Account/Wishlist" class="dropdown-item">
+                                    <a href="/Customer/Wishlist" class="dropdown-item">
                                         <i class="fas fa-heart"></i> Sản phẩm yêu thích
                                     </a>
                                     <div class="dropdown-divider"></div>
@@ -106,7 +104,7 @@
                             </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a href="#" class="nav-link">
+                            <a href="/SanPham/Index" class="nav-link">
                                 <i class="fas fa-boxes"></i>
                                 <span>Danh mục sản phẩm</span>
                                 <i class="fas fa-chevron-down"></i>
@@ -115,31 +113,31 @@
                                 <div class="mega-menu-content">
                                     <div class="category-section">
                                         <h6>Vật tư xây dựng</h6>
-                                        <a href="/Category/Cement" class="dropdown-item">Xi măng</a>
-                                        <a href="/Category/Steel" class="dropdown-item">Sắt thép</a>
-                                        <a href="/Category/Brick" class="dropdown-item">Gạch, cát, đá</a>
-                                        <a href="/Category/Plumbing" class="dropdown-item">Vật tư nước</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Xi măng</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Sắt thép</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Gạch, cát, đá</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Vật tư nước</a>
                                     </div>
                                     <div class="category-section">
                                         <h6>Vật tư điện</h6>
-                                        <a href="/Category/Wire" class="dropdown-item">Dây điện</a>
-                                        <a href="/Category/Switch" class="dropdown-item">Công tắc, ổ cắm</a>
-                                        <a href="/Category/Light" class="dropdown-item">Đèn chiếu sáng</a>
-                                        <a href="/Category/Tool" class="dropdown-item">Thiết bị điện</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Dây điện</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Công tắc, ổ cắm</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Đèn chiếu sáng</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Thiết bị điện</a>
                                     </div>
                                     <div class="category-section">
                                         <h6>Dụng cụ & Thiết bị</h6>
-                                        <a href="/Category/HandTool" class="dropdown-item">Dụng cụ cầm tay</a>
-                                        <a href="/Category/Machine" class="dropdown-item">Máy móc thiết bị</a>
-                                        <a href="/Category/Safety" class="dropdown-item">Thiết bị an toàn</a>
-                                        <a href="/Category/Paint" class="dropdown-item">Sơn & Phụ kiện</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Dụng cụ cầm tay</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Máy móc thiết bị</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Thiết bị an toàn</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Sơn & Phụ kiện</a>
                                     </div>
                                     <div class="category-section">
                                         <h6>Phụ kiện & Vật tư khác</h6>
-                                        <a href="/Category/Hardware" class="dropdown-item">Phụ kiện kim khí</a>
-                                        <a href="/Category/Adhesive" class="dropdown-item">Keo dán, chất kết dính</a>
-                                        <a href="/Category/Chemical" class="dropdown-item">Hóa chất xây dựng</a>
-                                        <a href="/Category/Other" class="dropdown-item">Vật tư khác</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Phụ kiện kim khí</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Keo dán, chất kết dính</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Hóa chất xây dựng</a>
+                                        <a href="/SanPham/Index" class="dropdown-item">Vật tư khác</a>
                                     </div>
                                 </div>
                             </div>
@@ -168,9 +166,9 @@
                                 <i class="fas fa-chevron-down"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a href="/About" class="dropdown-item">Về chúng tôi</a>
+                                <a href="/Customer/About" class="dropdown-item">Về chúng tôi</a>
                                 <a href="/Contact" class="dropdown-item">Liên hệ</a>
-                                <a href="/Policy" class="dropdown-item">Chính sách</a>
+                                <a href="/Customer/PurchasePolicy" class="dropdown-item">Chính sách</a>
                                 <a href="/Guide" class="dropdown-item">Hướng dẫn mua hàng</a>
                             </div>
                         </li>
@@ -192,16 +190,16 @@
             <i class="fas fa-home"></i>
             <span>Trang chủ</span>
         </a>
-        <a href="/Category" class="quick-item">
+        <a href="/SanPham/Index" class="quick-item">
             <i class="fas fa-th"></i>
             <span>Danh mục</span>
         </a>
-        <a href="/Cart" class="quick-item">
+        <a href="/GioHang/GioHang" class="quick-item">
             <i class="fas fa-shopping-cart"></i>
             <span>Giỏ hàng</span>
             <span class="badge">0</span>
         </a>
-        <a href="/Account" class="quick-item">
+        <a href="/Customer/Profile" class="quick-item">
             <i class="fas fa-user"></i>
             <span>Tài khoản</span>
         </a>
@@ -238,7 +236,7 @@
                     <div class="col-lg-2 col-md-6 footer-column">
                         <h5 class="footer-title">Về chúng tôi</h5>
                         <ul class="footer-links">
-                            <li><a href="/About">Giới thiệu</a></li>
+                            <li><a href="/Customer/About">Giới thiệu</a></li>
                             <li><a href="/Contact">Liên hệ</a></li>
                             <li><a href="/Career">Tuyển dụng</a></li>
                             <li><a href="/Store">Hệ thống cửa hàng</a></li>
@@ -249,11 +247,11 @@
                     <div class="col-lg-2 col-md-6 footer-column">
                         <h5 class="footer-title">Chính sách</h5>
                         <ul class="footer-links">
-                            <li><a href="/Policy/Payment">Điều khoản thanh toán</a></li>
-                            <li><a href="/Policy/Delivery">Giao hàng - vận chuyển</a></li>
-                            <li><a href="/Policy/Warranty">Chính sách bảo hành</a></li>
-                            <li><a href="/Policy/Return">Đổi trả & hoàn tiền</a></li>
-                            <li><a href="/Policy/Security">Bảo mật thông tin</a></li>
+                            <li><a href="/Customer/PurchasePolicy">Điều khoản thanh toán</a></li>
+                            <li><a href="/Customer/PurchasePolicy">Giao hàng - vận chuyển</a></li>
+                            <li><a href="/Customer/PurchasePolicy">Chính sách bảo hành</a></li>
+                            <li><a href="/Customer/PurchasePolicy">Đổi trả & hoàn tiền</a></li>
+                            <li><a href="/Customer/PurchasePolicy">Bảo mật thông tin</a></li>
                         </ul>
                     </div>
 
@@ -357,8 +355,7 @@
             // Hiển thị preview giỏ hàng
         });
     </script>
-    @await RenderSectionAsync("Scripts", required: false)
-    @await RenderSectionAsync("Style", required: false)
+
 
 </body>
 </html>

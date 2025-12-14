@@ -4,7 +4,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class DonHang : BaseEntity
     {
-        public string MaHienThi => $"DH{DateTime.Now:yyyy}-{ID:000}";
+        public string MaHienThi { get; set; }
 
         [Column("MaKhachHang")]
         public int? KhachHangId { get; set; }

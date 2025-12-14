@@ -72,6 +72,16 @@ namespace QuanLyVatTu_ASP.Controllers
                 message = "Đổi mật khẩu thành công"
             });
         }
+        public IActionResult About()
+        {
+
+            return View();
+        }
+        public IActionResult PurchasePolicy()
+        {
+
+            return View();
+        }
 
     }
 }

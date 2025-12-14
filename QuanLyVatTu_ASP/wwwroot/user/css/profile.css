@@ -1,0 +1,365 @@
+﻿/* ======================================= */
+/* 1. KHAI BÁO BIẾN & KIỂU CHUNG */
+/* ======================================= */
+:root {
+    --primary-color: #007bff; /* Xanh dương */
+    --primary-dark: #0056b3;
+    --secondary-bg: #f8f9fa; /* Nền xám nhạt */
+    --border-color: #dee2e6;
+    --shadow-light: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --card-bg: #ffffff;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+}
+
+body {
+    background-color: var(--secondary-bg);
+}
+
+.profile-page {
+    padding: 30px 0;
+}
+
+.page-header {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+    .page-header h1 {
+        font-size: 2rem;
+        color: #343a40;
+    }
+
+    .page-header p {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+/* ======================================= */
+/* 2. PROFILE LAYOUT (MAIN CONTENT) */
+/* ======================================= */
+.profile-content {
+    display: flex;
+    gap: 30px;
+}
+
+/* ======================================= */
+/* 3. SIDEBAR (THANH BÊN) */
+/* ======================================= */
+.profile-sidebar {
+    flex-shrink: 0;
+    width: 280px;
+}
+
+.user-info-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.user-avatar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 15px;
+}
+
+.avatar-placeholder {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-right: 15px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-details h3 {
+    font-size: 1.15rem;
+    margin-bottom: 3px;
+    color: #343a40;
+    text-align: left;
+}
+
+.user-details p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: left;
+    margin: 0;
+}
+
+.user-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 10px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.profile-nav {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+}
+
+    .profile-nav .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: #343a40;
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .profile-nav .nav-link i {
+            width: 25px;
+            text-align: center;
+            margin-right: 10px;
+            color: #6c757d;
+        }
+
+        .profile-nav .nav-link:hover {
+            background-color: var(--secondary-bg);
+            color: var(--primary-dark);
+        }
+
+        .profile-nav .nav-link.active {
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+            background-color: #e9ecef;
+            color: var(--primary-dark);
+        }
+
+        .profile-nav .nav-link.logout {
+            color: var(--danger-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: 5px;
+        }
+
+            .profile-nav .nav-link.logout i {
+                color: var(--danger-color);
+            }
+
+/* ======================================= */
+/* 4. MAIN CONTENT (TABS) */
+/* ======================================= */
+.profile-main {
+    flex-grow: 1;
+    min-width: 0; /* Cho phép co lại */
+}
+
+.tab-content {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.tab-header h2 {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-form-container form {
+    max-width: 600px; /* Giới hạn chiều rộng form thông tin */
+}
+
+/* Kiểu dáng Form */
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #495057;
+    }
+
+.form-control[readonly] {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    cursor: default;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: background-color 0.2s;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+/* ======================================= */
+/* 5. ORDERS HISTORY */
+/* ======================================= */
+.order-card {
+    border: 1px solid var(--border-color) !important;
+    transition: all 0.2s;
+}
+
+    .order-card:hover {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+    }
+
+.order-header h4 {
+    font-size: 1.1rem;
+}
+
+/* Badge Statuses (Dựa trên hàm GetStatusClass của bạn) */
+.badge {
+    padding: 0.4em 0.6em;
+    font-weight: 600;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.bg-info.text-white { /* Mới */
+    background-color: #17a2b8 !important;
+}
+
+.bg-warning.text-dark { /* Chờ xử lý */
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.bg-success.text-white { /* Đã giao */
+    background-color: var(--success-color) !important;
+}
+
+.bg-danger.text-white { /* Hủy */
+    background-color: var(--danger-color) !important;
+}
+
+.order-items {
+    border-radius: 6px !important;
+}
+
+    .order-items span {
+        color: #6c757d;
+    }
+
+/* ======================================= */
+/* 6. RESPONSIVE DESIGN */
+/* ======================================= */
+
+@media (max-width: 992px) {
+    .profile-content {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+    }
+
+    .user-info-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .user-avatar {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .user-details h3,
+    .user-details p {
+        text-align: left;
+    }
+
+    .user-stats {
+        padding-top: 0;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .stat-item {
+        margin-bottom: 5px;
+    }
+
+    .profile-nav {
+        display: flex;
+        overflow-x: auto; /* Cho phép cuộn ngang cho menu */
+        border-radius: 8px;
+        box-shadow: none;
+        margin-bottom: 20px;
+    }
+
+        .profile-nav .nav-link {
+            flex-shrink: 0;
+            border-left: none;
+            border-bottom: 3px solid transparent;
+        }
+
+            .profile-nav .nav-link.active {
+                border-left-color: transparent;
+                border-bottom-color: var(--primary-color);
+                background-color: var(--card-bg); /* Giữ màu trắng khi active */
+            }
+
+            .profile-nav .nav-link.logout {
+                border-top: none;
+                margin-top: 0;
+            }
+}
+
+@media (max-width: 576px) {
+    .profile-page {
+        padding: 20px 0;
+    }
+
+    .tab-content {
+        padding: 20px;
+    }
+
+    .user-info-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-stats {
+        width: 100%;
+        margin-top: 15px;
+        flex-direction: row;
+        justify-content: space-around;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 15px;
+    }
+
+    .user-details h3,
+    .user-details p {
+        text-align: center;
+    }
+}

@@ -26,13 +26,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                keyword = keyword.Trim();
+                keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.TenVatTu.Contains(keyword) ||
-                    x.DonViTinh.Contains(keyword) ||
-                    x.LoaiVatTu.TenLoaiVatTu.Contains(keyword) ||
-                    x.NhaCungCap.TenNhaCungCap.Contains(keyword));
+                    x.MaHienThi.ToLower().Contains(keyword) ||
+                    x.TenVatTu.ToLower().Contains(keyword) ||
+                    x.DonViTinh.ToLower().Contains(keyword) ||
+                    x.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(keyword) ||
+                    x.NhaCungCap.TenNhaCungCap.ToLower().Contains(keyword));
             }
 
             var total = await query.CountAsync();
@@ -43,6 +43,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 .Take(pageSize)
                 .Select(x => new VatTuIndexViewModel.ItemViewModel
                 {
+                    ID = x.ID,
                     MaHienThi = x.MaHienThi,
                     TenVatTu = x.TenVatTu,
                     DonViTinh = x.DonViTinh,

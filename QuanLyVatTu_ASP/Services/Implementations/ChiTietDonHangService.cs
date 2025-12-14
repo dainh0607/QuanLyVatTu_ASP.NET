@@ -24,9 +24,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                string s = search.Trim().ToLower();
+                string s = search.ToLower();
                 query = query.Where(v =>
-                    v.ID.ToString().Contains(s) ||
+
+                    
                     v.TenVatTu.ToLower().Contains(s) ||
                     (v.LoaiVatTu != null && v.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(s)));
             }
@@ -54,10 +55,14 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     DonGia = c.DonGia
                 })
                 .ToListAsync();
-
+            var donHang = await _context.DonHang
+                 .Include(d => d.KhachHang)
+                 .FirstOrDefaultAsync(d => d.ID == maDonHang);
             return new ChiTietDonHangViewModel
             {
                 MaDonHang = maDonHang,
+                TenKhachHang = donHang?.KhachHang?.HoTen,
+                NgayTao = donHang?.NgayTao,
                 DanhSachVatTu = dsVatTu,
                 ChiTietDonHang = chiTiet,
                 SearchTerm = search
