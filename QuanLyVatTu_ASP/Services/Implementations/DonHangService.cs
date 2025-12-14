@@ -97,7 +97,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 TongTien = model.TongTien,
                 SoTienDatCoc = model.SoTienDatCoc,
                 PhuongThucDatCoc = model.PhuongThucDatCoc,
-                NgayDatCoc = model.NgayDatCoc,
+                NgayDatCoc = (model.NgayDatCoc.HasValue && model.NgayDatCoc.Value.Year < 1753) ? null : model.NgayDatCoc,
                 TrangThai = model.TrangThai ?? "Chờ xác nhận",
                 GhiChu = model.GhiChu,
                 NgayTao = DateTime.Now
@@ -112,10 +112,37 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var entity = await _context.DonHang.FindAsync(id);
             if (entity == null) return false;
 
+            
+            decimal datCocCu = entity.SoTienDatCoc ?? 0;
+            decimal datCocMoi = model.SoTienDatCoc ?? 0;
+            decimal tienCocToiThieu = entity.TongTien * 0.1M;
+
+            if (datCocMoi < datCocCu)
+            {
+                
+                return false;
+            }
+            if (model.TrangThai == "Đã xác nhận" && datCocMoi < tienCocToiThieu)
+            {
+
+                return false;
+            }
+            if (model.NgayDatCoc.HasValue && model.NgayDatCoc.Value.Year < 1753)
+            {
+                entity.NgayDatCoc = null;
+            }
+            else
+            {
+                entity.NgayDatCoc = model.NgayDatCoc; 
+            }
+
             entity.KhachHangId = model.KhachHangId;
             entity.NhanVienId = model.NhanVienId ?? 0;
             entity.NgayDat = model.NgayDat;
-            entity.SoTienDatCoc = model.SoTienDatCoc;
+
+            
+            entity.SoTienDatCoc = datCocMoi;
+
             entity.PhuongThucDatCoc = model.PhuongThucDatCoc;
             entity.NgayDatCoc = model.NgayDatCoc;
             entity.TrangThai = model.TrangThai ?? "Chờ xác nhận";

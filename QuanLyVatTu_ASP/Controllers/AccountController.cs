@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Repositories;
+using System.Text.RegularExpressions;
 
 namespace QuanLyVatTu_ASP.Controllers
 {
@@ -33,6 +34,21 @@ namespace QuanLyVatTu_ASP.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(string email, string password)
         {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin.";
+                return View();
+            }
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                ViewBag.Error = "Địa chỉ email không hợp lệ.";
+                return View();
+            }
+            if (password.Length < 6)
+            {
+                ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                return View();
+            }
             // 1. Tìm Nhân viên
             var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
             if (nhanVien != null)
@@ -66,6 +82,23 @@ namespace QuanLyVatTu_ASP.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(string hoTen, string email, string password, string confirmPassword)
         {
+            if (string.IsNullOrEmpty(hoTen) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
+            {
+                ViewBag.Error = "Vui lòng điền đầy đủ thông tin đăng ký.";
+                return View("Login");
+            }
+            if (password.Length < 6)
+            {
+                ViewBag.Error = "Mật khẩu phải có tối thiểu 6 ký tự.";
+                return View("Login");
+            }
+
+            // Kiểm tra ký tự đặc biệt trong Tên
+            if (Regex.IsMatch(hoTen, @"[!@#$%^&*(),.?""':{}|<>]"))
+            {
+                ViewBag.Error = "Họ tên không được chứa ký tự đặc biệt.";
+                return View("Login");
+            }
             if (password != confirmPassword)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp.";

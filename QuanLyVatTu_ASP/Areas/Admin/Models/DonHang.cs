@@ -4,7 +4,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class DonHang : BaseEntity
     {
-        public string MaHienThi { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string? MaHienThi { get; set; }
 
         [Column("MaKhachHang")]
         public int? KhachHangId { get; set; }
