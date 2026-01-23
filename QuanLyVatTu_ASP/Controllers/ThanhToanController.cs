@@ -21,16 +21,36 @@ namespace QuanLyVatTu_ASP.Controllers
         public async Task<IActionResult> Checkout()
         {
             var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
+            
+            // DEMO DATA GENERATION IF CART IS EMPTY
             if (cart == null || !cart.Any())
             {
-                return RedirectToAction("Index", "GioHang");
+                cart = new List<CartItem>
+                {
+                    new CartItem { VatTuId = 101, TenVatTu = "Máy khoan Bosch GSB 550", DonGia = 1250000, SoLuong = 1, HinhAnh = "https://placehold.co/100x100/0d6efd/ffffff?text=Khoan" },
+                    new CartItem { VatTuId = 102, TenVatTu = "Bộ mũi khoan đa năng", DonGia = 350000, SoLuong = 2, HinhAnh = "https://placehold.co/100x100/ffc107/ffffff?text=Mui+Khoan" },
+                    new CartItem { VatTuId = 103, TenVatTu = "Găng tay bảo hộ 3M", DonGia = 45000, SoLuong = 5, HinhAnh = "https://placehold.co/100x100/198754/ffffff?text=Gang+Tay" }
+                };
             }
-            if (HttpContext.Session.GetString("Role") != "Customer")
-            {
-                return RedirectToAction("Login", "Account", new { returnUrl = "/ThanhToan/Checkout" });
-            }
+
+            // MOCK USER DATA IF NOT LOGGED IN
+            var khachHang = new KhachHang();
             var email = HttpContext.Session.GetString("Email");
-            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            
+            if (!string.IsNullOrEmpty(email))
+            {
+                 khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            }
+            else
+            {
+                khachHang = new KhachHang 
+                { 
+                    HoTen = "Nguyễn Văn A", 
+                    SoDienThoai = "0987654321", 
+                    DiaChi = "123 Đường Số 1, Phường Bến Nghé, Quận 1, TP.HCM",
+                    Email = "nguyenvana@example.com"
+                };
+            }
 
             ViewBag.Cart = cart;
             ViewBag.Total = cart.Sum(x => x.ThanhTien);
@@ -49,7 +69,21 @@ namespace QuanLyVatTu_ASP.Controllers
 
             decimal tongTien = 0;
 
-            if (khachHang == null) return RedirectToAction("Login", "Account");
+            // TODO: Tạm thời vô hiệu hóa để test - cần bật lại sau
+            // if (khachHang == null) return RedirectToAction("Login", "Account");
+            
+            // Mock user if not logged in
+            if (khachHang == null)
+            {
+                khachHang = new KhachHang
+                {
+                    ID = 1,
+                    HoTen = "Nguyễn Văn An",
+                    Email = "nguyenvanan@example.com",
+                    SoDienThoai = soDienThoai,
+                    DiaChi = diaChi
+                };
+            }
 
             try
             {

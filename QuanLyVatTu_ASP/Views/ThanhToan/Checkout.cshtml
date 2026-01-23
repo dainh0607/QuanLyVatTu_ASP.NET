@@ -1,83 +1,388 @@
 ﻿@using QuanLyVatTu_ASP.Models.ViewModels
 @model QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
 @{
-    ViewData["Title"] = "Thanh toán";
-    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+    Layout = null; // Independent Page
     var cart = ViewBag.Cart as List<CartItem>;
-    decimal total = ViewBag.Total != null ? (decimal)ViewBag.Total : 0;
+    var total = (decimal?)ViewBag.Total ?? 0;
 }
 
-<div class="checkout-page">
-    <div class="container">
-        <div class="checkout-header">
-            <h1>Thanh toán</h1>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán - Quản lý vật tư</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/user/css/site.css" />
+    <link rel="stylesheet" href="~/user/css/checkout.css" asp-append-version="true" />
+    
+    <style>
+        body { 
+            background-color: #f9fafb; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Minimal Header -->
+    <header class="checkout-page-header">
+        <div class="checkout-container">
+            <a href="/" class="logo-text">
+                <i class="fas fa-tools"></i>
+                <span>Quản lý vật tư</span>
+            </a>
         </div>
+    </header>
 
-        <div class="checkout-content">
-            <div class="checkout-form">
-                <form id="checkoutForm" method="post" action="@Url.Action("ProcessCheckout", "ThanhToan")">
-                    <section class="form-section">
-                        <h2>Thông tin giao hàng</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Họ và tên</label>
-                                <input type="text" value="@Model.HoTen" readonly class="form-control" style="background-color: #f0f0f0;">
-                            </div>
-                            <div class="form-group">
-                                <label>Số điện thoại nhận hàng *</label>
-                                <input type="tel" name="soDienThoai" value="@Model.SoDienThoai" required class="form-control">
-                            </div>
-                             <div class="form-group full-width">
-                                <label>Email</label>
-                                <input type="email" value="@Model.Email" readonly class="form-control" style="background-color: #f0f0f0;">
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Địa chỉ nhận hàng *</label>
-                                <input type="text" name="diaChi" value="@Model.DiaChi" required class="form-control" placeholder="Số nhà, đường, phường/xã...">
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="form-section">
-                        <h2>Ghi chú đơn hàng</h2>
-                        <div class="form-group">
-                            <textarea name="ghiChu" placeholder="Ghi chú về đơn hàng (Ví dụ: Giao giờ hành chính)" rows="4" class="form-control"></textarea>
-                        </div>
-                    </section>
+    <div class="checkout-page">
+        <div class="checkout-container">
+            
+            <form action="/ThanhToan/ProcessCheckout" method="post" id="checkoutForm">
+                <div class="checkout-layout">
                     
-                    <button type="submit" class="checkout-btn btn-primary mt-4">Đặt hàng</button>
-                </form>
-            </div>
+                    <!-- LEFT COLUMN: Forms -->
+                    <div class="col-left checkout-form-column">
+                        
+                        <!-- Header & Steps -->
+                        <div class="mb-3">
+                            <h1 class="checkout-title">Thông tin thanh toán</h1>
+                            <div class="text-muted" style="font-size: 0.9rem;">
+                                <a href="/GioHang/GioHang" class="text-decoration-none" style="color: #6b7280;">Giỏ hàng</a> 
+                                <i class="fas fa-chevron-right mx-2" style="font-size: 0.65rem; color: #9ca3af;"></i> 
+                                <span style="color: #111827; font-weight: 600;">Thanh toán</span>
+                            </div>
+                        </div>
 
-            <div class="order-summary">
-                <div class="summary-card">
-                    <h3>Đơn hàng của bạn</h3>
-                    <div class="order-items">
-                        @if (cart != null)
-                        {
-                            foreach (var item in cart)
-                            {
-                                <div class="order-item">
-                                    <div class="item-info">
-                                        <span class="item-name">@item.TenVatTu <strong>x @item.SoLuong</strong></span>
-                                        <span class="item-price">@item.ThanhTien.ToString("N0")đ</span>
-                                    </div>
+                        <!-- 1. Shipping Info -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-regular fa-id-card"></i>
                                 </div>
-                            }
-                        }
+                                <h2 class="section-title">Thông tin vận chuyển</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group w-100">
+                                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-input w-100" name="HoTen" value="@Model?.HoTen" required placeholder="Nhập họ tên người nhận">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-input w-100" name="Email" value="@Model?.Email" required placeholder="email@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-input w-100" name="soDienThoai" value="@Model?.SoDienThoai" required placeholder="Nhập số điện thoại">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                                <input type="text" class="form-input w-100" name="diaChi" value="@Model?.DiaChi" required placeholder="Số nhà, tên đường, phường/xã...">
+                            </div>
+                        </div>
+
+                        <!-- 2. Shipping Method -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </div>
+                                <h2 class="section-title">Phương thức vận chuyển</h2>
+                            </div>
+                            
+                            <div class="shipping-options">
+                                <!-- Standard Shipping -->
+                                <label class="custom-radio-card">
+                                    <input type="radio" name="shippingMethod" value="standard" checked>
+                                    <div class="radio-content">
+                                        <div class="radio-circle"></div>
+                                        <div class="radio-info">
+                                            <span class="radio-title">Giao hàng tiêu chuẩn</span>
+                                            <span class="radio-desc">Nhận hàng sau 3-5 ngày làm việc</span>
+                                        </div>
+                                        <span class="radio-price">47.000₫</span>
+                                    </div>
+                                </label>
+                                
+                                <!-- Store Pickup -->
+                                <label class="custom-radio-card">
+                                    <input type="radio" name="shippingMethod" value="pickup">
+                                    <div class="radio-content">
+                                        <div class="radio-circle"></div>
+                                        <div class="radio-info">
+                                            <span class="radio-title">Nhận tại cửa hàng</span>
+                                            <span class="radio-desc">Sẵn sàng sau 2 giờ</span>
+                                        </div>
+                                        <span class="radio-price text-success">Miễn phí</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3. Payment Method -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <h2 class="section-title">Phương thức thanh toán</h2>
+                            </div>
+                            
+                            <div class="payment-methods">
+                                <!-- COD -->
+                                <label class="custom-radio-card">
+                                    <input type="radio" name="paymentMethod" value="cod" checked>
+                                    <div class="radio-content">
+                                        <div class="radio-circle"></div>
+                                        <div class="radio-info">
+                                            <span class="radio-title">Thanh toán khi nhận hàng (COD)</span>
+                                            <span class="radio-desc">Thanh toán tiền mặt cho nhân viên giao hàng</span>
+                                        </div>
+                                        <i class="fa-solid fa-money-bill-wave" style="color: #10b981; font-size: 1.25rem;"></i>
+                                    </div>
+                                </label>
+                                
+                                <!-- Bank Transfer -->
+                                <label class="custom-radio-card">
+                                    <input type="radio" name="paymentMethod" value="bank">
+                                    <div class="radio-content">
+                                        <div class="radio-circle"></div>
+                                        <div class="radio-info">
+                                            <span class="radio-title">Chuyển khoản ngân hàng</span>
+                                            <span class="radio-desc">Chuyển khoản qua Internet Banking/QR Code</span>
+                                        </div>
+                                        <i class="fa-solid fa-building-columns" style="color: #3b82f6; font-size: 1.25rem;"></i>
+                                    </div>
+                                    
+                                    <!-- Payment Details -->
+                                    <div class="payment-details">
+                                        <div class="bank-info-box">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span style="color: #6b7280; font-size: 0.9rem;">Ngân hàng:</span>
+                                                <strong style="color: #111827;">Vietcombank</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span style="color: #6b7280; font-size: 0.9rem;">Số tài khoản:</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <strong style="color: #3b82f6;" id="bankAccount">0071000123456</strong>
+                                                    <button type="button" class="copy-btn" onclick="copyToClipboard('bankAccount')">
+                                                        <i class="fa-regular fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span style="color: #6b7280; font-size: 0.9rem;">Chủ tài khoản:</span>
+                                                <strong style="color: #111827; text-transform: uppercase; font-size: 0.9rem;">CTY MAY THIET BI KIM LONG</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span style="color: #6b7280; font-size: 0.9rem;">Nội dung:</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <strong style="color: #ef4444;" id="transferContent">@Model?.HoTen @Model?.SoDienThoai</strong>
+                                                    <button type="button" class="copy-btn" onclick="copyToClipboard('transferContent')">
+                                                        <i class="fa-regular fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 4. Notes -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-regular fa-message"></i>
+                                </div>
+                                <h2 class="section-title">Ghi chú đơn hàng</h2>
+                            </div>
+                            <div class="form-group w-100">
+                                <textarea class="form-input w-100" name="ghiChu" rows="3" placeholder="Ghi chú về đơn hàng, yêu cầu giao hàng đặc biệt..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Actions Section -->
+                        <div class="mt-2">
+                             <!-- Terms Checkbox -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    Tôi đã đọc và đồng ý với <a href="#">Điều khoản</a> và <a href="#">Chính sách mua hàng</a>
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <a href="/GioHang/GioHang" class="btn-back-cart">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                    <span>Quay lại giỏ hàng</span>
+                                </a>
+                                <button type="submit" class="btn-place-order">
+                                    <span>Đặt hàng</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="order-totals">
-                        <div class="total-row grand-total">
-                            <span>Tổng cộng:</span>
-                            <span class="total-price">@total.ToString("N0")đ</span>
+                    <!-- RIGHT COLUMN: Summary -->
+                    <div class="col-right checkout-summary-column">
+                        <div class="summary-card">
+                            <div class="summary-header">
+                                <i class="fa-solid fa-shopping-bag"></i>
+                                <h3>Đơn hàng của bạn (@(cart != null ? cart.Count : 0) sản phẩm)</h3>
+                            </div>
+                            
+                            <div class="summary-products">
+                                @if (cart != null)
+                                {
+                                    foreach (var item in cart)
+                                    {
+                                        <div class="summary-item">
+                                            <div class="item-thumb">
+                                                <img src="@item.HinhAnh" alt="@item.TenVatTu">
+                                                <span class="item-badge">@item.SoLuong</span>
+                                            </div>
+                                            <div class="item-info">
+                                                <span class="item-name">@item.TenVatTu</span>
+                                                <span class="item-meta">Đơn giá: @item.DonGia.ToString("N0")₫</span>
+                                            </div>
+                                            <div class="item-price">
+                                                @((item.DonGia * item.SoLuong).ToString("N0"))₫
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            
+                            <div class="summary-totals">
+                                <div class="total-row">
+                                    <span>Tạm tính</span>
+                                    <span style="font-weight: 600; color: #111827;">@total.ToString("N0")₫</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>Phí vận chuyển</span>
+                                    <span id="shippingFee" style="font-weight: 600;">47.000₫</span>
+                                </div>
+                                
+                                <div class="total-row final">
+                                    <span>Tổng cộng</span>
+                                    <span class="value" id="finalTotal">@((total + 47000).ToString("N0"))₫</span>
+                                </div>
+                            </div>
+                            
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <span>Thanh toán bảo mật 100%</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    <span>Đổi trả trong 7 ngày</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fa-solid fa-headset"></i>
+                                    <span>Hỗ trợ khách hàng 24/7</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-</div>
 
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="checkoutToast">
+        <i class="fa-solid fa-check-circle me-2"></i>
+        <span>Đã sao chép!</span>
+    </div>
 
-    <link rel="stylesheet" href="~/user/css/checkout.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Shipping Fee Logic
+        document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const shippingFeeEl = document.getElementById('shippingFee');
+                const finalTotalEl = document.getElementById('finalTotal');
+                const baseTotal = @total;
+                
+                if (this.value === 'standard') {
+                    shippingFeeEl.textContent = '47.000₫';
+                    shippingFeeEl.classList.remove('text-success');
+                    shippingFeeEl.style.color = '#111827';
+                    finalTotalEl.textContent = formatCurrency(baseTotal + 47000) + '₫';
+                } else {
+                    shippingFeeEl.textContent = 'Miễn phí';
+                    shippingFeeEl.classList.add('text-success');
+                    finalTotalEl.textContent = formatCurrency(baseTotal) + '₫';
+                }
+            });
+        });
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Đã sao chép vào bộ nhớ tạm!');
+            });
+        }
+        
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('vi-VN').format(number);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('checkoutToast');
+            toast.querySelector('span').textContent = message;
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Form validation feedback
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('input[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                showToast('Vui lòng điền đầy đủ thông tin!');
+            }
+        });
+
+        // Remove invalid class on input
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+        });
+    </script>
+</body>
+</html>
