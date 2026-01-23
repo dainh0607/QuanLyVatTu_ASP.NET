@@ -20,7 +20,63 @@ namespace QuanLyVatTu_ASP.Controllers
 
         public IActionResult GioHang()
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
+
+            // DEMO DATA: Thêm dữ liệu mẫu nếu giỏ hàng trống
+            if (cart == null || !cart.Any())
+            {
+                cart = new List<CartItem>
+                {
+                    new CartItem 
+                    { 
+                        VatTuId = 1, 
+                        TenVatTu = "Xi măng Holcim PCB40 (50kg)", 
+                        DonGia = 125000, 
+                        SoLuong = 10, 
+                        HinhAnh = "https://placehold.co/120x120/0d6efd/ffffff?text=Xi+Mang" 
+                    },
+                    new CartItem 
+                    { 
+                        VatTuId = 2, 
+                        TenVatTu = "Thép hình chữ V 50x50x5mm (dài 6m)", 
+                        DonGia = 285000, 
+                        SoLuong = 4, 
+                        HinhAnh = "https://placehold.co/120x120/495057/ffffff?text=Thep+V" 
+                    },
+                    new CartItem 
+                    { 
+                        VatTuId = 3, 
+                        TenVatTu = "Dây điện Cadivi CV 2.5mm² (cuộn 100m)", 
+                        DonGia = 850000, 
+                        SoLuong = 2, 
+                        HinhAnh = "https://placehold.co/120x120/ff6b00/ffffff?text=Day+Dien" 
+                    },
+                    new CartItem 
+                    { 
+                        VatTuId = 4, 
+                        TenVatTu = "Sơn Dulux nội thất EasyClean (5L)", 
+                        DonGia = 1250000, 
+                        SoLuong = 3, 
+                        HinhAnh = "https://placehold.co/120x120/ffc107/333333?text=Son+Dulux" 
+                    },
+                    new CartItem 
+                    { 
+                        VatTuId = 5, 
+                        TenVatTu = "Ống nhựa PVC Bình Minh Ø90mm (4m)", 
+                        DonGia = 185000, 
+                        SoLuong = 8, 
+                        HinhAnh = "https://placehold.co/120x120/17a2b8/ffffff?text=Ong+PVC" 
+                    },
+                    new CartItem 
+                    { 
+                        VatTuId = 6, 
+                        TenVatTu = "Máy khoan Bosch GSB 550 Professional", 
+                        DonGia = 1450000, 
+                        SoLuong = 1, 
+                        HinhAnh = "https://placehold.co/120x120/28a745/ffffff?text=May+Khoan" 
+                    }
+                };
+            }
 
             // Tính tổng tiền để hiển thị
             ViewBag.Total = cart.Sum(item => item.ThanhTien);
