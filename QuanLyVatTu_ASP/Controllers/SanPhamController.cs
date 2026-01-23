@@ -25,11 +25,11 @@ namespace QuanLyVatTu_ASP.Controllers
 
             return View(products);
         }
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> ProductDetail(int id)
         {
             var product = await _unitOfWork.VatTuRepository.GetByIdAsync(id);
             if (product == null) return NotFound();
-            var category = await _unitOfWork.LoaiVatTuRepository.GetByIdAsync(product.ID);
+            var category = await _unitOfWork.LoaiVatTuRepository.GetByIdAsync(product.MaLoaiVatTu);
             ViewBag.TenLoai = category?.TenLoaiVatTu;
 
             return View(product);

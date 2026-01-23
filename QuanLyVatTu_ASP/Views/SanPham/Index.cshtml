@@ -25,30 +25,54 @@
             </div>
 
             <div class="products-content">
-                <div class="products-grid">
-                    @foreach (var item in Model)
-                    {
-                        <div class="product-card">
-                            <div class="product-image">
-                                <a href="@Url.Action("Detail", "SanPham", new { id = item.ID })">
-                                    
-
-
-
-                                </a>
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-name">
-                                    <a href="@Url.Action("Detail", "SanPham", new { id = item.ID })">@item.TenVatTu</a>
-                                </h3>
-                                <div class="product-price">
-                                    <span class="current-price">@item.GiaBan.ToString("N0")đ</span>
-                                </div>
-                                <button class="add-to-cart-btn" onclick="quickAdd(@item.ID)">Thêm vào giỏ</button>
-                            </div>
+<div class="products-grid">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var product in Model)
+                {
+                    <div class="product-card">
+                        <div class="product-img-wrapper">
+                            <span class="discount-badge">-15%</span>
+                            
+                            <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">
+                                <img src="https://placehold.co/300x300?text=@product.TenVatTu" alt="@product.TenVatTu" loading="lazy" />
+                            </a>
                         </div>
-                    }
-                </div>
+
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
+                            </h3>
+                            
+                            <div class="rating">
+                                <i class="fas fa-star"></i> 4.5 <span class="text-muted">(50)</span>
+                            </div>
+
+                            <div class="price-box">
+                                <span class="current-price">@product.GiaBan.ToString("N0") đ</span>
+                            </div>
+
+                            @if (product.SoLuongTon > 0)
+                            {
+                                <button class="btn-add-cart" onclick="addToCartIndex(@product.ID)">
+                                    Thêm vào giỏ
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn-add-cart" disabled>Hết hàng</button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center w-100">Chưa có sản phẩm nào.</p>
+            }
+        </div>
+    </section>
+</div>
             </div>
         </div>
     </div>
