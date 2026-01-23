@@ -1,3 +1,6 @@
 .vs/
 QuanLyVatTu_ASP/obj/
 QuanLyVatTu_ASP/bin/
+QuanLyVatTu_ASP/appsettings.json
+QuanLyVatTu_ASP/Program.cs
+QuanLyVatTu_ASP/QuanLyVatTu_ASP.csproj.user
