@@ -34,14 +34,14 @@
                         <div class="product-img-wrapper">
                             <span class="discount-badge">-15%</span>
                             
-                            <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">
+                            <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
                                 <img src="https://placehold.co/300x300?text=@product.TenVatTu" alt="@product.TenVatTu" loading="lazy" />
                             </a>
                         </div>
 
                         <div class="product-info">
                             <h3 class="product-name">
-                                <a href="@Url.Action("Detail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
+                                <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
                             </h3>
                             
                             <div class="rating">
