@@ -4,70 +4,143 @@
     Layout = "~/Views/Shared/_Layout_Customer.cshtml";
 }
 
-<div class="product-detail-page">
+<div class="product-detail-page py-5 bg-white">
     <div class="container">
-        <div class="breadcrumb">
-            <a href="/">Trang chủ</a> / <a href="/SanPham">Sản phẩm</a> / <span>@Model.TenVatTu</span>
-        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 mb-4">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/SanPham" class="text-decoration-none text-muted">Danh mục sản phẩm</a></li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">@Model.TenVatTu</li>
+            </ol>
+        </nav>
 
-        <div class="product-detail">
-            <div class="product-gallery">
-                <div class="main-image">
-
-
-
-
-
+        <div class="row g-4">
+            <div class="col-lg-5 col-md-6">
+                <div class="product-gallery">
+                    <div class="main-image mb-3 border rounded overflow-hidden position-relative">
+                        <img src="https://placehold.co/600x600?text=@Model.TenVatTu" id="currentImg" class="img-fluid w-100" alt="@Model.TenVatTu" style="object-fit: cover; aspect-ratio: 1/1;">
+                    </div>
+                    <div class="d-flex gap-2 thumbnail-list">
+                        <img src="https://placehold.co/100x100?text=1" class="img-thumbnail active-thumb" onclick="changeImage(this)">
+                        <img src="https://placehold.co/100x100?text=2" class="img-thumbnail" onclick="changeImage(this)">
+                        <img src="https://placehold.co/100x100?text=3" class="img-thumbnail" onclick="changeImage(this)">
+                        <img src="https://placehold.co/100x100?text=4" class="img-thumbnail" onclick="changeImage(this)">
+                    </div>
                 </div>
             </div>
 
-            <div class="product-info">
-                <h1 class="product-title">@Model.TenVatTu</h1>
-
-                <div class="product-price">
-                    <span class="current-price">@Model.GiaBan.ToString("N0")đ</span>
+            <div class="col-lg-4 col-md-6">
+                <h1 class="fw-bold h3 mb-2">@Model.TenVatTu</h1>
+                
+                <div class="mb-3">
+                    <span class="text-warning fw-bold h4">@Model.GiaBan.ToString("N0")đ</span>
                 </div>
 
-                <div class="product-description">
+                <div class="mb-3 text-muted" style="font-size: 0.9rem;">
+                    <p class="mb-1">Mã sản phẩm: <strong>@Model.ID</strong></p>
+                    <p class="mb-1">Tình trạng: 
+                        @if (Model.SoLuongTon > 0)
+                        {
+                            <span class="text-success fw-bold">Còn hàng</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger fw-bold">Hết hàng</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="product-description mb-4 text-secondary">
                     <p>@Model.MoTa</p>
+                    <p>Sản phẩm chất lượng cao, bền bỉ, phù hợp với mọi nhu cầu sử dụng của gia đình và công trình.</p>
                 </div>
 
-                <div class="product-specs">
-                    <ul>
-                        <li><strong>Đơn vị tính:</strong> @Model.DonViTinh</li>
-                        <li>
-                            <strong>Tình trạng:</strong>
-                            @if (Model.SoLuongTon > 0)
-                            {
-                                <span class="text-success">Còn hàng (@Model.SoLuongTon)</span>
-                            }
-                            else
-                            {
+                @if (Model.SoLuongTon > 0)
+                {
+                    <div class="action-area">
+                        <label class="mb-2 fw-bold d-block">Số lượng:</label>
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="input-group quantity-group" style="width: 140px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateQty(-1)">-</button>
+                                <input type="number" id="qty" class="form-control text-center border-secondary" value="1" min="1" max="@Model.SoLuongTon">
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateQty(1)">+</button>
+                            </div>
+                        </div>
 
-                                <span class="text-danger">Hết hàng</span>
-                            }
+                        <button class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase" onclick="addToCart(@Model.ID)">
+                            Thêm vào giỏ hàng
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button class="btn btn-secondary w-100 py-3 rounded-3" disabled>Tạm hết hàng</button>
+                }
+            </div>
+
+            <div class="col-lg-3 mt-4 mt-lg-0">
+                <div class="service-box bg-light p-4 rounded-3 h-100">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        <li class="d-flex gap-3">
+                            <i class="fas fa-phone-alt text-danger mt-1"></i>
+                            <div>
+                                <strong class="d-block">SĐT/Zalo:</strong>
+                                <span>0302370432</span>
+                            </div>
+                        </li>
+                        <li class="d-flex gap-3">
+                            <i class="fas fa-truck text-warning mt-1"></i>
+                            <div>
+                                <strong class="d-block">Giao hàng nhanh chóng</strong>
+                                <span class="text-muted small">Vận chuyển toàn quốc</span>
+                            </div>
+                        </li>
+                        <li class="d-flex gap-3">
+                            <i class="fas fa-clock text-primary mt-1"></i>
+                            <div>
+                                <strong class="d-block">Giờ làm việc</strong>
+                                <span class="text-muted small">8h30 - 17h30 (T2 - T7)</span>
+                            </div>
+                        </li>
+                        <li class="d-flex gap-3">
+                            <i class="fas fa-globe text-info mt-1"></i>
+                            <div>
+                                <strong class="d-block">Mua online:</strong>
+                                <span class="text-muted small">cuahangvattu.com</span>
+                            </div>
+                        </li>
+                        <li class="d-flex gap-3">
+                            <i class="fas fa-sync-alt text-success mt-1"></i>
+                            <div>
+                                <strong class="d-block">Đổi trả dễ dàng</strong>
+                                <span class="text-muted small">Chính sách đổi trả trong 7 ngày</span>
+                            </div>
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
 
-                <div class="product-actions">
-                    @if (Model.SoLuongTon > 0)
-                    {
-                        <div class="quantity-selector">
-                            <label>Số lượng:</label>
-                            <input type="number" id="qty" value="1" min="1" max="@Model.SoLuongTon" class="form-control" style="width: 80px; display:inline-block">
+        <div class="related-products mt-5 pt-5 border-top">
+            <h3 class="fw-bold mb-4">Sản phẩm liên quan</h3>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @for(int i = 1; i <= 4; i++)
+                {
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm product-card-hover">
+                            <div class="position-relative overflow-hidden rounded-top">
+                                <img src="https://placehold.co/300x200?text=SanPham+@i" class="card-img-top" alt="...">
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold text-truncate">Máy khoan cầm tay mẫu @i</h6>
+                                <p class="card-text text-warning fw-bold">1.250.000đ</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pb-3">
+                                <a href="#" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
+                            </div>
                         </div>
-                        <div class="action-buttons mt-3">
-                            <button class="btn-primary add-to-cart" onclick="addToCart(@Model.ID)">
-                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-                            </button>
-                        </div>
-                    }
-                    else
-                    {
-                        <button class="btn btn-secondary" disabled>Tạm hết hàng</button>
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -75,17 +148,83 @@
 
 @section Scripts {
     <script>
+        // Xử lý nút tăng giảm số lượng
+        function updateQty(change) {
+            var input = document.getElementById('qty');
+            var newVal = parseInt(input.value) + change;
+            var max = parseInt(input.getAttribute('max'));
+            
+            if (newVal >= 1 && newVal <= max) {
+                input.value = newVal;
+            }
+        }
+
+        // Xử lý đổi ảnh khi click thumbnail
+        function changeImage(element) {
+            var mainImg = document.getElementById('currentImg');
+            mainImg.src = element.src.replace('100x100', '600x600'); // Logic giả định đổi size ảnh
+            
+            // Xóa class active cũ
+            document.querySelectorAll('.thumbnail-list img').forEach(img => img.classList.remove('active-thumb', 'border-primary'));
+            // Thêm class active mới
+            element.classList.add('active-thumb', 'border', 'border-primary');
+        }
+
+        // Ajax thêm vào giỏ hàng
         function addToCart(id) {
             var qty = $('#qty').val();
             $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
                 if(res.success) {
-                    alert(res.message);
-                    // Có thể update icon giỏ hàng ở header
+                    alert("Đã thêm vào giỏ hàng thành công!");
+                    if(res.count) $('.cart-count').text(res.count);
+                } else {
+                    alert("Có lỗi xảy ra: " + res.message);
                 }
             });
         }
     </script>
 }
+
 @section Styles {
-    <link rel="stylesheet" href="~/user/css/ProductDetail.css" />
+    <style>
+        /* CSS Riêng cho trang chi tiết */
+        .product-gallery .img-thumbnail {
+            cursor: pointer;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+        .product-gallery .img-thumbnail:hover, 
+        .product-gallery .img-thumbnail.active-thumb {
+            opacity: 1;
+            border-color: var(--bs-primary) !important;
+        }
+        
+        .quantity-group input::-webkit-outer-spin-button,
+        .quantity-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Hiệu ứng hover cho thẻ sản phẩm liên quan */
+        .product-card-hover {
+            transition: transform 0.2s;
+        }
+        .product-card-hover:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-box {
+            background-color: #f8f9fa; /* Màu xám nhạt giống ảnh */
+        }
+        .btn-dark {
+            background-color: #000;
+            border: none;
+        }
+        .btn-dark:hover {
+            background-color: #333;
+        }
+    </style>
 }

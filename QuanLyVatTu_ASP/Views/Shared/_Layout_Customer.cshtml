@@ -1,361 +1,155 @@
-﻿<head>
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Quản lý vật tư</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Cửa hàng vật tư</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <header class="main-header">
-        <div class="container-fluid">
-            <div class="top-header">
-                <div class="header-left">
-                    <button class="menu-toggle" id="mobileMenuToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="logo">
-                        <a href="/">
-                            <i class="fas fa-tools"></i>
-                            <span>Quản lý vật tư</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="header-center">
-                    <div class="search-box-wrapper">
-                        <form action="/Search" method="get" class="search-form">
-                            <input type="text" name="q" placeholder="Tìm kiếm sản phẩm, vật tư..."
-                                   class="search-input" id="searchInput" />
-                            <button type="submit" class="search-btn">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
-                        <div class="search-suggestions" id="searchSuggestions">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="header-right">
-                    <div class="header-icons">
-                        <a href="/GioHang/Wishlist" class="icon-link" title="Yêu thích">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="badge">0</span>
-                        </a>
-                        <a href="/GioHang/GioHang" class="icon-link cart-icon" title="Giỏ hàng">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="badge cart-count">0</span>
-                        </a>
-                        <a href="/Customer/Profile" class="icon-link" title="Tài khoản">
-                            <i class="fa-regular fa-user"></i>
-                        </a>
-                        <a href="/Customer/Orders" class="icon-link" title="Đơn hàng">
-                            <i class="fas fa-clipboard-list"></i>
-                        </a>
-
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <div class="user-dropdown">
-                                <a href="#" class="user-info">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span>@User.Identity.Name</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </a>
-                                <div class="dropdown-menu user-menu">
-                                    <a href="/Customer/Profile" class="dropdown-item">
-                                        <i class="fas fa-user"></i> Thông tin tài khoản
-                                    </a>
-                                    <a href="/Customer/Orders" class="dropdown-item">
-                                        <i class="fas fa-box"></i> Đơn hàng của tôi
-                                    </a>
-                                    <a href="/Customer/Wishlist" class="dropdown-item">
-                                        <i class="fas fa-heart"></i> Sản phẩm yêu thích
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="/Account/Logout" class="dropdown-item logout">
-                                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                                    </a>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="auth-buttons">
-                                <a class="btn btn-login" href="/Account/Login">
-                                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
-                                </a>
-                                <a class="btn btn-register" href="/Account/Login?show=register">
-                                    <i class="fas fa-user-plus"></i> Đăng ký
-                                </a>
-                            </div>
-                        }
-                    </div>
-                </div>
+<header class="main-header">
+    <div class="top-header py-3">
+        <div class="container d-flex align-items-center justify-content-between">
+            
+            <div class="logo">
+                <a href="/">
+                    <span class="logo-icon">FN</span>
+                    <span>Cửa hàng vật tư</span>
+                </a>
             </div>
 
-            <nav class="main-nav" id="mainNav">
-                <div class="nav-container">
-                    <ul class="nav-menu">
-                        <li class="nav-item">
-                            <a href="/" class="nav-link">
-                                <i class="fas fa-home"></i>
-                                <span>Trang chủ</span>
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="/SanPham/Index" class="nav-link">
-                                <i class="fas fa-boxes"></i>
-                                <span>Danh mục sản phẩm</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <div class="dropdown-menu mega-menu">
-                                <div class="mega-menu-content">
-                                    <div class="category-section">
-                                        <h6>Vật tư xây dựng</h6>
-                                        <a href="/SanPham/Index" class="dropdown-item">Xi măng</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Sắt thép</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Gạch, cát, đá</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Vật tư nước</a>
-                                    </div>
-                                    <div class="category-section">
-                                        <h6>Vật tư điện</h6>
-                                        <a href="/SanPham/Index" class="dropdown-item">Dây điện</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Công tắc, ổ cắm</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Đèn chiếu sáng</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Thiết bị điện</a>
-                                    </div>
-                                    <div class="category-section">
-                                        <h6>Dụng cụ & Thiết bị</h6>
-                                        <a href="/SanPham/Index" class="dropdown-item">Dụng cụ cầm tay</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Máy móc thiết bị</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Thiết bị an toàn</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Sơn & Phụ kiện</a>
-                                    </div>
-                                    <div class="category-section">
-                                        <h6>Phụ kiện & Vật tư khác</h6>
-                                        <a href="/SanPham/Index" class="dropdown-item">Phụ kiện kim khí</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Keo dán, chất kết dính</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Hóa chất xây dựng</a>
-                                        <a href="/SanPham/Index" class="dropdown-item">Vật tư khác</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+            <div class="search-box-wrapper">
+                <form action="/Search" method="get" class="search-form">
+                    <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." class="search-input" />
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
 
-                        <li class="nav-item">
-                            <a href="/Product/Promotion" class="nav-link">
-                                <i class="fas fa-fire"></i>
-                                <span>Khuyến mãi</span>
-                                <span class="badge-hot">Hot</span>
-                            </a>
-                        </li>
+            <div class="header-actions">
+                <a href="/GioHang/Wishlist" class="icon-btn">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="badge-count">0</span>
+                </a>
+                <a href="/GioHang/GioHang" class="icon-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="badge-count cart-count">0</span>
+                </a>
 
-                        <li class="nav-item">
-                            <a href="/Product/New" class="nav-link">
-                                <i class="fas fa-star"></i>
-                                <span>Sản phẩm mới</span>
-                                <span class="badge-new">Mới</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-info-circle"></i>
-                                <span>Giới thiệu</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="/Customer/About" class="dropdown-item">Về chúng tôi</a>
-                                <a href="/Contact" class="dropdown-item">Liên hệ</a>
-                                <a href="/Customer/PurchasePolicy" class="dropdown-item">Chính sách</a>
-                                <a href="/Guide" class="dropdown-item">Hướng dẫn mua hàng</a>
-                            </div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="/Support" class="nav-link">
-                                <i class="fas fa-headset"></i>
-                                <span>Hỗ trợ</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg text-white"></i> <span class="text-white">@User.Identity.Name</span> </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/Customer/Profile">Tài khoản</a></li>
+                            <li><a class="dropdown-item" href="/Customer/Orders">Đơn hàng</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/Account/Logout">Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <div class="auth-buttons">
+                        <a href="/Account/Login" class="btn-login">Đăng nhập</a>
+                        <a href="/Account/Login?show=register" class="btn-register">Đăng ký</a>
+                    </div>
+                }
+            </div>
         </div>
-    </header>
-
-    <div class="quick-access-bar">
-        <a href="/" class="quick-item">
-            <i class="fas fa-home"></i>
-            <span>Trang chủ</span>
-        </a>
-        <a href="/SanPham/Index" class="quick-item">
-            <i class="fas fa-th"></i>
-            <span>Danh mục</span>
-        </a>
-        <a href="/GioHang/GioHang" class="quick-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Giỏ hàng</span>
-            <span class="badge">0</span>
-        </a>
-        <a href="/Customer/Profile" class="quick-item">
-            <i class="fas fa-user"></i>
-            <span>Tài khoản</span>
-        </a>
     </div>
 
-    <main class="main-content">
-        <div class="container page-container">
-            @RenderBody()
-        </div>
-    </main>
-
-    <footer class="main-footer">
+    <div class="bottom-nav">
         <div class="container">
-            <div class="footer-top">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 footer-column">
-                        <div class="footer-logo">
-                            <a href="/">
-                                <i class="fas fa-tools fa-2x"></i>
-                                <h4>Quản lý vật tư</h4>
-                            </a>
-                            <p class="footer-description">
-                                Cung cấp vật tư xây dựng, thiết bị điện, dụng cụ và phụ kiện chất lượng cao.
-                            </p>
-                            <div class="social-links">
-                                <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
-                                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                                <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
-                                <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
-                            </div>
-                        </div>
-                    </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Trang chủ</a></li>
+                <li><a href="/SanPham" class="nav-link">Danh mục sản phẩm</a></li>
+                <li><a href="/Customer/About" class="nav-link">Giới thiệu</a></li>
+                <li><a href="/Contact" class="nav-link">Liên hệ</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
 
-                    <div class="col-lg-2 col-md-6 footer-column">
-                        <h5 class="footer-title">Về chúng tôi</h5>
-                        <ul class="footer-links">
-                            <li><a href="/Customer/About">Giới thiệu</a></li>
-                            <li><a href="/Contact">Liên hệ</a></li>
-                            <li><a href="/Career">Tuyển dụng</a></li>
-                            <li><a href="/Store">Hệ thống cửa hàng</a></li>
-                            <li><a href="/News">Tin tức</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-lg-2 col-md-6 footer-column">
-                        <h5 class="footer-title">Chính sách</h5>
-                        <ul class="footer-links">
-                            <li><a href="/Customer/PurchasePolicy">Điều khoản thanh toán</a></li>
-                            <li><a href="/Customer/PurchasePolicy">Giao hàng - vận chuyển</a></li>
-                            <li><a href="/Customer/PurchasePolicy">Chính sách bảo hành</a></li>
-                            <li><a href="/Customer/PurchasePolicy">Đổi trả & hoàn tiền</a></li>
-                            <li><a href="/Customer/PurchasePolicy">Bảo mật thông tin</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-lg-2 col-md-6 footer-column">
-                        <h5 class="footer-title">Hỗ trợ</h5>
-                        <ul class="footer-links">
-                            <li><a href="/Guide/Buy">Hướng dẫn mua hàng</a></li>
-                            <li><a href="/Guide/Payment">Hướng dẫn thanh toán</a></li>
-                            <li><a href="/FAQ">Câu hỏi thường gặp</a></li>
-                            <li><a href="/Support">Trung tâm hỗ trợ</a></li>
-                            <li><a href="/Feedback">Phản hồi & góp ý</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6 footer-column">
-                        <h5 class="footer-title">Thông tin liên hệ</h5>
-                        <div class="contact-info">
-                            <p><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận XYZ, TP.HCM</p>
-                            <p><i class="fas fa-phone"></i> Hotline: <a href="tel:0302370432">0302 370 432</a></p>
-                            <p><i class="fas fa-phone"></i> Zalo: <a href="https://zalo.me/0302370432">0302 370 432</a></p>
-                            <p><i class="fas fa-envelope"></i> Email: <a href="mailto:dainhtb01722@gmail.com">dainhtb01722@gmail.com</a></p>
-                            <p><i class="fas fa-clock"></i> Giờ làm việc: 8:00 - 20:00 (T2 - CN)</p>
-                        </div>
-                    </div>
-                </div>
+    <main role="main">
+        @RenderBody()
+    </main>
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-top row">
+            <!-- Cột liên hệ -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="footer-title">Liên hệ</h5>
+                <ul class="footer-links list-unstyled">
+                    <li><i class="bi bi-clock me-2"></i>Liên hệ trong giờ làm việc</li>
+                    <li><i class="bi bi-chat-dots me-2"></i>Zalo: 0302370432</li>
+                    <li><i class="bi bi-envelope me-2"></i>Email: dainhtb01722@gmail.com</li>
+                </ul>
             </div>
-
-            <div class="footer-bottom">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <p class="copyright">
-                            &copy; 2025 Quản lý vật tư. Tất cả các quyền được bảo lưu.
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="payment-methods">
-                            <span>Chấp nhận thanh toán:</span>
-                            <i class="fab fa-cc-visa"></i>
-                            <i class="fab fa-cc-mastercard"></i>
-                            <i class="fab fa-cc-paypal"></i>
-                            <i class="fas fa-qrcode"></i>
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
+            
+            <!-- Cột về chúng tôi -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="footer-title">Về chúng tôi</h5>
+                <ul class="footer-links list-unstyled">
+                    <li><a href="#"><i class="bi bi-info-circle me-2"></i>Giới thiệu</a></li>
+                    <li><a href="#"><i class="bi bi-telephone me-2"></i>Liên hệ</a></li>
+                    <li><a href="#"><i class="bi bi-question-circle me-2"></i>FAQs</a></li>
+                </ul>
+            </div>
+            
+            <!-- Cột chính sách -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="footer-title">Chính sách</h5>
+                <ul class="footer-links list-unstyled">
+                    <li><a href="#"><i class="bi bi-cart-check me-2"></i>Hướng dẫn mua hàng</a></li>
+                    <li><a href="#"><i class="bi bi-credit-card me-2"></i>Điều khoản thanh toán</a></li>
+                    <li><a href="#"><i class="bi bi-truck me-2"></i>Giao hàng - vận chuyển</a></li>
+                    <li><a href="#"><i class="bi bi-shield-check me-2"></i>Chính sách bảo hành</a></li>
+                </ul>
+            </div>
+            
+            <!-- Cột hợp tác -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="footer-title">Hợp tác</h5>
+                <ul class="footer-links list-unstyled">
+                    <li><a href="#"><i class="bi bi-person-plus me-2"></i>Tuyển dụng</a></li>
+                    <li><a href="#"><i class="bi bi-handshake me-2"></i>Chính sách đại lý</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Dòng bên dưới với bản quyền và mạng xã hội -->
+        <div class="footer-bottom border-top border-secondary pt-4 mt-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2025 Furniture Store. Tất cả quyền được bảo lưu.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="social-icons">
+                        <a href="#" class="btn btn-outline-light btn-sm me-2">
+                            <i class="bi bi-facebook me-1"></i>Facebook
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm me-2">
+                            <i class="bi bi-instagram me-1"></i>Instagram
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-chat-dots me-1"></i>Zalo
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
-        });
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.trim();
-            const suggestions = document.getElementById('searchSuggestions');
-
-            if (searchTerm.length > 2) {
-                // Hiển thị gợi ý tìm kiếm
-                suggestions.style.display = 'block';
-                // Gọi API tìm kiếm ở đây
-            } else {
-                suggestions.style.display = 'none';
-            }
-        });
-
-        // User dropdown
-        document.querySelectorAll('.user-dropdown').forEach(dropdown => {
-            const toggle = dropdown.querySelector('.user-info');
-            const menu = dropdown.querySelector('.user-menu');
-
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                menu.classList.toggle('show');
-            });
-
-            // Đóng dropdown khi click ra ngoài
-            document.addEventListener('click', function(e) {
-                if (!dropdown.contains(e.target)) {
-                    menu.classList.remove('show');
-                }
-            });
-        });
-
-        // Update cart count
-        function updateCartCount(count) {
-            document.querySelectorAll('.cart-count, .badge').forEach(el => {
-                el.textContent = count;
-            });
-        }
-
-        // Quick cart preview
-        document.querySelector('.cart-icon').addEventListener('mouseenter', function() {
-            // Hiển thị preview giỏ hàng
-        });
-    </script>
-
-
+    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Styles", required: false)
 </body>
 </html>

@@ -1,5 +1,145 @@
-﻿@{
-    ViewData["Title"] = "Trang chủ - QuanLyVatTu";
+﻿@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>
+@{
+    ViewData["Title"] = "Trang Chủ";
     Layout = "~/Views/Shared/_Layout_Customer.cshtml";
 }
 
+<div class="container">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Phòng ngủ tối giản</h1>
+            <p class="hero-desc">Tạo không gian nghỉ ngơi hoàn hảo với bộ sưu tập mới nhất.</p>
+            <a href="/SanPham" class="btn-primary-hero">Khám phá ngay</a>
+        </div>
+    </section>
+
+    <section class="features-grid">
+        <div class="feature-box">
+            <div class="feature-icon bg-blue">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div>
+                <h6 class="mb-1 fw-bold">Vận chuyển toàn quốc</h6>
+                <small class="text-muted">Giao hàng nhanh chóng</small>
+            </div>
+        </div>
+        <div class="feature-box">
+            <div class="feature-icon bg-green">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div>
+                <h6 class="mb-1 fw-bold">Thanh toán an toàn</h6>
+                <small class="text-muted">Nhiều phương thức bảo mật</small>
+            </div>
+        </div>
+        <div class="feature-box">
+            <div class="feature-icon bg-purple">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div>
+                <h6 class="mb-1 fw-bold">Đặt cọc</h6>
+                <small class="text-muted">10% giá trị đơn hàng</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="fw-bold mb-4">Danh mục</h3>
+        <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <a href="/SanPham?category=sofa" class="d-block text-center">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
+                    <h6 class="fw-bold text-dark mt-2">Sofa</h6>
+                    <small class="text-muted">120+ sản phẩm</small>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="/SanPham?category=ban" class="d-block text-center">
+                    <img src="https://images.unsplash.com/photo-1577140917170-285929fb55b7?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
+                    <h6 class="fw-bold text-dark mt-2">Bàn ăn</h6>
+                    <small class="text-muted">85+ sản phẩm</small>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="/SanPham?category=giuong" class="d-block text-center">
+                    <img src="https://images.unsplash.com/photo-1505693416388-b0346ef1218b?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
+                    <h6 class="fw-bold text-dark mt-2">Phòng ngủ</h6>
+                    <small class="text-muted">95+ sản phẩm</small>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="/SanPham?category=vanphong" class="d-block text-center">
+                    <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
+                    <h6 class="fw-bold text-dark mt-2">Văn phòng</h6>
+                    <small class="text-muted">70+ sản phẩm</small>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="section-header">
+            <h3 class="section-title">Sản phẩm bán chạy</h3>
+            <a href="/SanPham" class="btn-view-all">Xem tất cả</a>
+        </div>
+
+        <div class="products-grid">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var product in Model)
+                {
+                    <div class="product-card">
+                        <div class="product-img-wrapper">
+                            <span class="discount-badge">-15%</span>
+                            
+                            <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
+                                <img src="https://placehold.co/300x300?text=@product.TenVatTu" alt="@product.TenVatTu" loading="lazy" />
+                            </a>
+                        </div>
+
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
+                            </h3>
+                            
+                            <div class="rating">
+                                <i class="fas fa-star"></i> 4.5 <span class="text-muted">(50)</span>
+                            </div>
+
+                            <div class="price-box">
+                                <span class="current-price">@product.GiaBan.ToString("N0") đ</span>
+                            </div>
+
+                            @if (product.SoLuongTon > 0)
+                            {
+                                <button class="btn-add-cart" onclick="addToCartIndex(@product.ID)">
+                                    Thêm vào giỏ
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn-add-cart" disabled>Hết hàng</button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center w-100">Chưa có sản phẩm nào.</p>
+            }
+        </div>
+    </section>
+</div>
+
+<script>
+    function addToCartIndex(id) {
+        $.post('/GioHang/AddToCart', { productId: id, quantity: 1 }, function(res) {
+            if(res.success) {
+                alert("Đã thêm vào giỏ hàng!");
+                // Cập nhật số lượng trên icon giỏ hàng nếu cần
+                if(res.count) $('.cart-count').text(res.count);
+            }
+        });
+    }
+</script>

@@ -8,13 +8,11 @@ using QuanLyVatTu_ASP.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
 
-// Đăng ký Repository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVatTuRepository, VatTuRepository>();
 builder.Services.AddScoped<ILoaiVatTuRepository, LoaiVatTuRepository>();
@@ -27,7 +25,6 @@ builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 
 
-//Đăng ký services
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 builder.Services.AddScoped<IDonHangService, DonHangService>();
@@ -66,7 +63,7 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=DonHang}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Customer}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
