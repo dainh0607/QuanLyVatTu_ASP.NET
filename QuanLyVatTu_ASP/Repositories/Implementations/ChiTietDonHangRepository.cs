@@ -6,7 +6,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class ChiTietDonHangRepository : GenericRepository<ChiTietDonHang>, IChiTietDonHangRepository
     {
-        public ChiTietDonHangRepository(ApplicationDbContext context) : base(context)
+        public ChiTietDonHangRepository(AppDbContext context) : base(context)
         {
         }
     }

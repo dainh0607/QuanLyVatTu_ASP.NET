@@ -6,7 +6,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class LoaiVatTuRepository : GenericRepository<LoaiVatTu>, ILoaiVatTuRepository
     {
-        public LoaiVatTuRepository(ApplicationDbContext context) : base(context)
+        public LoaiVatTuRepository(AppDbContext context) : base(context)
         {
         }
     }

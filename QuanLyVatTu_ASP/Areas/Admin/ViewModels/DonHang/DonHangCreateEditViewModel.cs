@@ -26,6 +26,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         [Display(Name = "Số tiền đặt cọc")]
         public decimal? SoTienDatCoc { get; set; }
 
+        public decimal TiềnCọcTốiThiểu => TongTien * 0.1M;
+
         [Display(Name = "Phương thức đặt cọc")]
         public string? PhuongThucDatCoc { get; set; }
 

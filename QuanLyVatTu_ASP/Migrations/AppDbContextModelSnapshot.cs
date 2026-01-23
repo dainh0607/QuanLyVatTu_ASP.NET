@@ -10,14 +10,14 @@ using QuanLyVatTu_ASP.DataAccess;
 
 namespace QuanLyVatTu_ASP.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -48,7 +48,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Property<decimal>("ThanhTien")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18, 0)")
-                        .HasComputedColumnSql("[SoLuong] * [DonGia]");
+                        .HasComputedColumnSql("[SoLuong] * [DonGia]", true);
 
                     b.HasKey("ID");
 
@@ -81,7 +81,8 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.Property<decimal>("ThanhTien")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("decimal(18, 0)");
+                        .HasColumnType("decimal(18, 0)")
+                        .HasComputedColumnSql("[SoLuong] * [DonGia]", true);
 
                     b.HasKey("ID");
 
@@ -106,6 +107,10 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Property<int?>("KhachHangId")
                         .HasColumnType("int")
                         .HasColumnName("MaKhachHang");
+
+                    b.Property<string>("MaHienThi")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("NgayDat")
                         .HasColumnType("datetime2");
@@ -384,9 +389,6 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.Property<int>("MaNhaCungCap")
                         .HasColumnType("int");
-
-                    b.Property<string>("MoTa")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("NgayTao")
                         .HasColumnType("datetime2");

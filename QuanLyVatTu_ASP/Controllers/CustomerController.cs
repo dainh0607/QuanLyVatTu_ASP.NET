@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Models.ViewModels;
 using QuanLyVatTu_ASP.Repositories;
 using QuanLyVatTu_ASP.Repositories.Implementations;
@@ -16,29 +17,65 @@ namespace QuanLyVatTu_ASP.Controllers
         }
         public async Task<IActionResult> Profile()
         {
-            var email = HttpContext.Session.GetString("Email");
-            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
+            // TODO: Tạm thời vô hiệu hóa để test - cần bật lại sau
+            // var email = HttpContext.Session.GetString("Email");
+            // if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
 
-            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            // Mock user data for testing
+            var khachHang = new KhachHang
+            {
+                ID = 1,
+                MaHienThi = "KH001",
+                HoTen = "Nguyễn Văn An",
+                Email = "nguyenvanan@example.com",
+                SoDienThoai = "0987654321",
+                DiaChi = "123 Đường ABC, Phường Tân Bình, Quận Tân Bình, TP.HCM",
+                MatKhau = "123456"
+            };
+
+            // Try to get real data if session exists
+            var email = HttpContext.Session.GetString("Email");
+            if (!string.IsNullOrEmpty(email))
+            {
+                var realKhachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+                if (realKhachHang != null)
+                {
+                    khachHang = realKhachHang;
+                }
+            }
+
             var donHangs = await _unitOfWork.DonHangRepository.GetDonHangByKhachHangAsync(khachHang.ID);
 
             var viewModel = new ProfileViewModel
             {
                 KhachHang = khachHang,
                 DonHangs = donHangs,
-                SoSanPhamDaMua = donHangs.Sum(d => d.ChiTietDonHangs?.Sum(ct => ct.SoLuong) ?? 0)
+                SoSanPhamDaMua = donHangs?.Sum(d => d.ChiTietDonHangs?.Sum(ct => ct.SoLuong) ?? 0) ?? 0
             };
 
             return View(viewModel);
         }
         public async Task<IActionResult> History()
         {
+            // TODO: Tạm thời vô hiệu hóa để test - cần bật lại sau
+            // var email = HttpContext.Session.GetString("Email");
+            // if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
+
+            // Mock user data for testing
+            var khachHangId = 1;
+
+            // Try to get real data if session exists
             var email = HttpContext.Session.GetString("Email");
-            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
+            if (!string.IsNullOrEmpty(email))
+            {
+                var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+                if (khachHang != null)
+                {
+                    khachHangId = khachHang.ID;
+                }
+            }
 
-            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
-
-            var orders = await _unitOfWork.DonHangRepository.GetDonHangByKhachHangAsync(khachHang.ID);
+            var orders = await _unitOfWork.DonHangRepository.GetDonHangByKhachHangAsync(khachHangId);
 
             return View(orders);
         }

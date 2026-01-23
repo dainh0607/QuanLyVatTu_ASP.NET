@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class VatTuService : IVatTuService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public VatTuService(ApplicationDbContext context)
+        public VatTuService(AppDbContext context)
         {
             _context = context;
         }

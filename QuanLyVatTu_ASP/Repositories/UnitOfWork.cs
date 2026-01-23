@@ -6,7 +6,7 @@ namespace QuanLyVatTu_ASP.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
         public IVatTuRepository VatTuRepository { get; private set; }
         public ILoaiVatTuRepository LoaiVatTuRepository { get; private set; }
@@ -18,7 +18,7 @@ namespace QuanLyVatTu_ASP.Repositories
         public IHoaDonRepository HoaDonRepository { get; private set; }
         public IChiTietHoaDonRepository ChiTietHoaDonRepository { get; private set; }
 
-        public UnitOfWork(ApplicationDbContext context)
+        public UnitOfWork(AppDbContext context)
         {
             _context = context;
 

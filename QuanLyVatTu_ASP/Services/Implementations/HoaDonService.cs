@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class HoaDonService : IHoaDonService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public HoaDonService(ApplicationDbContext context)
+        public HoaDonService(AppDbContext context)
         {
             _context = context;
         }

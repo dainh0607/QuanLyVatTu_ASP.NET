@@ -9,9 +9,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class KhachHangService : IKhachHangService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public KhachHangService(ApplicationDbContext context)
+        public KhachHangService(AppDbContext context)
         {
             _context = context;
         }

@@ -9,9 +9,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class LoaiVatTuService : ILoaiVatTuService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public LoaiVatTuService(ApplicationDbContext context)
+        public LoaiVatTuService(AppDbContext context)
         {
             _context = context;
         }

@@ -7,9 +7,9 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class NhanVienRepository : GenericRepository<NhanVien>, INhanVienRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public NhanVienRepository(ApplicationDbContext context) : base(context)
+        public NhanVienRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }

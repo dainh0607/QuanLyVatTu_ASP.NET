@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class KhachHangRepository : IKhachHangRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public KhachHangRepository(ApplicationDbContext context)
+        public KhachHangRepository(AppDbContext context)
         {
             _context = context;
         }

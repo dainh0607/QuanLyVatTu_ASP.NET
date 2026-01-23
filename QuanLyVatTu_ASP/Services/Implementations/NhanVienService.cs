@@ -9,9 +9,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class NhanVienService : INhanVienService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public NhanVienService(ApplicationDbContext context)
+        public NhanVienService(AppDbContext context)
         {
             _context = context;
         }

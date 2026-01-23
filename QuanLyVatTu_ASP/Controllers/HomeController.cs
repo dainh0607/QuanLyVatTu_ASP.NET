@@ -17,7 +17,7 @@ namespace QuanLyVatTu_ASP.Controllers
         {
             var products = await _unitOfWork.VatTuRepository.GetAllAsync();
             var featuredProducts = products.OrderByDescending(p => p.ID).Take(8).ToList();
-
+            // var featuredProducts = new List<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>();
             return View(featuredProducts);
         }
     }

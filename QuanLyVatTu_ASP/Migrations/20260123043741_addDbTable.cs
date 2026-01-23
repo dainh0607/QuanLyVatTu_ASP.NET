@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuanLyVatTu_ASP.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMoTaColumn : Migration
+    public partial class addDbTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -97,7 +97,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     GiaNhap = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     GiaBan = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     SoLuongTon = table.Column<int>(type: "int", nullable: false),
-                    MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: true),
                     MaLoaiVatTu = table.Column<int>(type: "int", nullable: false),
                     MaNhaCungCap = table.Column<int>(type: "int", nullable: false)
@@ -125,6 +124,7 @@ namespace QuanLyVatTu_ASP.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    MaHienThi = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaKhachHang = table.Column<int>(type: "int", nullable: true),
                     MaNhanVien = table.Column<int>(type: "int", nullable: true),
                     NgayDat = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -162,7 +162,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     SoTienDatCoc = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     DonGia = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]")
+                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]", stored: true)
                 },
                 constraints: table =>
                 {
@@ -233,7 +233,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     MaVatTu = table.Column<int>(type: "int", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     DonGia = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false)
+                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]", stored: true)
                 },
                 constraints: table =>
                 {

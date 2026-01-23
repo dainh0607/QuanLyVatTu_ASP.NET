@@ -80,7 +80,25 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var success = await _donHangService.UpdateAsync(id, model);
-                if (!success) return NotFound();
+                var donHangGoc = await _donHangService.GetByIdForEditAsync(id); // <--- Chính là đây
+                if (donHangGoc == null) return NotFound();
+                if (!success)
+                {
+                    
+                    ModelState.AddModelError("SoTienDatCoc",
+                                             "Số tiền đặt cọc mới phải lớn hơn hoặc bằng số tiền đặt cọc trước đó.");
+
+                    // Tải lại dropdown và trả về View
+                    await LoadDropdownData(model.KhachHangId, model.NhanVienId);
+                    return View(model);
+                }
+                decimal tienCocToiThieu = donHangGoc.TongTien * 0.1M;
+
+                if (model.TrangThai == "Đã xác nhận" && model.SoTienDatCoc < tienCocToiThieu)
+                {
+                    ModelState.AddModelError("TrangThai",
+                                             $"Để chuyển sang 'Đã xác nhận', khách hàng phải đặt cọc đủ 10% giá trị đơn hàng ({tienCocToiThieu:N0} đ). Hiện tại chỉ có {model.SoTienDatCoc:N0} đ.");
+                }
 
                 TempData["Success"] = "Cập nhật đơn hàng thành công";
                 return RedirectToAction(nameof(Index));

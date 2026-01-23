@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class ChiTietDonHangService : IChiTietDonHangService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public ChiTietDonHangService(ApplicationDbContext context)
+        public ChiTietDonHangService(AppDbContext context)
         {
             _context = context;
         }

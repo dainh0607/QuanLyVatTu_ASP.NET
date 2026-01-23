@@ -7,7 +7,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class VatTuRepository : GenericRepository<VatTu>, IVatTuRepository
     {
-        public VatTuRepository(ApplicationDbContext context) : base(context)
+        public VatTuRepository(AppDbContext context) : base(context)
         {
         }
         public IEnumerable<VatTu> GetVatTuKemLoai()

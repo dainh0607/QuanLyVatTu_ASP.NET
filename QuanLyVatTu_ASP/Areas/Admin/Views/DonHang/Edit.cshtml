@@ -18,23 +18,26 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="MaHienThi" />
+                        <input type="hidden" asp-for="KhachHangId" />
+                        <input type="hidden" asp-for="NhanVienId" />
+                        <input type="hidden" asp-for="NgayDat" />
 
                         <div class="row g-4">
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Khách hàng <span class="text-danger">*</span></label>
-                                    <select asp-for="KhachHangId" class="form-select form-select-lg rounded-3" asp-items="ViewBag.KhachHangList" required></select>
+                                    <select asp-for="KhachHangId" class="form-select form-select-lg rounded-3" asp-items="ViewBag.KhachHangList" required disabled></select>
                                     <span asp-validation-for="KhachHangId" class="text-danger"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Nhân viên phụ trách</label>
-                                    <select asp-for="NhanVienId" class="form-select form-select-lg rounded-3" asp-items="ViewBag.NhanVienList">
+                                    <select asp-for="NhanVienId" class="form-select form-select-lg rounded-3" asp-items="ViewBag.NhanVienList" disabled>
                                         <option value="">-- Chưa phân công --</option>
                                     </select>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Ngày đặt <span class="text-danger">*</span></label>
-                                    <input asp-for="NgayDat" class="form-control form-control-lg rounded-3" type="datetime-local" required />
+                                    <input asp-for="NgayDat" class="form-control form-control-lg rounded-3" type="datetime-local" required **readonly**  />
                                     <span asp-validation-for="NgayDat" class="text-danger"></span>
                                 </div>
                                 <div class="mb-4">
@@ -59,6 +62,7 @@
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số tiền đặt cọc</label>
                                     <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" />
+                                    <span asp-validation-for="SoTienDatCoc" class="text-danger"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Phương thức đặt cọc</label>

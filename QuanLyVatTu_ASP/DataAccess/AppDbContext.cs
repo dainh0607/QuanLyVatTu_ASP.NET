@@ -3,11 +3,19 @@ using QuanLyVatTu_ASP.Areas.Admin.Models;
 
 namespace QuanLyVatTu_ASP.DataAccess
 {
-    public class ApplicationDbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
+            }
         }
 
         public DbSet<VatTu> VatTus { get; set; }
@@ -98,12 +106,12 @@ namespace QuanLyVatTu_ASP.DataAccess
             modelBuilder.Entity<KhachHang>().HasIndex(u => u.TaiKhoan).IsUnique();
 
             modelBuilder.Entity<ChiTietDonHang>()
-             .Property(p => p.ThanhTien)
-             .HasComputedColumnSql();
+                .Property(p => p.ThanhTien)
+                .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
 
-            modelBuilder.Entity<ChiTietDonHang>()
-            .Property(p => p.ThanhTien)
-            .HasComputedColumnSql("[SoLuong] * [DonGia]");
+            modelBuilder.Entity<ChiTietHoaDon>()
+                .Property(p => p.ThanhTien)
+                .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
         }
     }
 }

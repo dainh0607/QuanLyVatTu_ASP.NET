@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/user/css/cart-dropdown.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
@@ -43,10 +44,132 @@
                             <i class="fa-regular fa-heart"></i>
                             <span class="badge">0</span>
                         </a>
-                        <a href="/GioHang/GioHang" class="icon-link cart-icon" title="Giỏ hàng">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="badge cart-count">0</span>
-                        </a>
+                        <div class="cart-dropdown-wrapper">
+                            <a href="/GioHang/GioHang" class="icon-link cart-icon" title="Giỏ hàng">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="badge cart-count">5</span>
+                            </a>
+                            <!-- Cart Quick Preview Dropdown (Hover) -->
+                            <div class="cart-quick-preview" id="cartQuickPreview">
+                                <div class="cart-preview-header">
+                                    <div class="cart-preview-title">
+                                        <i class="fa-solid fa-shopping-bag"></i>
+                                        <span>Giỏ hàng của bạn</span>
+                                    </div>
+                                    <span class="cart-items-badge">5 sản phẩm</span>
+                                </div>
+                                
+                                <div class="cart-preview-items">
+                                    <!-- Cart Item 1 -->
+                                    <div class="cart-preview-item">
+                                        <div class="cart-item-thumb">
+                                            <img src="https://placehold.co/60x60/0d6efd/ffffff?text=Xi+Mang" alt="Xi măng">
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <h6 class="cart-item-name">Xi măng Holcim PCB40</h6>
+                                            <div class="cart-item-meta">
+                                                <span class="cart-item-price">125.000₫</span>
+                                                <span class="cart-item-qty">x2</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Cart Item 2 -->
+                                    <div class="cart-preview-item">
+                                        <div class="cart-item-thumb">
+                                            <img src="https://placehold.co/60x60/ff6b00/ffffff?text=Day+Dien" alt="Dây điện">
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <h6 class="cart-item-name">Dây điện Cadivi 2.5mm</h6>
+                                            <div class="cart-item-meta">
+                                                <span class="cart-item-price">850.000₫</span>
+                                                <span class="cart-item-qty">x1</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Cart Item 3 -->
+                                    <div class="cart-preview-item">
+                                        <div class="cart-item-thumb">
+                                            <img src="https://placehold.co/60x60/28a745/ffffff?text=Bua" alt="Búa">
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <h6 class="cart-item-name">Búa đinh Stanley 16oz</h6>
+                                            <div class="cart-item-meta">
+                                                <span class="cart-item-price">245.000₫</span>
+                                                <span class="cart-item-qty">x1</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Cart Item 4 -->
+                                    <div class="cart-preview-item">
+                                        <div class="cart-item-thumb">
+                                            <img src="https://placehold.co/60x60/ffc107/ffffff?text=Son" alt="Sơn">
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <h6 class="cart-item-name">Sơn Dulux nội thất 5L</h6>
+                                            <div class="cart-item-meta">
+                                                <span class="cart-item-price">1.250.000₫</span>
+                                                <span class="cart-item-qty">x2</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Cart Item 5 -->
+                                    <div class="cart-preview-item">
+                                        <div class="cart-item-thumb">
+                                            <img src="https://placehold.co/60x60/17a2b8/ffffff?text=Den+LED" alt="Đèn LED">
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <h6 class="cart-item-name">Đèn LED âm trần 12W</h6>
+                                            <div class="cart-item-meta">
+                                                <span class="cart-item-price">85.000₫</span>
+                                                <span class="cart-item-qty">x4</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Empty State (hidden when has items) -->
+                                    <div class="cart-preview-empty" style="display: none;">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                        <p>Giỏ hàng đang trống</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="cart-preview-footer">
+                                    <div class="cart-preview-total">
+                                        <span>Tạm tính:</span>
+                                        <strong>2.895.000₫</strong>
+                                    </div>
+                                    <div class="dropdown-actions">
+                                        <a href="/GioHang/GioHang" class="btn-view-full-cart">
+                                            <i class="fa-regular fa-eye"></i>
+                                            Xem giỏ hàng
+                                        </a>
+                                        <a href="/ThanhToan/Checkout" class="btn-checkout">
+                                            Thanh toán
+                                            <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <a href="/Customer/Profile" class="icon-link" title="Tài khoản">
                             <i class="fa-regular fa-user"></i>
                         </a>
@@ -85,7 +208,7 @@
                                 <a class="btn btn-login" href="/Account/Login">
                                     <i class="fas fa-sign-in-alt"></i> Đăng nhập
                                 </a>
-                                <a class="btn btn-register" href="/Account/Register">
+                                <a class="btn btn-register" href="/Account/Login?show=register">
                                     <i class="fas fa-user-plus"></i> Đăng ký
                                 </a>
                             </div>
@@ -357,5 +480,6 @@
     </script>
 
 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

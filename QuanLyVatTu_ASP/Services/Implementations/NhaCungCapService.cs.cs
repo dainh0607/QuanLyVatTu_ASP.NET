@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class NhaCungCapService : INhaCungCapService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public NhaCungCapService(ApplicationDbContext context)
+        public NhaCungCapService(AppDbContext context)
         {
             _context = context;
         }
