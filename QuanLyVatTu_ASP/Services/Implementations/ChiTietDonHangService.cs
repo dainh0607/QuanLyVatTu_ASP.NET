@@ -15,7 +15,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             _context = context;
         }
 
-        public async Task<ChiTietDonHangViewModel> GetDetailViewModelAsync(int maDonHang, string search)
+        public async Task<ChiTietDonHangViewModel?> GetDetailViewModelAsync(int maDonHang, string search)
         {
             var donHangExists = await _context.DonHang.AnyAsync(d => d.ID == maDonHang);
             if (!donHangExists) return null;
@@ -69,7 +69,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> AddVatTuAsync(int maDonHang, int maVatTu, int soLuong)
+        public async Task<string?> AddVatTuAsync(int maDonHang, int maVatTu, int soLuong)
         {
             if (maVatTu <= 0 || soLuong <= 0) return "Dữ liệu không hợp lệ";
 
@@ -101,7 +101,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateSoLuongAsync(int maDonHang, int maVatTu, int soLuong)
+        public async Task<string?> UpdateSoLuongAsync(int maDonHang, int maVatTu, int soLuong)
         {
             if (soLuong < 1) return "Số lượng phải ≥ 1";
 
@@ -118,7 +118,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> RemoveVatTuAsync(int maDonHang, List<int> selectedIds)
+        public async Task<string?> RemoveVatTuAsync(int maDonHang, List<int> selectedIds)
         {
             if (selectedIds == null || selectedIds.Count == 0) return "Chưa chọn vật tư nào để xóa";
 

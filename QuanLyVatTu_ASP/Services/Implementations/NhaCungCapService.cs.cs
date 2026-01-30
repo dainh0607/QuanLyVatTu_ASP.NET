@@ -59,7 +59,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<NhaCungCapCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<NhaCungCapCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var ncc = await _context.NhaCungCaps.FindAsync(id);
             if (ncc == null) return null;
@@ -74,7 +74,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> CreateAsync(NhaCungCapCreateEditViewModel model)
+        public async Task<string?> CreateAsync(NhaCungCapCreateEditViewModel model)
         {
             if (!string.IsNullOrEmpty(model.Email) && await _context.NhaCungCaps.AnyAsync(x => x.Email == model.Email))
             {
@@ -101,7 +101,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateAsync(int id, NhaCungCapCreateEditViewModel model)
+        public async Task<string?> UpdateAsync(int id, NhaCungCapCreateEditViewModel model)
         {
             var ncc = await _context.NhaCungCaps.FindAsync(id);
             if (ncc == null) return "Nhà cung cấp không tồn tại";
@@ -126,7 +126,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> DeleteAsync(int id)
+        public async Task<string?> DeleteAsync(int id)
         {
             var ncc = await _context.NhaCungCaps
                 .Include(x => x.VatTus)

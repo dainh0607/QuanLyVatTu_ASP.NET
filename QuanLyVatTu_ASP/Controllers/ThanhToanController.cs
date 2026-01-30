@@ -34,14 +34,15 @@ namespace QuanLyVatTu_ASP.Controllers
             }
 
             // MOCK USER DATA IF NOT LOGGED IN
-            var khachHang = new KhachHang();
+            KhachHang? khachHang = null;
             var email = HttpContext.Session.GetString("Email");
             
             if (!string.IsNullOrEmpty(email))
             {
                  khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
             }
-            else
+            
+            if (khachHang == null)
             {
                 khachHang = new KhachHang 
                 { 
@@ -65,7 +66,9 @@ namespace QuanLyVatTu_ASP.Controllers
             if (cart == null || !cart.Any()) return RedirectToAction("Index", "Home");
 
             var email = HttpContext.Session.GetString("Email");
-            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            var khachHang = !string.IsNullOrEmpty(email) 
+                ? await _unitOfWork.KhachHangRepository.GetByEmailAsync(email) 
+                : null;
 
             decimal tongTien = 0;
 
@@ -101,7 +104,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     khachHang.DiaChi = diaChi;
                     khachHang.SoDienThoai = soDienThoai;
-                    _unitOfWork.KhachHangRepository.UpdateAsync(khachHang);
+                    await _unitOfWork.KhachHangRepository.UpdateAsync(khachHang);
                 }
 
                 await _unitOfWork.DonHangRepository.AddAsync(donHang);
@@ -110,9 +113,11 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(item.VatTuId);
 
-                    if (vatTu.SoLuongTon < item.SoLuong)
+                    if (vatTu == null || vatTu.SoLuongTon < item.SoLuong)
                     {
-                        TempData["Error"] = $"Sản phẩm {vatTu.TenVatTu} chỉ còn {vatTu.SoLuongTon} sản phẩm.";
+                        TempData["Error"] = vatTu == null 
+                            ? $"Sản phẩm không tồn tại." 
+                            : $"Sản phẩm {vatTu.TenVatTu} chỉ còn {vatTu.SoLuongTon} sản phẩm.";
                         return RedirectToAction("Checkout");
                     }
 
@@ -139,7 +144,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
                 return RedirectToAction("OrderSuccess");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log lỗi
                 TempData["Error"] = "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.";

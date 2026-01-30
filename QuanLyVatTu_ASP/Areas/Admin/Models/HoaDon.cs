@@ -31,11 +31,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         // Tính trong Service C#, không dùng Computed DB
         [Column(TypeName = "decimal(18,2)")]
-        [Column(TypeName = "decimal(18,2)")]
         public decimal? TienThueGTGT { get; set; } 
 
         // Tính trong Service C#, không dùng Computed DB
-        [Column(TypeName = "decimal(18,2)")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? TongTienSauThue { get; set; }
 

@@ -15,27 +15,27 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<KhachHang> GetByIdAsync(int id)
+        public async Task<KhachHang?> GetByIdAsync(int id)
         {
             return await _context.KhachHangs.FindAsync(id);
         }
 
-        public async Task<KhachHang> GetByEmailAsync(string email)
+        public async Task<KhachHang?> GetByEmailAsync(string email)
         {
             return await _context.KhachHangs.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<KhachHang> GetByTaiKhoanAsync(string taiKhoan)
+        public async Task<KhachHang?> GetByTaiKhoanAsync(string taiKhoan)
         {
             return await _context.KhachHangs.FirstOrDefaultAsync(u => u.TaiKhoan == taiKhoan);
         }
 
-        public async Task<KhachHang> GetByMaHienThiAsync(string maHienThi)
+        public async Task<KhachHang?> GetByMaHienThiAsync(string maHienThi)
         {
             return await _context.KhachHangs.FirstOrDefaultAsync(u => u.MaHienThi == maHienThi);
         }
 
-        public KhachHang GetByLogin(string loginInput, string password)
+        public KhachHang? GetByLogin(string loginInput, string password)
         {
             var user = _context.KhachHangs
                 .FirstOrDefault(x => x.Email == loginInput || x.TaiKhoan == loginInput);
@@ -67,7 +67,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             _context.KhachHangs.Add(khachHang);
         }
 
-        public async Task<KhachHang> UpdateAsync(KhachHang khachHang)
+        public async Task<KhachHang?> UpdateAsync(KhachHang khachHang)
         {
             var existingUser = await _context.KhachHangs.FindAsync(khachHang.MaHienThi);
 
