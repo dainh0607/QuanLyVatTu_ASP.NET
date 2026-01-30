@@ -31,7 +31,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public DateTime NgayLap { get; set; }
 
         // Thông tin công ty 
-        public string TenCongTy => "CÔNG TY TNHH VẬT LIỆU XÂY DỰNG VUÝP";
+        public string TenCongTy => "CÔNG TY TNHH VẬT LIỆU XÂY DỰNG ABC";
         public string DiaChiCongTy => "123 Lê Văn Việt, Thủ Đức, TP.HCM";
         public string MSTCongTy => "0373456789";
 

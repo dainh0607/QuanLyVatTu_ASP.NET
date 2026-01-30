@@ -32,78 +32,128 @@ namespace QuanLyVatTu_ASP.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<VatTu>().ToTable("VatTu");
-            modelBuilder.Entity<LoaiVatTu>().ToTable("LoaiVatTu");
-            modelBuilder.Entity<NhaCungCap>().ToTable("NhaCungCap");
-            modelBuilder.Entity<NhanVien>().ToTable("NhanVien");
-            modelBuilder.Entity<KhachHang>().ToTable("KhachHang");
-            modelBuilder.Entity<DonHang>().ToTable("DonHang");
-            modelBuilder.Entity<ChiTietDonHang>().ToTable("ChiTietDonHang");
-            modelBuilder.Entity<HoaDon>().ToTable("HoaDon", tb => tb.HasTrigger("Trigger_TinhToanHoaDon"));
-            modelBuilder.Entity<ChiTietHoaDon>().ToTable("ChiTietHoaDon");
-
-            modelBuilder.Entity<ChiTietHoaDon>(entity =>
+            // --- 1. LoaiVatTu ---
+            modelBuilder.Entity<LoaiVatTu>(entity =>
             {
-                entity.HasOne(d => d.HoaDon)
-                    .WithMany(p => p.ChiTietHoaDons)
-                    .HasForeignKey(d => d.MaHoaDon)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.ToTable("LoaiVatTu");
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'LVT' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+            });
 
-                entity.HasOne(d => d.VatTu)
-                    .WithMany()
-                    .HasForeignKey(d => d.MaVatTu)
+            // --- 2. VatTu ---
+            modelBuilder.Entity<VatTu>(entity =>
+            {
+                entity.ToTable("VatTu");
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'VT' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.SoLuongTon).HasDefaultValue(0);
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                
+                // Checks
+                entity.ToTable(t => t.HasCheckConstraint("CK_VatTu_GiaNhap", "[GiaNhap] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_VatTu_GiaBan", "[GiaBan] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_VatTu_SoLuongTon", "[SoLuongTon] >= 0"));
+
+                entity.HasOne(d => d.LoaiVatTu)
+                    .WithMany(p => p.VatTus)
+                    .HasForeignKey(d => d.MaLoaiVatTu)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.NhaCungCap)
+                    .WithMany(p => p.VatTus)
+                    .HasForeignKey(d => d.MaNhaCungCap)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<HoaDon>(entity =>
+            // --- 3. NhaCungCap ---
+            modelBuilder.Entity<NhaCungCap>(entity =>
             {
-                entity.HasOne(d => d.DonHang)
-                    .WithMany()
-                    .HasForeignKey(d => d.MaDonHang);
-
-                entity.HasOne(d => d.NhanVien)
-                    .WithMany()
-                    .HasForeignKey(d => d.MaNhanVien);
-
-                entity.HasOne(d => d.KhachHang)
-                    .WithMany()
-                    .HasForeignKey(d => d.MaKhachHang);
-
-                entity.Ignore("NgayTao");
-
-                entity.Property(e => e.TienThueGTGT).ValueGeneratedOnAddOrUpdate();
-                entity.Property(e => e.TongTienSauThue).ValueGeneratedOnAddOrUpdate();
-                entity.Property(e => e.TongTienTruocThue).HasColumnType("decimal(18, 0)");
-                entity.Property(e => e.SoTienDatCoc).HasColumnType("decimal(18, 0)");
+                entity.ToTable("NhaCungCap");
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'NCC' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
             });
 
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            // --- 4. NhanVien ---
+            modelBuilder.Entity<NhanVien>(entity =>
             {
-                var properties = entityType.ClrType.GetProperties()
-                    .Where(p => p.PropertyType == typeof(decimal) || p.PropertyType == typeof(decimal?));
+                entity.ToTable("NhanVien");
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'NV' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.HasIndex(e => e.TaiKhoan).IsUnique();
+                entity.HasIndex(e => new { e.NgaySinh, e.CCCD, e.SoDienThoai }).IsUnique();
+            });
 
-                foreach (var property in properties)
-                {
-                    modelBuilder.Entity(entityType.Name)
-                        .Property(property.Name)
-                        .HasColumnType("decimal(18, 0)");
-                }
-            }
+            // --- 5. KhachHang ---
+            modelBuilder.Entity<KhachHang>(entity =>
+            {
+                entity.ToTable("KhachHang");
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'KH' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.DangNhapGoogle).HasDefaultValue(false);
+                entity.HasIndex(e => e.Email).IsUnique();
+            });
 
-            modelBuilder.Entity<VatTu>()
-                .HasOne(d => d.LoaiVatTu)
-                .WithMany(p => p.VatTus)
-                .HasForeignKey(d => d.MaLoaiVatTu)
-                .OnDelete(DeleteBehavior.Restrict);
+            // --- 6. DonHang ---
+            modelBuilder.Entity<DonHang>(entity =>
+            {
+                entity.ToTable("DonHang");
+                // Formula: 'DH' + YEAR(NgayDat) (4 digits) + '-' + ID (3 digits)
+                // Note: YEAR(NgayDat) might need conversion.
+                entity.Property(e => e.MaHienThi)
+                      .HasComputedColumnSql("'DH' + CONVERT(VARCHAR(4), YEAR([NgayDat])) + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                
+                entity.Property(e => e.NgayDat).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.TongTien).HasDefaultValue(0);
+                entity.Property(e => e.TrangThai).HasDefaultValue("Chờ xác nhận");
 
-            modelBuilder.Entity<VatTu>()
-                .HasOne(d => d.NhaCungCap)
-                .WithMany(p => p.VatTus)
-                .HasForeignKey(d => d.MaNhaCungCap)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.KhachHangId);
+                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.NhanVienId);
+            });
 
-            modelBuilder.Entity<NhanVien>().HasIndex(u => u.TaiKhoan).IsUnique();
-            modelBuilder.Entity<KhachHang>().HasIndex(u => u.TaiKhoan).IsUnique();
+            // --- 7. ChiTietDonHang ---
+            modelBuilder.Entity<ChiTietDonHang>(entity =>
+            {
+                entity.ToTable("ChiTietDonHang");
+                entity.Property(e => e.ThanhTien)
+                      .HasComputedColumnSql("[SoLuong] * [DonGia]");
+                
+                entity.HasOne(d => d.DonHang)
+                    .WithMany(p => p.ChiTietDonHangs)
+                    .HasForeignKey(d => d.MaDonHang);
+
+                entity.HasOne(d => d.VatTu).WithMany().HasForeignKey(d => d.MaVatTu);
+            });
+
+            // --- 8. HoaDon ---
+            modelBuilder.Entity<HoaDon>(entity =>
+            {
+                entity.ToTable("HoaDon");
+                // HoaDon has no MaHienThi in requirements, only ID.
+                
+                entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.ChietKhau).HasDefaultValue(0);
+                entity.Property(e => e.SoTienDatCoc).HasDefaultValue(0);
+                entity.Property(e => e.TyLeThueGTGT).HasDefaultValue(10);
+                entity.Property(e => e.TrangThai).HasDefaultValue("Đã thanh toán");
+
+                // Checks
+                entity.ToTable(t => t.HasCheckConstraint("CK_HoaDon_TongTienTruocThue", "[TongTienTruocThue] > 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_HoaDon_ChietKhau", "[ChietKhau] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_HoaDon_SoTienDatCoc", "[SoTienDatCoc] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_HoaDon_TyLeThueGTGT", "[TyLeThueGTGT] IN (0, 10)"));
+
+                // Relationships
+                entity.HasOne(d => d.DonHang).WithMany().HasForeignKey(d => d.MaDonHang);
+                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.MaNhanVien);
+                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.MaKhachHang);
+                
+                entity.Ignore("NgayTao"); // If it exists in BaseEntity but not in table schema request
+            });
 
             modelBuilder.Entity<ChiTietDonHang>()
                 .Property(p => p.ThanhTien)

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
@@ -28,12 +29,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TyLeThueGTGT { get; set; } = 10;
 
-        // Cấu hình Computed để EF biết cột này do DB (Trigger) xử lý
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        // Tính trong Service C#, không dùng Computed DB
+        [Column(TypeName = "decimal(18,2)")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? TienThueGTGT { get; set; } 
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        // Tính trong Service C#, không dùng Computed DB
+        [Column(TypeName = "decimal(18,2)")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? TongTienSauThue { get; set; }
 
@@ -51,8 +53,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string TrangThai { get; set; } = "Đã thanh toán";
 
         // Navigation
+        [ForeignKey("MaDonHang")]
         public DonHang DonHang { get; set; } = null!;
+
+        [ForeignKey("MaNhanVien")]
         public NhanVien NhanVien { get; set; } = null!;
+
+        [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; } = null!;
 
         public ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; } = new List<ChiTietHoaDon>(); 

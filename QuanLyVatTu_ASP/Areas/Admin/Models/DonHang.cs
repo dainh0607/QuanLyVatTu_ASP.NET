@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
@@ -9,7 +10,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string? MaHienThi { get; set; }
 
         [Column("MaKhachHang")]
-        public int? KhachHangId { get; set; }
+        public int KhachHangId { get; set; }
 
         [Column("MaNhanVien")]
         public int? NhanVienId { get; set; }
@@ -25,6 +26,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public decimal? SoTienDatCoc { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
+        [MaxLength(50)]
         public string? PhuongThucDatCoc { get; set; }
 
         [Column(TypeName = "datetime")]
@@ -39,6 +41,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [ForeignKey("KhachHangId")]
         public KhachHang? KhachHang { get; set; }
+
+        [ForeignKey("NhanVienId")]
 
         [ForeignKey("NhanVienId")]
         public NhanVien? NhanVien { get; set; }

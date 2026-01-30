@@ -23,7 +23,6 @@ builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>(
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 
-
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 builder.Services.AddScoped<IDonHangService, DonHangService>();

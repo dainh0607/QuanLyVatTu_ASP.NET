@@ -11,7 +11,6 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 
         public NhanVienRepository(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public NhanVien GetByLogin(string email, string password)

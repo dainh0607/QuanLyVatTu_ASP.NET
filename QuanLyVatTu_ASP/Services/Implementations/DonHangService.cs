@@ -75,7 +75,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 Id = entity.ID,
                 MaHienThi = entity.MaHienThi,
-                KhachHangId = entity.KhachHangId ?? 0,
+                KhachHangId = entity.KhachHangId,
                 NhanVienId = entity.NhanVienId,
                 NgayDat = entity.NgayDat,
                 TongTien = entity.TongTien,
@@ -93,7 +93,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 MaHienThi = "DH" + new Random().Next(1000, 9999), 
                 KhachHangId = model.KhachHangId,
-                NhanVienId = model.NhanVienId ?? 0,
+                NhanVienId = model.NhanVienId,
                 NgayDat = model.NgayDat,
                 TongTien = model.TongTien,
                 SoTienDatCoc = model.SoTienDatCoc,
@@ -138,7 +138,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
 
             entity.KhachHangId = model.KhachHangId;
-            entity.NhanVienId = model.NhanVienId ?? 0;
+            entity.NhanVienId = model.NhanVienId;
             entity.NgayDat = model.NgayDat;
 
             

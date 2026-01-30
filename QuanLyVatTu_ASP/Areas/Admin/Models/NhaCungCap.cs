@@ -13,6 +13,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string TenNhaCungCap { get; set; } = string.Empty;
 
         [Column(TypeName = "nvarchar(255)")]
+        
+        [MaxLength(255)]
         public string? DiaChi { get; set; }
 
         [Column(TypeName = "varchar(10)")]

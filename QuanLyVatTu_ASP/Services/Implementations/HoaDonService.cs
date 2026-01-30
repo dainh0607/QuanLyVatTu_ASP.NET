@@ -72,7 +72,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 MaDonHang = donHang.ID,
                 MaNhanVien = donHang.NhanVienId ?? 1, // Mặc định 1 nếu null (cần cẩn thận chỗ này tùy data thật)
-                MaKhachHang = donHang.KhachHangId ?? 0,
+                MaKhachHang = donHang.KhachHangId,
                 NgayLap = DateTime.Now,
                 TongTienTruocThue = donHang.TongTien,
                 TyLeThueGTGT = 10,
@@ -135,6 +135,26 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     ThanhTien = ct.SoLuong * ct.DonGia
                 }).ToList()
             };
+        }
+
+                public void CalculateHoaDon(HoaDon hoaDon)
+        {
+            if (hoaDon == null) return;
+
+            // 1. TienThueGTGT
+            // Logic: (TongTienTruocThue * TyLeThueGTGT) / 100
+            // Round 2, AwayFromZero
+            decimal taxAmount = (hoaDon.TongTienTruocThue * hoaDon.TyLeThueGTGT) / 100m;
+            hoaDon.TienThueGTGT = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero);
+
+            // 2. TongTienSauThue
+            // Logic: TongTienTruocThue + TienThueGTGT - ChietKhau
+            // Note: Use the calculated TienThueGTGT or recalculate? 
+            // Usually simpler to sum components.
+            // Prompt formula: TongTienTruocThue + (TongTienTruocThue * TyLeThueGTGT / 100) - (ChietKhau ?? 0)
+            
+            decimal calculatedTotal = hoaDon.TongTienTruocThue + (hoaDon.TienThueGTGT ?? 0) - hoaDon.ChietKhau;
+            hoaDon.TongTienSauThue = Math.Round(calculatedTotal, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

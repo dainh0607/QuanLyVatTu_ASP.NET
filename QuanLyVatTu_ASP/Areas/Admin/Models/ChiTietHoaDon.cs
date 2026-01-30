@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
@@ -27,7 +28,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "decimal(18,2)")]
         public decimal ThanhTien { get; set; }
+        [ForeignKey("MaHoaDon")]
         public HoaDon HoaDon { get; set; } = null!;
+
+        [ForeignKey("MaVatTu")]
         public VatTu VatTu { get; set; } = null!;
     }
 }
