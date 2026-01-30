@@ -58,3 +58,8 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Cấu hình ứng dụng (Thông tin nhạy cảm/Cá nhân)
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/Properties/launchSettings.json
