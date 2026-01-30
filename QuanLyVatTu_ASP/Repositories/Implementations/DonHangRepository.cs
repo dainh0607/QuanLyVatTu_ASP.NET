@@ -8,7 +8,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class DonHangRepository : GenericRepository<DonHang>, IDonHangRepository
     {
-        public DonHangRepository(ApplicationDbContext context) : base(context)
+        public DonHangRepository(AppDbContext context) : base(context)
         {
         }
 

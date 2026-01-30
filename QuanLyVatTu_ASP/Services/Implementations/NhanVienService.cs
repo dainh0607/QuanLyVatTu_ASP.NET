@@ -9,9 +9,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class NhanVienService : INhanVienService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public NhanVienService(ApplicationDbContext context)
+        public NhanVienService(AppDbContext context)
         {
             _context = context;
         }
@@ -95,6 +95,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var nhanVien = new NhanVien
             {
+                MaHienThi = "NV" + new Random().Next(1000, 9999),
                 HoTen = model.HoTen,
                 NgaySinh = model.NgaySinh,
                 CCCD = model.CCCD,
@@ -104,7 +105,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 VaiTro = model.VaiTro,
                 NgayTao = DateTime.Now,
 
-                MatKhau = BCryptNet.HashPassword(model.MatKhau)
+                // MatKhau = BCryptNet.HashPassword(model.MatKhau)
+                MatKhau = model.MatKhau
             };
 
             _context.NhanViens.Add(nhanVien);
@@ -140,7 +142,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrEmpty(model.MatKhau))
             {
-                nhanVien.MatKhau = BCryptNet.HashPassword(model.MatKhau);
+                // nhanVien.MatKhau = BCryptNet.HashPassword(model.MatKhau);
+                nhanVien.MatKhau = model.MatKhau;
             }
 
             await _context.SaveChangesAsync();

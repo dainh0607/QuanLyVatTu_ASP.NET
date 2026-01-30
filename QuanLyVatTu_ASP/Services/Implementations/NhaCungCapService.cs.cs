@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class NhaCungCapService : INhaCungCapService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public NhaCungCapService(ApplicationDbContext context)
+        public NhaCungCapService(AppDbContext context)
         {
             _context = context;
         }
@@ -88,6 +88,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var ncc = new NhaCungCap
             {
+                MaHienThi = "NCC" + new Random().Next(1000, 9999),
                 TenNhaCungCap = model.TenNhaCungCap,
                 Email = model.Email,
                 SoDienThoai = model.SoDienThoai,

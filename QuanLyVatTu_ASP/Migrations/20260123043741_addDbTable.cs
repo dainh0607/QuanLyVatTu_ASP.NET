@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuanLyVatTu_ASP.Migrations
 {
     /// <inheritdoc />
-    public partial class QuanLyVatTuDB : Migration
+    public partial class addDbTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -162,7 +162,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     SoTienDatCoc = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     DonGia = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]")
+                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]", stored: true)
                 },
                 constraints: table =>
                 {
@@ -233,7 +233,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     MaVatTu = table.Column<int>(type: "int", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     DonGia = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false)
+                    ThanhTien = table.Column<decimal>(type: "decimal(18,0)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]", stored: true)
                 },
                 constraints: table =>
                 {

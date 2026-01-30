@@ -10,8 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("QuanLyVatTuDB")));
+builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IVatTuRepository, VatTuRepository>();
@@ -23,7 +22,6 @@ builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>();
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
-
 
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
@@ -63,7 +61,7 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Customer}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=DonHang}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

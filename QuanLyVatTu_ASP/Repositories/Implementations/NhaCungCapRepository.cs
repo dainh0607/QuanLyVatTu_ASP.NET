@@ -6,7 +6,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class NhaCungCapRepository : GenericRepository<NhaCungCap>, INhaCungCapRepository
     {
-        public NhaCungCapRepository(ApplicationDbContext context) : base(context)
+        public NhaCungCapRepository(AppDbContext context) : base(context)
         {
         }
     }

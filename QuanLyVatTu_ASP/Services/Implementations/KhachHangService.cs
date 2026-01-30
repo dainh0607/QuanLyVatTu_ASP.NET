@@ -9,9 +9,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class KhachHangService : IKhachHangService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public KhachHangService(ApplicationDbContext context)
+        public KhachHangService(AppDbContext context)
         {
             _context = context;
         }
@@ -97,7 +97,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 DiaChi = model.DiaChi,
                 TaiKhoan = model.TaiKhoan,
 
-                MatKhau = BCryptNet.HashPassword(model.MatKhau),
+                // MatKhau = BCryptNet.HashPassword(model.MatKhau),
+                MatKhau = model.MatKhau,
 
                 DangNhapGoogle = false,
                 NgayTao = DateTime.Now
@@ -131,7 +132,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrEmpty(model.MatKhau))
             {
-                kh.MatKhau = BCryptNet.HashPassword(model.MatKhau);
+                // kh.MatKhau = BCryptNet.HashPassword(model.MatKhau);
+                kh.MatKhau = model.MatKhau;
             }
 
             await _context.SaveChangesAsync();

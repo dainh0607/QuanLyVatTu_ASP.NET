@@ -3,11 +3,19 @@ using QuanLyVatTu_ASP.Areas.Admin.Models;
 
 namespace QuanLyVatTu_ASP.DataAccess
 {
-    public class ApplicationDbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
+            }
         }
 
         public DbSet<VatTu> VatTus { get; set; }
@@ -147,23 +155,13 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.Ignore("NgayTao"); // If it exists in BaseEntity but not in table schema request
             });
 
-            // --- 9. ChiTietHoaDon ---
-            modelBuilder.Entity<ChiTietHoaDon>(entity =>
-            {
-                entity.ToTable("ChiTietHoaDon");
-                entity.Property(e => e.ThanhTien)
-                      .HasComputedColumnSql("[SoLuong] * [DonGia]");
+            modelBuilder.Entity<ChiTietDonHang>()
+                .Property(p => p.ThanhTien)
+                .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
 
-                entity.HasOne(d => d.HoaDon)
-                    .WithMany(p => p.ChiTietHoaDons)
-                    .HasForeignKey(d => d.MaHoaDon)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(d => d.VatTu)
-                    .WithMany()
-                    .HasForeignKey(d => d.MaVatTu)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
+            modelBuilder.Entity<ChiTietHoaDon>()
+                .Property(p => p.ThanhTien)
+                .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
         }
     }
 }

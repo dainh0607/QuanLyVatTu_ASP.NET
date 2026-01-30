@@ -6,7 +6,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class HoaDonRepository : GenericRepository<HoaDon>, IHoaDonRepository
     {
-        public HoaDonRepository(ApplicationDbContext context) : base(context)
+        public HoaDonRepository(AppDbContext context) : base(context)
         {
 
         }

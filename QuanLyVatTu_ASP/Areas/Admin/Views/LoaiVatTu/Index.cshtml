@@ -20,7 +20,7 @@
                     </form>
                 </div>
                 <div class="col-lg-4 text-lg-end">
-                    <a asp-action="Create" asp-controller="LoaiVatTu" class="btn btn-success rounded-pill px-4 shadow-sm">
+                    <a asp-action="Create" asp-controller="LoaiVatTu" class="btn btn-glass btn-glass-success rounded-pill px-4">
                         <i class="bi bi-plus-lg me-1"></i> Thêm mới
                     </a>
                 </div>
@@ -71,14 +71,14 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a asp-action="Edit" asp-controller="LoaiVatTu" asp-route-id="@item.ID"
-                                               class="btn btn-warning btn-sm rounded-pill px-3" title="Sửa">
+                                               class="btn btn-glass btn-glass-warning btn-sm rounded-pill px-3" title="Sửa">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
                                             <form asp-action="Delete" asp-controller="LoaiVatTu" asp-route-id="@item.ID" method="post"
                                                   onsubmit="return confirm('Bạn có chắc chắn muốn xóa loại vật tư: @item.TenLoaiVatTu?\nHành động này không thể hoàn tác!');">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3" title="Xóa">
+                                                <button type="submit" class="btn btn-glass btn-glass-danger btn-sm rounded-pill px-3" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>

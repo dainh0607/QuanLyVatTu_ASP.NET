@@ -20,3 +20,91 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* --- Glassmorphism Button System --- */
+
+.btn-glass {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px; /* Soft rounded corners */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Soft, subtle shadow */
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0.5rem 1.25rem;
+}
+
+.btn-glass i {
+    margin-right: 8px; /* Icon spacing */
+    transition: transform 0.3s ease;
+}
+
+/* Hover Effect: Lift and Glow */
+.btn-glass:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12); /* Deeper shadow */
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-glass:hover i {
+    transform: scale(1.1);
+}
+
+/* Active Effect: Press down */
+.btn-glass:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Semantic Variants --- */
+
+/* 1. Add New (Thêm mới) - Blue/Green (Success) */
+.btn-glass-success {
+    background: rgba(25, 135, 84, 0.12); /* Very light glass green */
+    color: #198754;
+    border-color: rgba(25, 135, 84, 0.25);
+}
+
+.btn-glass-success:hover {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(20, 108, 67, 0.95)); /* Vivid Gradient on hover */
+    color: #fff;
+    border-color: transparent;
+}
+
+/* 2. Edit (Chỉnh sửa) - Orange/Yellow (Warning) */
+.btn-glass-warning {
+    background: rgba(253, 126, 20, 0.12); /* Light glass orange */
+    color: #fd7e14;
+    border-color: rgba(253, 126, 20, 0.25);
+}
+
+.btn-glass-warning:hover {
+    background: linear-gradient(135deg, rgba(253, 126, 20, 0.9), rgba(230, 81, 0, 0.95)); /* Vivid Orange Gradient */
+    color: #fff;
+    border-color: transparent;
+}
+
+/* 3. Delete (Xóa) - Red (Danger) */
+.btn-glass-danger {
+    background: rgba(220, 53, 69, 0.12); /* Light glass red */
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.25);
+}
+
+.btn-glass-danger:hover {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(167, 29, 42, 0.95)); /* Vivid Red Gradient */
+    color: #fff;
+    border-color: transparent;
+}
+
+/* Support for small buttons */
+.btn-sm.btn-glass {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}

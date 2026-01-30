@@ -8,9 +8,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 {
     public class ThongKeService : IThongKeService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public ThongKeService(ApplicationDbContext context)
+        public ThongKeService(AppDbContext context)
         {
             _context = context;
         }
