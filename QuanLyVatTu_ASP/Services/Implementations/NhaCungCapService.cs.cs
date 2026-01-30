@@ -88,6 +88,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var ncc = new NhaCungCap
             {
+                MaHienThi = "NCC" + new Random().Next(1000, 9999),
                 TenNhaCungCap = model.TenNhaCungCap,
                 Email = model.Email,
                 SoDienThoai = model.SoDienThoai,

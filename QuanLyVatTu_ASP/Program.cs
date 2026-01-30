@@ -62,7 +62,7 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Customer}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=DonHang}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

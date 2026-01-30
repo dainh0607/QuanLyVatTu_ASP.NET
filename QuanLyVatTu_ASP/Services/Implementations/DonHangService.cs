@@ -91,6 +91,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         {
             var entity = new DonHang
             {
+                MaHienThi = "DH" + new Random().Next(1000, 9999), 
                 KhachHangId = model.KhachHangId,
                 NhanVienId = model.NhanVienId ?? 0,
                 NgayDat = model.NgayDat,

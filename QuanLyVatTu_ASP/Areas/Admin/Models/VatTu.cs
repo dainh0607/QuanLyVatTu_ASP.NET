@@ -1,28 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
-    public class VatTu
+    public class VatTu : BaseEntity
     {
-        [Key]
-        public int ID { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string MaHienThi { get; set; }
+        [Column(TypeName = "varchar(20)")]
+        public string MaHienThi { get; set; } = string.Empty;
         
+        [Required]
+        [Column(TypeName = "nvarchar(100)")]
+        public string TenVatTu { get; set; } = string.Empty;
 
         [Required]
-        public string TenVatTu { get; set; }
+        [Column(TypeName = "nvarchar(50)")]
+        public string DonViTinh { get; set; } = string.Empty;
 
-        public string DonViTinh { get; set; }
-
-        [Column(TypeName = "decimal(18,0)")]
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal GiaNhap { get; set; }
 
-        [Column(TypeName = "decimal(18,0)")]
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal GiaBan { get; set; }
 
+        [Required]
         public int SoLuongTon { get; set; }
 
         [NotMapped]
@@ -32,17 +35,16 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
             get { return LoaiVatTu?.MoTa; }
         }
 
-        public DateTime? NgayTao { get; set; }
-
+        [Required]
         public int MaLoaiVatTu { get; set; }
 
         [ForeignKey("MaLoaiVatTu")]
         public virtual LoaiVatTu? LoaiVatTu { get; set; }
 
+        [Required]
         public int MaNhaCungCap { get; set; }
 
         [ForeignKey("MaNhaCungCap")]
         public virtual NhaCungCap? NhaCungCap { get; set; }
-
     }
 }

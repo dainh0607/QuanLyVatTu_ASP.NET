@@ -52,7 +52,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     SoLuongTon = x.SoLuongTon,
                     TenLoaiVatTu = x.LoaiVatTu != null ? x.LoaiVatTu.TenLoaiVatTu : "",
                     TenNhaCungCap = x.NhaCungCap != null ? x.NhaCungCap.TenNhaCungCap : "",
-                    NgayTao = x.NgayTao ?? DateTime.MinValue
+                    NgayTao = x.NgayTao
                 })
                 .ToListAsync();
 
@@ -97,9 +97,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 return "Tên vật tư này đã tồn tại trong kho.";
             }
 
+            // Tạo mã hiển thị tự động (VTxxxx)
+            string randomSuffix = new Random().Next(1000, 9999).ToString();
+            string maHienThiAuto = "VT" + randomSuffix;
+
             var vt = new VatTu
             {
-                // KHÔNG GÁN MaHienThi Ở ĐÂY (DB tự sinh)
+                MaHienThi = maHienThiAuto,
                 TenVatTu = model.TenVatTu,
                 DonViTinh = model.DonViTinh,
                 GiaNhap = model.GiaNhap,

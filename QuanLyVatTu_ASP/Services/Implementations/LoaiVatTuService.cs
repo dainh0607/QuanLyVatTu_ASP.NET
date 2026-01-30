@@ -79,6 +79,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var loai = new LoaiVatTu
             {
+                MaHienThi = "LVT" + new Random().Next(1000, 9999),
                 TenLoaiVatTu = model.TenLoaiVatTu,
                 MoTa = model.MoTa,
                 NgayTao = DateTime.Now

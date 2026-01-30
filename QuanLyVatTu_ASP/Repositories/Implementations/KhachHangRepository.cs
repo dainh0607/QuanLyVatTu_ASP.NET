@@ -42,6 +42,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 
             if (user == null) return null;
 
+            /* COMMENT BCrypt THEO YÊU CẦU
             bool isPasswordValid = false;
             try
             {
@@ -56,6 +57,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             {
                 return user;
             }
+            */
 
             return null;
         }

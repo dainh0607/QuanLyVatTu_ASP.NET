@@ -34,6 +34,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KhachHangCreateEditViewModel model)
         {
+            if (string.IsNullOrEmpty(model.MatKhau))
+            {
+                ModelState.AddModelError("MatKhau", "Vui lòng nhập mật khẩu");
+            }
             if (!ModelState.IsValid) return View(model);
 
             // Gọi Service

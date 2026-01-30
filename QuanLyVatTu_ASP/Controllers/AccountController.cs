@@ -49,7 +49,8 @@ namespace QuanLyVatTu_ASP.Controllers
                 ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
                 return View();
             }
-            // 1. Tìm Nhân viên
+            // 1. Tìm Nhân viên => COMMENT LẠI THEO YÊU CẦU
+            /*
             var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
             if (nhanVien != null)
             {
@@ -73,8 +74,29 @@ namespace QuanLyVatTu_ASP.Controllers
                 // Khách hàng thì về Trang chủ (Home) chứ không vào Admin
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
+            */
 
-            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác";
+            // --- GÁN CỨNG TÀI KHOẢN THEO YÊU CẦU ---
+
+            // Admin: admin@gmail.com / 123456
+            if (email == "admin@gmail.com" && password == "123456")
+            {
+                HttpContext.Session.SetString("UserName", "Admin User");
+                HttpContext.Session.SetString("Email", email);
+                HttpContext.Session.SetString("Role", "Admin");
+                return RedirectToRoute("AdminDonHang");
+            }
+
+            // Client: client@gmail.com / 123456
+            if (email == "client@gmail.com" && password == "123456")
+            {
+                HttpContext.Session.SetString("UserName", "Client User");
+                HttpContext.Session.SetString("Email", email);
+                HttpContext.Session.SetString("Role", "Customer");
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
+
+            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác (Hardcoded Check)";
             return View();
         }
 
@@ -107,13 +129,18 @@ namespace QuanLyVatTu_ASP.Controllers
 
             try
             {
+                // var khachCu = _unitOfWork.KhachHangRepository.GetByLogin(email, ""); // Có thể cần comment check trùng nếu bỏ DB, nhưng user chỉ nói bỏ check mật khẩu/login. Để lại check trùng email cũng được, hoặc comment nốt. 
+                // Tạm thời user bảo "lấy thông tin ... từ DB" -> có thể hiểu là Login. Register vẫn cần insert?
+                // "comment lại các thành phần liên quan đến mã hóa mật khẩu" -> Done below.
+                
                 var khachCu = _unitOfWork.KhachHangRepository.GetByLogin(email, "");
                 string taiKhoanTuDong = email.Split('@')[0];
                 var newKhach = new QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
                 {
                     HoTen = hoTen,
                     Email = email,
-                    MatKhau = BCrypt.Net.BCrypt.HashPassword(password),
+                    // MatKhau = BCrypt.Net.BCrypt.HashPassword(password), // COMMENT MÃ HÓA
+                    MatKhau = password, // Lưu plain text
                     DiaChi = "",
                     SoDienThoai = "",
                     TaiKhoan = taiKhoanTuDong,
