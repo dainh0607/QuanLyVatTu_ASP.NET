@@ -27,6 +27,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [Column(TypeName = "nvarchar(50)")]
         [MaxLength(50)]
+        [MaxLength(50)]
         public string? PhuongThucDatCoc { get; set; }
 
         [Column(TypeName = "datetime")]
@@ -41,6 +42,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [ForeignKey("KhachHangId")]
         public KhachHang? KhachHang { get; set; }
+
+        [ForeignKey("NhanVienId")]
 
         [ForeignKey("NhanVienId")]
 
