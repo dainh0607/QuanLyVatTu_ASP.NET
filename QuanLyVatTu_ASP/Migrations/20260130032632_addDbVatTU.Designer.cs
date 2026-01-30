@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260130032632_addDbVatTU")]
+    partial class addDbVatTU
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<decimal>("DonGia")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<int>("MaDonHang")
                         .HasColumnType("int");
@@ -43,11 +46,11 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("SoTienDatCoc")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("ThanhTien")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("decimal(18, 0)")
                         .HasComputedColumnSql("[SoLuong] * [DonGia]", true);
 
                     b.HasKey("ID");
@@ -68,7 +71,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<decimal>("DonGia")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<int>("MaHoaDon")
                         .HasColumnType("int");
@@ -104,7 +107,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("KhachHangId")
+                    b.Property<int?>("KhachHangId")
                         .HasColumnType("int")
                         .HasColumnName("MaKhachHang");
 
@@ -118,9 +121,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("NhanVienId")
                         .HasColumnType("int")
@@ -130,12 +131,10 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal?>("SoTienDatCoc")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("TongTien")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
@@ -159,9 +158,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<decimal>("ChietKhau")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<int>("MaDonHang")
                         .HasColumnType("int");
@@ -173,36 +170,32 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("NgayLap")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("NgayLap")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnName("NgayLap");
 
                     b.Property<string>("PhuongThucThanhToan")
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("SoTienDatCoc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal?>("TienThueGTGT")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal?>("TongTienSauThue")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("TongTienTruocThue")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("TyLeThueGTGT")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(4,2)")
-                        .HasDefaultValue(10m);
+                        .HasColumnType("decimal(18, 0)");
 
                     b.HasKey("ID");
 
@@ -214,14 +207,10 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.ToTable("HoaDon", null, t =>
                         {
-                            t.HasCheckConstraint("CK_HoaDon_ChietKhau", "[ChietKhau] >= 0");
-
-                            t.HasCheckConstraint("CK_HoaDon_SoTienDatCoc", "[SoTienDatCoc] >= 0");
-
-                            t.HasCheckConstraint("CK_HoaDon_TongTienTruocThue", "[TongTienTruocThue] > 0");
-
-                            t.HasCheckConstraint("CK_HoaDon_TyLeThueGTGT", "[TyLeThueGTGT] IN (0, 10)");
+                            t.HasTrigger("Trigger_TinhToanHoaDon");
                         });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", b =>
@@ -233,9 +222,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<bool>("DangNhapGoogle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<string>("DiaChi")
                         .HasColumnType("nvarchar(255)");
@@ -257,9 +244,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SoDienThoai")
                         .HasColumnType("varchar(10)");
@@ -295,9 +280,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenLoaiVatTu")
                         .IsRequired()
@@ -327,9 +310,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("varchar(20)");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SoDienThoai")
                         .HasColumnType("varchar(10)");
@@ -374,9 +355,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("date");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SoDienThoai")
                         .IsRequired()
@@ -395,9 +374,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.HasIndex("TaiKhoan")
                         .IsUnique();
 
-                    b.HasIndex("NgaySinh", "CCCD", "SoDienThoai")
-                        .IsUnique();
-
                     b.ToTable("NhanVien", (string)null);
                 });
 
@@ -414,10 +390,10 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("GiaBan")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("GiaNhap")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<string>("MaHienThi")
                         .IsRequired()
@@ -433,9 +409,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("SoLuongTon")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("TenVatTu")
                         .IsRequired()
@@ -447,14 +421,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.HasIndex("MaNhaCungCap");
 
-                    b.ToTable("VatTu", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_VatTu_GiaBan", "[GiaBan] >= 0");
-
-                            t.HasCheckConstraint("CK_VatTu_GiaNhap", "[GiaNhap] >= 0");
-
-                            t.HasCheckConstraint("CK_VatTu_SoLuongTon", "[SoLuongTon] >= 0");
-                        });
+                    b.ToTable("VatTu", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietDonHang", b =>
@@ -499,9 +466,7 @@ namespace QuanLyVatTu_ASP.Migrations
                 {
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
                         .WithMany()
-                        .HasForeignKey("KhachHangId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KhachHangId");
 
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.NhanVien", "NhanVien")
                         .WithMany()
