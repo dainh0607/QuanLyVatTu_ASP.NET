@@ -111,8 +111,8 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.Property(e => e.TongTien).HasDefaultValue(0);
                 entity.Property(e => e.TrangThai).HasDefaultValue("Chờ xác nhận");
 
-                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.KhachHangId);
-                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.NhanVienId);
+                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.KhachHangId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.NhanVienId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // --- 7. ChiTietDonHang ---
@@ -126,7 +126,7 @@ namespace QuanLyVatTu_ASP.DataAccess
                     .WithMany(p => p.ChiTietDonHangs)
                     .HasForeignKey(d => d.MaDonHang);
 
-                entity.HasOne(d => d.VatTu).WithMany().HasForeignKey(d => d.MaVatTu);
+                entity.HasOne(d => d.VatTu).WithMany().HasForeignKey(d => d.MaVatTu).OnDelete(DeleteBehavior.Restrict);
             });
 
             // --- 8. HoaDon ---
@@ -148,9 +148,9 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.ToTable(t => t.HasCheckConstraint("CK_HoaDon_TyLeThueGTGT", "[TyLeThueGTGT] IN (0, 10)"));
 
                 // Relationships
-                entity.HasOne(d => d.DonHang).WithMany().HasForeignKey(d => d.MaDonHang);
-                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.MaNhanVien);
-                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.MaKhachHang);
+                entity.HasOne(d => d.DonHang).WithMany().HasForeignKey(d => d.MaDonHang).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.MaNhanVien).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.MaKhachHang).OnDelete(DeleteBehavior.Restrict);
                 
                 entity.Ignore("NgayTao"); // If it exists in BaseEntity but not in table schema request
             });
@@ -159,9 +159,13 @@ namespace QuanLyVatTu_ASP.DataAccess
                 .Property(p => p.ThanhTien)
                 .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
 
-            modelBuilder.Entity<ChiTietHoaDon>()
-                .Property(p => p.ThanhTien)
-                .HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
+            // --- 9. ChiTietHoaDon ---
+            modelBuilder.Entity<ChiTietHoaDon>(entity => 
+            {
+                entity.ToTable("ChiTietHoaDon");
+                entity.Property(p => p.ThanhTien).HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
+                entity.HasOne(d => d.VatTu).WithMany().HasForeignKey(d => d.MaVatTu).OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }
