@@ -61,7 +61,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<NhanVienCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<NhanVienCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var nv = await _context.NhanViens.FindAsync(id);
             if (nv == null) return null;
@@ -79,7 +79,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> CreateAsync(NhanVienCreateEditViewModel model)
+        public async Task<string?> CreateAsync(NhanVienCreateEditViewModel model)
         {
             if (await _context.NhanViens.AnyAsync(x => x.CCCD == model.CCCD))
                 return "CCCD này đã tồn tại.";
@@ -115,7 +115,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateAsync(int id, NhanVienCreateEditViewModel model)
+        public async Task<string?> UpdateAsync(int id, NhanVienCreateEditViewModel model)
         {
             var nhanVien = await _context.NhanViens.FindAsync(id);
             if (nhanVien == null) return "Nhân viên không tồn tại.";
@@ -150,7 +150,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> DeleteAsync(int id)
+        public async Task<string?> DeleteAsync(int id)
         {
             var nhanVien = await _context.NhanViens.FindAsync(id);
             if (nhanVien == null) return "Nhân viên không tồn tại";

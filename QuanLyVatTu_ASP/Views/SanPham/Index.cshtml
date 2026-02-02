@@ -16,7 +16,7 @@
                 <ul class="list-group">
                     @if (ViewBag.Categories != null)
                     {
-                        foreach (var cat in ViewBag.Categories as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>)
+                        foreach (var cat in (ViewBag.Categories as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>) ?? Enumerable.Empty<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>())
                         {
                             <li class="list-group-item"><a href="/SanPham?loaiId=@cat.ID">@cat.TenLoaiVatTu</a></li>
                         }

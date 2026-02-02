@@ -23,8 +23,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 .Select(d => new HoaDonViewModel.OrderForItem
                 {
                     DonHangId = d.ID,
-                    MaDonHang = d.MaHienThi,
-                    TenKhachHang = d.KhachHang.HoTen,
+                    MaDonHang = d.MaHienThi ?? $"DH{d.ID:0000}",
+                    TenKhachHang = d.KhachHang != null ? d.KhachHang.HoTen : "",
                     NgayDat = d.NgayDat,
                     TongTien = d.TongTien,
                     SoTienDatCoc = d.SoTienDatCoc ?? 0,
@@ -45,7 +45,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return new HoaDonViewModel { Orders = orders };
         }
 
-        public async Task<(string Error, int NewInvoiceId)> CreateInvoiceFromOrderAsync(int donHangId)
+        public async Task<(string? Error, int NewInvoiceId)> CreateInvoiceFromOrderAsync(int donHangId)
         {
             // 1. Lấy thông tin đơn hàng + chi tiết
             var donHang = await _context.DonHang
@@ -104,7 +104,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return (null, hoaDon.ID);
         }
 
-        public async Task<HoaDonDetailViewModel> GetInvoiceDetailAsync(int id)
+        public async Task<HoaDonDetailViewModel?> GetInvoiceDetailAsync(int id)
         {
             var hd = await _context.HoaDons
                 .Include(h => h.KhachHang)
@@ -119,8 +119,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 HoaDonId = hd.ID,
                 MaHoaDon = $"HD{hd.ID:0000}",
                 NgayLap = hd.NgayLap,
-                TenKhachHang = hd.KhachHang.HoTen,
-                DiaChiKhachHang = hd.KhachHang.DiaChi,
+                TenKhachHang = hd.KhachHang?.HoTen ?? "",
+                DiaChiKhachHang = hd.KhachHang?.DiaChi,
                 PhuongThucThanhToan = hd.PhuongThucThanhToan,
                 TongTienHang = hd.TongTienTruocThue,
                 ThueGTGT = hd.TienThueGTGT ?? 0, // Trigger DB tính

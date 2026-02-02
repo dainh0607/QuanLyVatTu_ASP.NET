@@ -7,7 +7,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
     {
         Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize);
 
-        Task<DonHangCreateEditViewModel> GetByIdForEditAsync(int id);
+        Task<DonHangCreateEditViewModel?> GetByIdForEditAsync(int id);
 
         Task CreateAsync(DonHangCreateEditViewModel model);
 

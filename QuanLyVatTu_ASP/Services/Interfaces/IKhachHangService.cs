@@ -6,12 +6,12 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
     {
         Task<KhachHangIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize);
 
-        Task<KhachHangCreateEditViewModel> GetByIdForEditAsync(int id);
+        Task<KhachHangCreateEditViewModel?> GetByIdForEditAsync(int id);
 
-        Task<string> CreateAsync(KhachHangCreateEditViewModel model);
+        Task<string?> CreateAsync(KhachHangCreateEditViewModel model);
 
-        Task<string> UpdateAsync(int id, KhachHangCreateEditViewModel model);
+        Task<string?> UpdateAsync(int id, KhachHangCreateEditViewModel model);
 
-        Task<string> DeleteAsync(int id);
+        Task<string?> DeleteAsync(int id);
     }
 }

@@ -58,7 +58,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<KhachHangCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<KhachHangCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var kh = await _context.KhachHangs.FindAsync(id);
             if (kh == null) return null;
@@ -74,7 +74,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> CreateAsync(KhachHangCreateEditViewModel model)
+        public async Task<string?> CreateAsync(KhachHangCreateEditViewModel model)
         {
             if (await _context.KhachHangs.AnyAsync(x => x.Email == model.Email))
                 return "Email này đã tồn tại.";
@@ -110,7 +110,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateAsync(int id, KhachHangCreateEditViewModel model)
+        public async Task<string?> UpdateAsync(int id, KhachHangCreateEditViewModel model)
         {
             var kh = await _context.KhachHangs.FindAsync(id);
             if (kh == null) return "Khách hàng không tồn tại.";
@@ -140,7 +140,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> DeleteAsync(int id)
+        public async Task<string?> DeleteAsync(int id)
         {
             var kh = await _context.KhachHangs.FindAsync(id);
             if (kh == null) return "Khách hàng không tồn tại";

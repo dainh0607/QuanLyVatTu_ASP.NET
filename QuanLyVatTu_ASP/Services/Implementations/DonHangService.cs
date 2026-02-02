@@ -29,9 +29,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.ToLower().Contains(keyword) ||
+                    (x.MaHienThi != null && x.MaHienThi.ToLower().Contains(keyword)) ||
                     (x.GhiChu != null && x.GhiChu.ToLower().Contains(keyword)) ||
-                    x.KhachHang.HoTen.ToLower().Contains(keyword));
+                    (x.KhachHang != null && x.KhachHang.HoTen.ToLower().Contains(keyword)));
             }
 
             var total = await query.CountAsync();
@@ -43,7 +43,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 {
                     ID = x.ID,
                     MaHienThi = x.MaHienThi ?? "DH" + x.ID.ToString("0000"),
-                    TenKhachHang = x.KhachHang.HoTen,
+                    TenKhachHang = x.KhachHang != null ? x.KhachHang.HoTen : "",
                     TenNhanVien = x.NhanVien != null ? x.NhanVien.HoTen : "",
                     NgayDat = x.NgayDat,
                     TongTien = x.TongTien,
@@ -66,7 +66,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<DonHangCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<DonHangCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var entity = await _context.DonHang.FindAsync(id);
             if (entity == null) return null;

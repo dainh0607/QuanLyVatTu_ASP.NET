@@ -31,8 +31,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     x.MaHienThi.ToLower().Contains(keyword) ||
                     x.TenVatTu.ToLower().Contains(keyword) ||
                     x.DonViTinh.ToLower().Contains(keyword) ||
-                    x.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(keyword) ||
-                    x.NhaCungCap.TenNhaCungCap.ToLower().Contains(keyword));
+                    (x.LoaiVatTu != null && x.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(keyword)) ||
+                    (x.NhaCungCap != null && x.NhaCungCap.TenNhaCungCap.ToLower().Contains(keyword)));
             }
 
             var total = await query.CountAsync();
@@ -66,7 +66,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<VatTuCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<VatTuCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var vt = await _context.VatTus
                     .Include(v => v.LoaiVatTu)
@@ -90,7 +90,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> CreateAsync(VatTuCreateEditViewModel model)
+        public async Task<string?> CreateAsync(VatTuCreateEditViewModel model)
         {
             if (await _context.VatTus.AnyAsync(x => x.TenVatTu == model.TenVatTu))
             {
@@ -121,7 +121,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateAsync(int id, VatTuCreateEditViewModel model)
+        public async Task<string?> UpdateAsync(int id, VatTuCreateEditViewModel model)
         {
             var vt = await _context.VatTus.FindAsync(id);
             if (vt == null) return "Vật tư không tồn tại";
@@ -145,7 +145,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> DeleteAsync(int id)
+        public async Task<string?> DeleteAsync(int id)
         {
             var vt = await _context.VatTus.FindAsync(id);
             if (vt == null) return "Vật tư không tồn tại";

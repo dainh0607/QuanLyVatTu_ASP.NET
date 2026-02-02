@@ -10,8 +10,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public class OrderForItem
         {
             public int DonHangId { get; set; }
-            public string MaDonHang { get; set; }
-            public string TenKhachHang { get; set; }
+            public string MaDonHang { get; set; } = string.Empty;
+            public string TenKhachHang { get; set; } = string.Empty;
             public DateTime NgayDat { get; set; }
             public decimal TongTien { get; set; }
             public decimal SoTienDatCoc { get; set; }
@@ -27,7 +27,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
     public class HoaDonDetailViewModel
     {
         public int HoaDonId { get; set; }
-        public string MaHoaDon { get; set; }
+        public string MaHoaDon { get; set; } = string.Empty;
         public DateTime NgayLap { get; set; }
 
         // Thông tin công ty 
@@ -36,10 +36,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public string MSTCongTy => "0373456789";
 
         // Thông tin khách hàng
-        public string TenKhachHang { get; set; }
-        public string DiaChiKhachHang { get; set; }
-        public string MSTKhachHang { get; set; }
-        public string PhuongThucThanhToan { get; set; }
+        public string TenKhachHang { get; set; } = string.Empty;
+        public string? DiaChiKhachHang { get; set; }
+        public string? MSTKhachHang { get; set; }
+        public string? PhuongThucThanhToan { get; set; }
 
         // Danh sách vật tư
         public List<ChiTietItem> ChiTiet { get; set; } = new List<ChiTietItem>();
@@ -52,8 +52,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public class ChiTietItem
         {
             public int STT { get; set; }
-            public string TenVatTu { get; set; }
-            public string DVT { get; set; }
+            public string TenVatTu { get; set; } = string.Empty;
+            public string DVT { get; set; } = string.Empty;
             public int SoLuong { get; set; }
             public decimal DonGia { get; set; }
             public decimal ThanhTien { get; set; }

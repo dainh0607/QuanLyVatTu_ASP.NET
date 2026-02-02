@@ -57,7 +57,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<LoaiVatTuCreateEditViewModel> GetByIdForEditAsync(int id)
+        public async Task<LoaiVatTuCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
             var loai = await _context.LoaiVatTus.FindAsync(id);
             if (loai == null) return null;
@@ -70,7 +70,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             };
         }
 
-        public async Task<string> CreateAsync(LoaiVatTuCreateEditViewModel model)
+        public async Task<string?> CreateAsync(LoaiVatTuCreateEditViewModel model)
         {
             if (await _context.LoaiVatTus.AnyAsync(x => x.TenLoaiVatTu == model.TenLoaiVatTu))
             {
@@ -90,7 +90,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> UpdateAsync(int id, LoaiVatTuCreateEditViewModel model)
+        public async Task<string?> UpdateAsync(int id, LoaiVatTuCreateEditViewModel model)
         {
             var loai = await _context.LoaiVatTus.FindAsync(id);
             if (loai == null) return "Loại vật tư không tồn tại";
@@ -107,7 +107,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return null;
         }
 
-        public async Task<string> DeleteAsync(int id)
+        public async Task<string?> DeleteAsync(int id)
         {
             var loai = await _context.LoaiVatTus
                 .Include(x => x.VatTus)

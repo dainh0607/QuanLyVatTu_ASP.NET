@@ -7,13 +7,11 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 {
     public class NhanVienRepository : GenericRepository<NhanVien>, INhanVienRepository
     {
-        private readonly AppDbContext _context;
-
         public NhanVienRepository(AppDbContext context) : base(context)
         {
         }
 
-        public NhanVien GetByLogin(string email, string password)
+        public NhanVien? GetByLogin(string email, string password)
         {
             var nhanVien = _context.NhanViens
                 .FirstOrDefault(x => x.Email == email || x.TaiKhoan == email);

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
@@ -27,7 +26,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [Column(TypeName = "nvarchar(50)")]
         [MaxLength(50)]
-        [MaxLength(50)]
         public string? PhuongThucDatCoc { get; set; }
 
         [Column(TypeName = "datetime")]
@@ -42,10 +40,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [ForeignKey("KhachHangId")]
         public KhachHang? KhachHang { get; set; }
-
-        [ForeignKey("NhanVienId")]
-
-        [ForeignKey("NhanVienId")]
 
         [ForeignKey("NhanVienId")]
         public NhanVien? NhanVien { get; set; }
