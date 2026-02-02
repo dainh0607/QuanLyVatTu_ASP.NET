@@ -16,14 +16,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu
 
         [Required(ErrorMessage = "Vui lòng nhập giá nhập")]
         [Display(Name = "Giá nhập")]
-        public decimal GiaNhap { get; set; }
+        public decimal? GiaNhap { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập giá bán")]
         [Display(Name = "Giá bán")]
-        public decimal GiaBan { get; set; }
+        public decimal? GiaBan { get; set; }
 
         [Display(Name = "Số lượng tồn")]
-        public int SoLuongTon { get; set; } = 0;
+        [Range(0, int.MaxValue, ErrorMessage = "Số lượng tồn phải lớn hơn hoặc bằng 0")]
+        public int? SoLuongTon { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn loại vật tư")]
         [Display(Name = "Loại vật tư")]

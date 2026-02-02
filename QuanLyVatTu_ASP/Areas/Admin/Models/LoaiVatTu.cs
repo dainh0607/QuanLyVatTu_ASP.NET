@@ -8,7 +8,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(20)")]
         public string MaHienThi { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập tên loại vật tư")]
         [Column(TypeName = "nvarchar(100)")]
         public string TenLoaiVatTu { get; set; } = null!;
 

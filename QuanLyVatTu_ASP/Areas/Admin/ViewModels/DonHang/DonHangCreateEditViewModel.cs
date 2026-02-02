@@ -21,12 +21,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public DateTime NgayDat { get; set; }
 
         [Display(Name = "Tổng tiền")]
-        public decimal TongTien { get; set; }
+        public decimal? TongTien { get; set; }
 
         [Display(Name = "Số tiền đặt cọc")]
         public decimal? SoTienDatCoc { get; set; }
 
-        public decimal TiềnCọcTốiThiểu => TongTien * 0.1M;
+        public decimal TiềnCọcTốiThiểu => (TongTien ?? 0) * 0.1M;
 
         [Display(Name = "Phương thức đặt cọc")]
         public string? PhuongThucDatCoc { get; set; }

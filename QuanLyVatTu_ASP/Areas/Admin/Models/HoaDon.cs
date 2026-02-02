@@ -14,16 +14,14 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [ForeignKey("NhanVien")]
         public int MaNhanVien { get; set; }
 
-        [Required]
         [ForeignKey("KhachHang")]
         public int MaKhachHang { get; set; }
 
-        [Required]
         [Column("NgayLap")]
         public DateTime NgayLap { get; set; } = DateTime.Now;
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal TongTienTruocThue { get; set; }
+        public decimal? TongTienTruocThue { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -38,15 +36,14 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public decimal? TongTienSauThue { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ChietKhau { get; set; } = 0;
+        public decimal? ChietKhau { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal SoTienDatCoc { get; set; } = 0;
+        public decimal? SoTienDatCoc { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
         public string? PhuongThucThanhToan { get; set; }
 
-        [Required]
         [Column(TypeName = "nvarchar(50)")]
         public string TrangThai { get; set; } = "Đã thanh toán";
 

@@ -41,7 +41,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     ID = x.ID,
                     MaHienThi = x.MaHienThi,
                     TenNhaCungCap = x.TenNhaCungCap,
-                    Email = x.Email,
+                    Email = x.Email ?? "",
                     SoDienThoai = x.SoDienThoai,
                     DiaChi = x.DiaChi,
                     SoLuongVatTuCungCap = x.VatTus.Count,
@@ -90,9 +90,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 MaHienThi = "NCC" + new Random().Next(1000, 9999),
                 TenNhaCungCap = model.TenNhaCungCap,
-                Email = model.Email,
-                SoDienThoai = model.SoDienThoai,
-                DiaChi = model.DiaChi,
+                Email = model.Email ?? "",
+                SoDienThoai = model.SoDienThoai ?? "",
+                DiaChi = model.DiaChi ?? "",
                 NgayTao = DateTime.Now
             };
 
@@ -118,9 +118,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
 
             ncc.TenNhaCungCap = model.TenNhaCungCap;
-            ncc.Email = model.Email;
-            ncc.SoDienThoai = model.SoDienThoai;
-            ncc.DiaChi = model.DiaChi;
+            ncc.Email = model.Email ?? "";
+            ncc.SoDienThoai = model.SoDienThoai ?? "";
+            ncc.DiaChi = model.DiaChi ?? "";
 
             await _context.SaveChangesAsync();
             return null;

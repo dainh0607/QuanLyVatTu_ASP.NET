@@ -56,7 +56,7 @@
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Tổng tiền (Tự động tính)</label>
                                     <input asp-for="TongTien" class="form-control form-control-lg rounded-3 text-end text-danger fw-bold bg-light"
-                                           readonly value="@Model.TongTien.ToString("N0")" />
+                                           readonly value="@(Model.TongTien?.ToString("N0") ?? "0")" />
                                     <small class="text-muted fst-italic">* Tổng tiền được tính từ chi tiết đơn hàng.</small>
                                 </div>
                                 <div class="mb-4">

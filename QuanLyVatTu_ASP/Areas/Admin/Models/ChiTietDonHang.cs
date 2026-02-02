@@ -15,15 +15,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Required]
         public int MaVatTu { get; set; }
 
-        [Required]
-        public int SoLuong { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập số lượng")]
+        public int? SoLuong { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? SoTienDatCoc { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập đơn giá")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal DonGia { get; set; }
+        public decimal? DonGia { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "decimal(18,2)")]

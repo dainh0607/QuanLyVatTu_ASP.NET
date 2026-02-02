@@ -106,7 +106,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 NgayTao = DateTime.Now,
 
                 // MatKhau = BCryptNet.HashPassword(model.MatKhau)
-                MatKhau = model.MatKhau
+                MatKhau = model.MatKhau ?? ""
             };
 
             _context.NhanViens.Add(nhanVien);
@@ -143,7 +143,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (!string.IsNullOrEmpty(model.MatKhau))
             {
                 // nhanVien.MatKhau = BCryptNet.HashPassword(model.MatKhau);
-                nhanVien.MatKhau = model.MatKhau;
+                nhanVien.MatKhau = model.MatKhau ?? "";
             }
 
             await _context.SaveChangesAsync();

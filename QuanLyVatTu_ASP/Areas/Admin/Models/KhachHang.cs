@@ -12,11 +12,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(20)")]
         public string MaHienThi { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập họ tên")]
         [Column(TypeName = "nvarchar(100)")]
         public string HoTen { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập email")]
         [Column(TypeName = "varchar(100)")]
         public string Email { get; set; } = null!;
 
@@ -26,11 +26,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(255)")]
         public string? DiaChi { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập tài khoản")]
         [Column(TypeName = "varchar(50)")]
         public string TaiKhoan { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
         [Column(TypeName = "varchar(50)")]
         public string MatKhau { get; set; } = null!;
 

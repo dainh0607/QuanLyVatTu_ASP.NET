@@ -47,9 +47,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     MaHienThi = x.MaHienThi,
                     TenVatTu = x.TenVatTu,
                     DonViTinh = x.DonViTinh,
-                    GiaNhap = x.GiaNhap,
-                    GiaBan = x.GiaBan,
-                    SoLuongTon = x.SoLuongTon,
+                    GiaNhap = x.GiaNhap ?? 0,
+                    GiaBan = x.GiaBan ?? 0,
+                    SoLuongTon = x.SoLuongTon ?? 0,
                     TenLoaiVatTu = x.LoaiVatTu != null ? x.LoaiVatTu.TenLoaiVatTu : "",
                     TenNhaCungCap = x.NhaCungCap != null ? x.NhaCungCap.TenNhaCungCap : "",
                     NgayTao = x.NgayTao
