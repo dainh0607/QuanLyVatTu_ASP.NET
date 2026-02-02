@@ -19,7 +19,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
             if (loaiId.HasValue)
             {
-                products = products.Where(p => p.ID == loaiId.Value);
+                products = products.Where(p => p.MaLoaiVatTu == loaiId.Value);
             }
             ViewBag.Categories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
 

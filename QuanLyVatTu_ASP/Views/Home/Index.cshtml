@@ -43,37 +43,32 @@
         </div>
     </section>
 
+@using QuanLyVatTu_ASP.Repositories
+@inject IUnitOfWork _unitOfWork
+@{
+    var categories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
+    var featureCategories = categories.Take(4).ToList();
+}
     <section class="mb-5">
         <h3 class="fw-bold mb-4">Danh mục</h3>
         <div class="row g-3">
-            <div class="col-md-3 col-6">
-                <a href="/SanPham?category=sofa" class="d-block text-center">
-                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
-                    <h6 class="fw-bold text-dark mt-2">Sofa</h6>
-                    <small class="text-muted">120+ sản phẩm</small>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/SanPham?category=ban" class="d-block text-center">
-                    <img src="https://images.unsplash.com/photo-1577140917170-285929fb55b7?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
-                    <h6 class="fw-bold text-dark mt-2">Bàn ăn</h6>
-                    <small class="text-muted">85+ sản phẩm</small>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/SanPham?category=giuong" class="d-block text-center">
-                    <img src="https://images.unsplash.com/photo-1505693416388-b0346ef1218b?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
-                    <h6 class="fw-bold text-dark mt-2">Phòng ngủ</h6>
-                    <small class="text-muted">95+ sản phẩm</small>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/SanPham?category=vanphong" class="d-block text-center">
-                    <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
-                    <h6 class="fw-bold text-dark mt-2">Văn phòng</h6>
-                    <small class="text-muted">70+ sản phẩm</small>
-                </a>
-            </div>
+            @if(featureCategories != null && featureCategories.Any())
+            {
+                foreach(var cat in featureCategories)
+                {
+                    <div class="col-md-3 col-6">
+                        <a href="/SanPham?loaiId=@cat.ID" class="d-block text-center">
+                            <img src="https://placehold.co/400x200?text=@cat.TenLoaiVatTu" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
+                            <h6 class="fw-bold text-dark mt-2">@cat.TenLoaiVatTu</h6>
+                            <small class="text-muted">Xem ngay</small>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Chưa có danh mục nào.</p>
+            }
         </div>
     </section>
 
@@ -136,7 +131,7 @@
     function addToCartIndex(id) {
         $.post('/GioHang/AddToCart', { productId: id, quantity: 1 }, function(res) {
             if(res.success) {
-                alert("Đã thêm vào giỏ hàng!");
+                showGlobalMessage("Đã thêm vào giỏ hàng!", "Thành công", "success");
                 // Cập nhật số lượng trên icon giỏ hàng nếu cần
                 if(res.count) $('.cart-count').text(res.count);
             }

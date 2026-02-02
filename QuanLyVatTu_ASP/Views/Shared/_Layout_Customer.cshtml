@@ -1,17 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using QuanLyVatTu_ASP.Repositories
+@inject IUnitOfWork _unitOfWork
+@{
+    var _layoutCategories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
+}
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Cửa hàng vật tư</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
-
-    <title>@ViewData["Title"] - Quản lý vật tư</title>
     <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/user/css/cart-dropdown.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
 </head>
 <body>
 <header class="main-header">
@@ -194,10 +196,24 @@
     <div class="bottom-nav">
         <div class="container">
             <ul class="nav-menu">
-                <li><a href="/" class="nav-link">Trang chủ</a></li>
-                <li><a href="/SanPham" class="nav-link">Danh mục sản phẩm</a></li>
-                <li><a href="/Customer/About" class="nav-link">Giới thiệu</a></li>
-                <li><a href="/Contact" class="nav-link">Liên hệ</a></li>
+                <li class="nav-item"><a href="/" class="nav-link">Trang chủ</a></li>
+                <li class="nav-item">
+                    <a href="/SanPham" class="nav-link">
+                        Danh mục <i class="fas fa-chevron-down ms-1" style="font-size: 0.8em;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/SanPham" class="dropdown-item">Tất cả sản phẩm</a>
+                        @if (_layoutCategories != null)
+                        {
+                            foreach (var cat in _layoutCategories)
+                            {
+                                <a href="/SanPham?loaiId=@cat.ID" class="dropdown-item">@cat.TenLoaiVatTu</a>
+                            }
+                        }
+                    </div>
+                </li>
+                <li class="nav-item"><a href="/Customer/About" class="nav-link">Giới thiệu</a></li>
+                <li class="nav-item"><a href="/Contact" class="nav-link">Liên hệ</a></li>
             </ul>
         </div>
     </div>
@@ -274,61 +290,175 @@
     </div>
 </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Global Message Modal -->
+    <div class="modal fade" id="globalMessageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="globalMessageTitle">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-info-circle text-primary" style="font-size: 3rem;" id="globalMessageIcon"></i>
+                    </div>
+                    <p id="globalMessageContent" class="fs-5">Nội dung thông báo</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-primary px-4 rounded-pill" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Confirm Modal -->
+    <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="globalConfirmTitle">Xác nhận</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <p id="globalConfirmContent" class="fs-5">Bạn có chắc chắn muốn thực hiện?</p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger px-4 rounded-pill" id="globalConfirmBtn">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/user/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/user/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     @await RenderSectionAsync("Styles", required: false)
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
-        });
+        // Global variables for Modals
+        var confirmCallback = null;
+        var messageModal = null;
+        var confirmModal = null;
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.trim();
-            const suggestions = document.getElementById('searchSuggestions');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('mobileMenuToggle');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    const nav = document.getElementById('mainNav');
+                    if (nav) nav.classList.toggle('active');
+                });
+            }
 
-            if (searchTerm.length > 2) {
-                // Hiển thị gợi ý tìm kiếm
-                suggestions.style.display = 'block';
-                // Gọi API tìm kiếm ở đây
-            } else {
-                suggestions.style.display = 'none';
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.trim();
+                    const suggestions = document.getElementById('searchSuggestions');
+                    if (suggestions) {
+                        if (searchTerm.length > 2) {
+                            suggestions.style.display = 'block';
+                        } else {
+                            suggestions.style.display = 'none';
+                        }
+                    }
+                });
+            }
+            
+            // User dropdown
+            document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+                const toggle = dropdown.querySelector('.user-info');
+                const menu = dropdown.querySelector('.user-menu');
+                if (toggle && menu) {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        menu.classList.toggle('show');
+                    });
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+                     const menu = dropdown.querySelector('.user-menu');
+                     if (menu && !dropdown.contains(e.target)) {
+                         menu.classList.remove('show');
+                     }
+                });
+            });
+
+            // Initialize Modals
+            const msgEl = document.getElementById('globalMessageModal');
+            if (msgEl) messageModal = new bootstrap.Modal(msgEl);
+
+            const confirmEl = document.getElementById('globalConfirmModal');
+            if (confirmEl) confirmModal = new bootstrap.Modal(confirmEl);
+
+            // Confirm Button Listener
+            const confirmBtn = document.getElementById('globalConfirmBtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', function() {
+                    if (confirmCallback) {
+                        confirmCallback();
+                    }
+                    if (confirmModal) confirmModal.hide();
+                });
+            }
+
+            // Quick cart preview
+            const cartIcon = document.querySelector('.cart-icon');
+            if(cartIcon) {
+                 cartIcon.addEventListener('mouseenter', function() {
+                    // Preview logic
+                });
             }
         });
 
-        // User dropdown
-        document.querySelectorAll('.user-dropdown').forEach(dropdown => {
-            const toggle = dropdown.querySelector('.user-info');
-            const menu = dropdown.querySelector('.user-menu');
-
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                menu.classList.toggle('show');
-            });
-
-            // Đóng dropdown khi click ra ngoài
-            document.addEventListener('click', function(e) {
-                if (!dropdown.contains(e.target)) {
-                    menu.classList.remove('show');
+        // Global Helper Functions attached to window
+        window.showGlobalMessage = function(message, title = "Thông báo", type = "info") {
+            const contentEl = document.getElementById('globalMessageContent');
+            const titleEl = document.getElementById('globalMessageTitle');
+            const iconEl = document.getElementById('globalMessageIcon');
+            
+            if (contentEl) contentEl.innerText = message;
+            if (titleEl) titleEl.innerText = title;
+            
+            if (iconEl) {
+                iconEl.className = ''; // Reset
+                if (type === 'success') {
+                    iconEl.className = 'fas fa-check-circle text-success';
+                    iconEl.style.fontSize = '3rem';
+                } else if (type === 'error') {
+                    iconEl.className = 'fas fa-times-circle text-danger';
+                    iconEl.style.fontSize = '3rem';
+                } else {
+                    iconEl.className = 'fas fa-info-circle text-primary';
+                    iconEl.style.fontSize = '3rem';
                 }
-            });
-        });
+            }
+            
+            if (messageModal) messageModal.show();
+        };
 
-        // Update cart count
+        window.showGlobalConfirm = function(message, callback) {
+            const contentEl = document.getElementById('globalConfirmContent');
+            if (contentEl) contentEl.innerText = message;
+            
+            confirmCallback = callback;
+            
+            if (confirmModal) confirmModal.show();
+        };
+
         function updateCartCount(count) {
             document.querySelectorAll('.cart-count, .badge').forEach(el => {
                 el.textContent = count;
             });
         }
-
-        // Quick cart preview
-        document.querySelector('.cart-icon').addEventListener('mouseenter', function() {
-            // Hiển thị preview giỏ hàng
-        });
     </script>
 </body>
 </html>

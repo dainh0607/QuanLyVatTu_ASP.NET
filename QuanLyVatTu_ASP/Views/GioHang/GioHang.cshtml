@@ -103,7 +103,8 @@
                                                    min="1"
                                                    max="99"
                                                    readonly 
-                                                   data-item-id="@item.VatTuId" />
+                                                   data-item-id="@item.VatTuId"
+                                                   data-price="@item.DonGia" />
                                             <button class="qty-btn qty-increase" onclick="updateQuantity(@item.VatTuId, 1)">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
@@ -143,7 +144,7 @@
                         <!-- Subtotal -->
                         <div class="summary-row">
                             <span class="summary-label">Tạm tính</span>
-                            <span class="summary-value">@subtotal.ToString("N0")₫</span>
+                            <span class="summary-value" id="cart-subtotal">@subtotal.ToString("N0")₫</span>
                         </div>
 
                         <!-- Discount Code Section -->
@@ -195,7 +196,7 @@
                         <!-- Total -->
                         <div class="summary-total-row">
                             <span class="total-label">Tổng cộng</span>
-                            <span class="total-value">@total.ToString("N0")₫</span>
+                            <span class="total-value" id="cart-total">@total.ToString("N0")₫</span>
                         </div>
 
                         <!-- Checkout Button -->
@@ -252,36 +253,77 @@
             
             input.value = newQty;
             
-            // Animate the row
+            // Calculate new line total locally
+            const price = parseFloat(input.dataset.price);
+            const lineTotal = price * newQty;
+            
+            // Update line total display
             const row = document.querySelector(`[data-item-id="${productId}"]`);
+            const totalEl = row.querySelector('.total-amount');
+            if(totalEl) {
+                totalEl.textContent = lineTotal.toLocaleString('vi-VN') + '₫';
+            }
+
+            // Update cart summary
+            updateCartSummary();
+
+            // Animate the row
             row.style.transform = 'scale(0.98)';
             setTimeout(() => row.style.transform = 'scale(1)', 200);
             
             // Show toast
-            showToast('Đã cập nhật số lượng');
+            // showToast('Đã cập nhật số lượng'); // Optional: hide toast to avoid spam
             
-            // AJAX call to update backend would go here
-            // $.post('/GioHang/UpdateQuantity', { productId, quantity: newQty });
+            // AJAX call to update backend (silent)
+             $.post('/GioHang/UpdateQuantity', { productId, quantity: newQty });
+        }
+
+        // Calculate and update cart totals
+        function updateCartSummary() {
+            let subtotal = 0;
+            const rows = document.querySelectorAll('.cart-item-row');
+            
+            rows.forEach(row => {
+                const input = row.querySelector('.qty-input');
+                if (input) {
+                    const qty = parseInt(input.value) || 0;
+                    const price = parseFloat(input.dataset.price) || 0;
+                    subtotal += qty * price;
+                }
+            });
+            
+            const discount = 0; // Get discount if applied
+            const total = subtotal - discount;
+            
+            // Update DOM
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            
+            if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString('vi-VN') + '₫';
+            if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN') + '₫';
         }
 
         // Remove item confirmation
         function confirmRemoveItem(productId, productName) {
-            if (confirm(`Bạn có chắc muốn xóa "${productName}" khỏi giỏ hàng?`)) {
+            showGlobalConfirm(`Bạn có chắc muốn xóa "${productName}" khỏi giỏ hàng?`, function() {
                 const row = document.querySelector(`[data-item-id="${productId}"]`);
                 row.style.opacity = '0';
                 row.style.transform = 'translateX(100px)';
                 
                 setTimeout(() => {
                     row.remove();
-                    showToast('Đã xóa sản phẩm khỏi giỏ hàng');
+                    showGlobalMessage('Đã xóa sản phẩm khỏi giỏ hàng', 'Thành công', 'success'); 
                     
+                    // Recalculate totals
+                    updateCartSummary();
+
                     // Check if cart is empty
                     checkEmptyCart();
                 }, 300);
                 
                 // AJAX call would go here
                 // $.post('/GioHang/RemoveItem', { productId });
-            }
+            });
         }
 
         // Toggle discount form
@@ -303,7 +345,7 @@
             const code = document.getElementById('discountCode').value.trim();
             
             if (code === '') {
-                alert('Vui lòng nhập mã giảm giá');
+                showGlobalMessage('Vui lòng nhập mã giảm giá', 'Lỗi', 'error');
                 return;
             }
             
