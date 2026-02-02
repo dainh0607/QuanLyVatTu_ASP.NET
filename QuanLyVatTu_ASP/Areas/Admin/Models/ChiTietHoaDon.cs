@@ -17,12 +17,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [ForeignKey("VatTu")]
         public int MaVatTu { get; set; }
 
-        [Required]
-        public int SoLuong { get; set; }
+        public int? SoLuong { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal DonGia { get; set; }
+        public decimal? DonGia { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "decimal(18,2)")]

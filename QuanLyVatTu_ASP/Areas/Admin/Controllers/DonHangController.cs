@@ -92,7 +92,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                     await LoadDropdownData(model.KhachHangId, model.NhanVienId);
                     return View(model);
                 }
-                decimal tienCocToiThieu = donHangGoc.TongTien * 0.1M;
+                decimal tienCocToiThieu = (donHangGoc.TongTien ?? 0) * 0.1M;
 
                 if (model.TrangThai == "Đã xác nhận" && model.SoTienDatCoc < tienCocToiThieu)
                 {

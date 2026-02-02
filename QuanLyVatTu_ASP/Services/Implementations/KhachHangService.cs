@@ -92,13 +92,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 MaHienThi = maHienThiAuto,
                 HoTen = model.HoTen,
-                Email = model.Email,
-                SoDienThoai = model.SoDienThoai,
-                DiaChi = model.DiaChi,
+                Email = model.Email ?? "",
+                SoDienThoai = model.SoDienThoai ?? "",
+                DiaChi = model.DiaChi ?? "",
                 TaiKhoan = model.TaiKhoan,
 
                 // MatKhau = BCryptNet.HashPassword(model.MatKhau),
-                MatKhau = model.MatKhau,
+                MatKhau = model.MatKhau ?? "",
 
                 DangNhapGoogle = false,
                 NgayTao = DateTime.Now
@@ -125,15 +125,15 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 return "SĐT đã được sử dụng bởi khách hàng khác.";
 
             kh.HoTen = model.HoTen;
-            kh.Email = model.Email;
-            kh.SoDienThoai = model.SoDienThoai;
-            kh.DiaChi = model.DiaChi;
+            kh.Email = model.Email ?? "";
+            kh.SoDienThoai = model.SoDienThoai ?? "";
+            kh.DiaChi = model.DiaChi ?? "";
             kh.TaiKhoan = model.TaiKhoan;
 
             if (!string.IsNullOrEmpty(model.MatKhau))
             {
                 // kh.MatKhau = BCryptNet.HashPassword(model.MatKhau);
-                kh.MatKhau = model.MatKhau;
+                kh.MatKhau = model.MatKhau ?? "";
             }
 
             await _context.SaveChangesAsync();

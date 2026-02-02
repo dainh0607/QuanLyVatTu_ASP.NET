@@ -8,24 +8,24 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(20)")]
         public string MaHienThi { get; set; } = string.Empty;
         
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập tên vật tư")]
         [Column(TypeName = "nvarchar(100)")]
         public string TenVatTu { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập đơn vị tính")]
         [Column(TypeName = "nvarchar(50)")]
         public string DonViTinh { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập giá nhập")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal GiaNhap { get; set; }
+        public decimal? GiaNhap { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập giá bán")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal GiaBan { get; set; }
+        public decimal? GiaBan { get; set; }
 
-        [Required]
-        public int SoLuongTon { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập số lượng tồn")]
+        public int? SoLuongTon { get; set; }
 
         [NotMapped]
         public string? MoTa
@@ -34,13 +34,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
             get { return LoaiVatTu?.MoTa; }
         }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn loại vật tư")]
         public int MaLoaiVatTu { get; set; }
 
         [ForeignKey("MaLoaiVatTu")]
         public virtual LoaiVatTu? LoaiVatTu { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn nhà cung cấp")]
         public int MaNhaCungCap { get; set; }
 
         [ForeignKey("MaNhaCungCap")]

@@ -14,12 +14,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column("MaNhanVien")]
         public int? NhanVienId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn ngày đặt hàng")]
         [Column(TypeName = "datetime")]
         public DateTime NgayDat { get; set; } = DateTime.Now;
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal TongTien { get; set; } = 0;
+        public decimal? TongTien { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? SoTienDatCoc { get; set; }
@@ -31,7 +31,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "datetime")]
         public DateTime? NgayDatCoc { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn trạng thái đơn hàng")]
         [Column(TypeName = "nvarchar(50)")]
         public string TrangThai { get; set; } = "Chờ xác nhận";
 

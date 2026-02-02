@@ -67,7 +67,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             // 4. Calculate Stats
             var model = new DashboardViewModel
             {
-                TotalRevenue = rawData.Sum(x => x.TongTien),
+                TotalRevenue = rawData.Sum(x => x.TongTien ?? 0),
                 TotalOrders = rawData.Count,
                 PaidOrders = rawData.Count(x => x.TrangThai == "Hoàn thành" || x.TrangThai == "Đã thanh toán"),
 
@@ -88,7 +88,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 Ngay = x.NgayDat,
                 KhachHang = x.KhachHang?.HoTen ?? "Khách vãng lai",
                 NhanVien = x.NhanVien?.HoTen ?? "Chưa phân công",
-                TongTien = x.TongTien,
+                TongTien = x.TongTien ?? 0,
                 TrangThai = x.TrangThai ?? "Mới tạo"
             }).ToList();
 
@@ -99,7 +99,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 .Select(g => new
                 {
                     DateLabel = g.Key.ToString("MM-dd"),
-                    DailyRevenue = g.Sum(x => x.TongTien)
+                    DailyRevenue = g.Sum(x => x.TongTien ?? 0)
                 })
                 .ToList();
 

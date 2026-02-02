@@ -39,8 +39,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     MaCode = v.ID.ToString("VT000"),
                     TenVatTu = v.TenVatTu,
                     TenLoai = v.LoaiVatTu != null ? v.LoaiVatTu.TenLoaiVatTu : "Chưa phân loại",
-                    SoLuongTon = v.SoLuongTon,
-                    GiaBan = v.GiaBan
+                    SoLuongTon = v.SoLuongTon ?? 0,
+                    GiaBan = v.GiaBan ?? 0
                 })
                 .ToListAsync();
 
@@ -51,8 +51,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 {
                     MaVatTu = c.MaVatTu,
                     TenVatTu = c.VatTu.TenVatTu,
-                    SoLuong = c.SoLuong,
-                    DonGia = c.DonGia
+                    SoLuong = c.SoLuong ?? 0,
+                    DonGia = c.DonGia ?? 0
                 })
                 .ToListAsync();
             var donHang = await _context.DonHang
@@ -144,7 +144,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 var tongTien = await _context.ChiTietDonHangs
                     .Where(ct => ct.MaDonHang == maDonHang)
-                    .SumAsync(ct => ct.SoLuong * ct.DonGia);
+                    .SumAsync(ct => (ct.SoLuong ?? 0) * (ct.DonGia ?? 0));
 
                 donHang.TongTien = tongTien;
                 _context.Update(donHang);

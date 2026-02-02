@@ -33,7 +33,7 @@
                 <h1 class="fw-bold h3 mb-2">@Model.TenVatTu</h1>
                 
                 <div class="mb-3">
-                    <span class="text-warning fw-bold h4">@Model.GiaBan.ToString("N0")đ</span>
+                    <span class="text-warning fw-bold h4">@(Model.GiaBan?.ToString("N0") ?? "0")đ</span>
                 </div>
 
                 <div class="mb-3 text-muted" style="font-size: 0.9rem;">

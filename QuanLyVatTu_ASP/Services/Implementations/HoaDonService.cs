@@ -26,7 +26,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     MaDonHang = d.MaHienThi ?? $"DH{d.ID:0000}",
                     TenKhachHang = d.KhachHang != null ? d.KhachHang.HoTen : "",
                     NgayDat = d.NgayDat,
-                    TongTien = d.TongTien,
+                    TongTien = d.TongTien ?? 0,
                     SoTienDatCoc = d.SoTienDatCoc ?? 0,
                     // Logic tìm xem đơn này đã có hóa đơn chưa
                     HoaDonId = _context.HoaDons
@@ -61,7 +61,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
 
             // 3. Kiểm tra tỷ lệ đặt cọc (Logic nghiệp vụ)
-            decimal tyLe = donHang.TongTien > 0 ? ((donHang.SoTienDatCoc ?? 0) / donHang.TongTien) : 0;
+            decimal tyLe = (donHang.TongTien ?? 0) > 0 ? ((donHang.SoTienDatCoc ?? 0) / (donHang.TongTien ?? 0)) : 0;
             if (tyLe < 0.1m)
             {
                 return ($"Chưa đủ điều kiện! Khách mới cọc {tyLe:P0}. Cần tối thiểu 10%.", 0);
@@ -74,7 +74,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 MaNhanVien = donHang.NhanVienId ?? 1, // Mặc định 1 nếu null (cần cẩn thận chỗ này tùy data thật)
                 MaKhachHang = donHang.KhachHangId,
                 NgayLap = DateTime.Now,
-                TongTienTruocThue = donHang.TongTien,
+                TongTienTruocThue = donHang.TongTien ?? 0,
                 TyLeThueGTGT = 10,
                 ChietKhau = 0,
                 SoTienDatCoc = donHang.SoTienDatCoc ?? 0,
@@ -91,9 +91,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 MaHoaDon = hoaDon.ID, // ID vừa sinh ra ở trên
                 MaVatTu = ct.MaVatTu,
-                SoLuong = ct.SoLuong,
-                DonGia = ct.DonGia,
-                ThanhTien = ct.DonGia * ct.SoLuong
+                SoLuong = ct.SoLuong ?? 0,
+                DonGia = ct.DonGia ?? 0,
+                ThanhTien = (ct.DonGia ?? 0) * (ct.SoLuong ?? 0)
             }).ToList();
 
             // Lưu lần 2
@@ -122,7 +122,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 TenKhachHang = hd.KhachHang?.HoTen ?? "",
                 DiaChiKhachHang = hd.KhachHang?.DiaChi,
                 PhuongThucThanhToan = hd.PhuongThucThanhToan,
-                TongTienHang = hd.TongTienTruocThue,
+                TongTienHang = hd.TongTienTruocThue ?? 0,
                 ThueGTGT = hd.TienThueGTGT ?? 0, // Trigger DB tính
                 TongThanhToan = hd.TongTienSauThue ?? 0, // Trigger DB tính
                 ChiTiet = hd.ChiTietHoaDons.Select((ct, index) => new HoaDonDetailViewModel.ChiTietItem
@@ -130,9 +130,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     STT = index + 1,
                     TenVatTu = ct.VatTu.TenVatTu,
                     DVT = ct.VatTu.DonViTinh,
-                    SoLuong = ct.SoLuong,
-                    DonGia = ct.DonGia,
-                    ThanhTien = ct.SoLuong * ct.DonGia
+                    SoLuong = ct.SoLuong ?? 0,
+                    DonGia = ct.DonGia ?? 0,
+                    ThanhTien = (ct.SoLuong ?? 0) * (ct.DonGia ?? 0)
                 }).ToList()
             };
         }
@@ -144,7 +144,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             // 1. TienThueGTGT
             // Logic: (TongTienTruocThue * TyLeThueGTGT) / 100
             // Round 2, AwayFromZero
-            decimal taxAmount = (hoaDon.TongTienTruocThue * hoaDon.TyLeThueGTGT) / 100m;
+            decimal taxAmount = ((hoaDon.TongTienTruocThue ?? 0) * hoaDon.TyLeThueGTGT) / 100m;
             hoaDon.TienThueGTGT = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero);
 
             // 2. TongTienSauThue
@@ -153,7 +153,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             // Usually simpler to sum components.
             // Prompt formula: TongTienTruocThue + (TongTienTruocThue * TyLeThueGTGT / 100) - (ChietKhau ?? 0)
             
-            decimal calculatedTotal = hoaDon.TongTienTruocThue + (hoaDon.TienThueGTGT ?? 0) - hoaDon.ChietKhau;
+            decimal calculatedTotal = (hoaDon.TongTienTruocThue ?? 0) + (hoaDon.TienThueGTGT ?? 0) - (hoaDon.ChietKhau ?? 0);
             hoaDon.TongTienSauThue = Math.Round(calculatedTotal, 2, MidpointRounding.AwayFromZero);
         }
     }

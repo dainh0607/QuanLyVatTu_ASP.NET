@@ -496,7 +496,7 @@
                                                 <span class="address-type-badge" style="background: @GetStatusColor(order.TrangThai); color: white;">@order.TrangThai</span>
                                             </div>
                                             <p class="address-text" style="margin-bottom: 8px;">
-                                                <strong style="color: #111827;">Tổng tiền: <span style="color: #ef4444;">@order.TongTien.ToString("N0")đ</span></strong>
+                                                <strong style="color: #111827;">Tổng tiền: <span style="color: #ef4444;">@(order.TongTien?.ToString("N0") ?? "0")đ</span></strong>
                                             </p>
                                             @if (order.ChiTietDonHangs != null)
                                             {

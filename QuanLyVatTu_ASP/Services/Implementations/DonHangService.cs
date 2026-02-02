@@ -46,7 +46,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     TenKhachHang = x.KhachHang != null ? x.KhachHang.HoTen : "",
                     TenNhanVien = x.NhanVien != null ? x.NhanVien.HoTen : "",
                     NgayDat = x.NgayDat,
-                    TongTien = x.TongTien,
+                    TongTien = x.TongTien ?? 0,
                     SoTienDatCoc = x.SoTienDatCoc ?? 0,
                     PhuongThucDatCoc = x.PhuongThucDatCoc,
                     NgayDatCoc = x.NgayDatCoc,
@@ -74,7 +74,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             return new DonHangCreateEditViewModel
             {
                 Id = entity.ID,
-                MaHienThi = entity.MaHienThi,
+                MaHienThi = entity.MaHienThi ?? "",
                 KhachHangId = entity.KhachHangId,
                 NhanVienId = entity.NhanVienId,
                 NgayDat = entity.NgayDat,
@@ -116,7 +116,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             
             decimal datCocCu = entity.SoTienDatCoc ?? 0;
             decimal datCocMoi = model.SoTienDatCoc ?? 0;
-            decimal tienCocToiThieu = entity.TongTien * 0.1M;
+            decimal tienCocToiThieu = (entity.TongTien ?? 0) * 0.1M;
 
             if (datCocMoi < datCocCu)
             {

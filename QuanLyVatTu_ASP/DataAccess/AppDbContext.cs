@@ -108,7 +108,7 @@ namespace QuanLyVatTu_ASP.DataAccess
                 
                 entity.Property(e => e.NgayDat).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.TongTien).HasDefaultValue(0);
+                entity.Property(e => e.TongTien).HasDefaultValue(0m);
                 entity.Property(e => e.TrangThai).HasDefaultValue("Chờ xác nhận");
 
                 entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.KhachHangId).OnDelete(DeleteBehavior.Restrict);
@@ -136,9 +136,9 @@ namespace QuanLyVatTu_ASP.DataAccess
                 // HoaDon has no MaHienThi in requirements, only ID.
                 
                 entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.ChietKhau).HasDefaultValue(0);
-                entity.Property(e => e.SoTienDatCoc).HasDefaultValue(0);
-                entity.Property(e => e.TyLeThueGTGT).HasDefaultValue(10);
+                entity.Property(e => e.ChietKhau).HasDefaultValue(0m);
+                entity.Property(e => e.SoTienDatCoc).HasDefaultValue(0m);
+                entity.Property(e => e.TyLeThueGTGT).HasDefaultValue(10m);
                 entity.Property(e => e.TrangThai).HasDefaultValue("Đã thanh toán");
 
                 // Checks
