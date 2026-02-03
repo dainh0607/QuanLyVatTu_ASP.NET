@@ -30,7 +30,7 @@ namespace QuanLyVatTu_ASP.ViewComponents
                      {
                          HoTen = sessionName,
                          VaiTro = sessionRole ?? "NhanVien",
-                         Avatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(sessionName)}&background=random&size=128"
+                         Avatar = string.Empty // Để View hiển thị icon mặc định
                      });
                  }
                 return Content(string.Empty);
@@ -45,7 +45,7 @@ namespace QuanLyVatTu_ASP.ViewComponents
                  {
                      HoTen = sessionName ?? "Unknown",
                      VaiTro = sessionRole ?? "NhanVien",
-                     Avatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(sessionName ?? "U")}&background=random&size=128"
+                     Avatar = string.Empty // Để View hiển thị icon mặc định
                  });
             }
 

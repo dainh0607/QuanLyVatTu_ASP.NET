@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu
 {
@@ -35,6 +36,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu
         public int MaNhaCungCap { get; set; }
 
         [Display(Name = "Mã vật tư")]
-        public string MaHienThi => Id > 0 ? $"VT{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
+
+        // Upload hình ảnh sản phẩm
+        [Display(Name = "Hình ảnh")]
+        public IFormFile? HinhAnhFile { get; set; }
+
+        // Đường dẫn ảnh hiện tại (dùng khi Edit)
+        public string? HinhAnh { get; set; }
     }
 }

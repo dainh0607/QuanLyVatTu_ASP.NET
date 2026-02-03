@@ -15,6 +15,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.LoaiVatTu
         public string? MoTa { get; set; }
 
         [Display(Name = "Mã loại")]
-        public string MaHienThi => Id > 0 ? $"LVT{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
     }
 }

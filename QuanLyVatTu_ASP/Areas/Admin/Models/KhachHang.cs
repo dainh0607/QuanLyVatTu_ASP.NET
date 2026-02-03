@@ -17,12 +17,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string HoTen { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập email")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Email phải có đuôi @gmail.com")]
         [Column(TypeName = "varchar(100)")]
         public string Email { get; set; } = null!;
 
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải có 10 số và bắt đầu bằng 0")]
         [Column(TypeName = "varchar(10)")]
         public string? SoDienThoai { get; set; }
 
+        [MaxLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 ký tự")]
         [Column(TypeName = "nvarchar(255)")]
         public string? DiaChi { get; set; }
 

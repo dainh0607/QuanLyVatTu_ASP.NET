@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels;
+using QuanLyVatTu_ASP.Helpers;
 using QuanLyVatTu_ASP.Services.Interfaces;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
@@ -10,10 +11,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     public class KhachHangController : AdminBaseController
     {
         private readonly IKhachHangService _khachHangService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public KhachHangController(IKhachHangService khachHangService)
+        public KhachHangController(IKhachHangService khachHangService, IWebHostEnvironment webHostEnvironment)
         {
             _khachHangService = khachHangService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet("")]
@@ -25,9 +28,18 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         }
 
         [HttpGet("them-moi")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new KhachHangCreateEditViewModel());
+            var nextMa = await _khachHangService.GetNextMaHienThiAsync();
+            return View(new KhachHangCreateEditViewModel { MaHienThi = nextMa });
+        }
+
+        // API: /admin/khach-hang/get-next-ma
+        [HttpGet("get-next-ma")]
+        public async Task<IActionResult> GetNextMaHienThi()
+        {
+            var nextMa = await _khachHangService.GetNextMaHienThiAsync();
+            return Json(new { maHienThi = nextMa });
         }
 
         [HttpPost("them-moi")]
@@ -39,6 +51,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 ModelState.AddModelError("MatKhau", "Vui lòng nhập mật khẩu");
             }
             if (!ModelState.IsValid) return View(model);
+
+            // Xử lý upload ảnh
+            if (model.AnhDaiDienFile != null)
+            {
+                model.AnhDaiDien = await FileUploadHelper.UploadFileAsync(
+                    model.AnhDaiDienFile, _webHostEnvironment.WebRootPath, "images/khachhang");
+            }
 
             // Gọi Service
             var errorMessage = await _khachHangService.CreateAsync(model);
@@ -71,6 +90,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(model.MatKhau)) ModelState.Remove("MatKhau");
 
             if (!ModelState.IsValid) return View(model);
+
+            // Xử lý upload ảnh mới
+            if (model.AnhDaiDienFile != null)
+            {
+                // Xóa ảnh cũ (nếu có)
+                FileUploadHelper.DeleteFile(model.AnhDaiDien, _webHostEnvironment.WebRootPath);
+                
+                // Upload ảnh mới
+                model.AnhDaiDien = await FileUploadHelper.UploadFileAsync(
+                    model.AnhDaiDienFile, _webHostEnvironment.WebRootPath, "images/khachhang");
+            }
 
             // Gọi Service
             var errorMessage = await _khachHangService.UpdateAsync(id, model);
