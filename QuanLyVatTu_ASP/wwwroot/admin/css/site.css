@@ -98,13 +98,48 @@ body {
 }
 
 .btn-glass-danger:hover {
-    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(167, 29, 42, 0.95)); /* Vivid Red Gradient */
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(167, 29, 42, 0.95));
     color: #fff;
     border-color: transparent;
 }
 
-/* Support for small buttons */
 .btn-sm.btn-glass {
     padding: 0.25rem 0.75rem;
     font-size: 0.875rem;
+}
+
+.pagination-modern {
+    gap: 5px;
+    align-items: center;
+}
+
+.pagination-modern .page-item .page-link {
+    border: none;
+    border-radius: 8px !important;
+    background-color: #f1f3f5;
+    color: #212529;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+
+.pagination-modern .page-item:not(.active):not(.disabled) .page-link:hover {
+    background-color: #e2e6ea;
+}
+
+.pagination-modern .page-item.active .page-link {
+    background-color: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+}
+
+.pagination-modern .page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    cursor: not-allowed;
 }

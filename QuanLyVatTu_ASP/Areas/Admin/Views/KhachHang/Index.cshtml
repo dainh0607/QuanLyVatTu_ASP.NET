@@ -60,14 +60,14 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a asp-action="Edit" asp-controller="KhachHang" asp-route-id="@item.ID"
-                                               class="btn btn-warning btn-sm rounded-pill px-3" title="Sửa thông tin">
+                                               class="btn btn-outline-warning btn-sm text-black me-1" title="Sửa thông tin">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
                                             <form asp-action="Delete" asp-controller="KhachHang" asp-route-id="@item.ID" method="post"
                                                   onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng: @item.HoTen?');">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3" title="Xóa">
+                                                <button type="submit" class="btn btn-outline-warning btn-sm text-black" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -91,28 +91,37 @@
 
             @if (Model.TotalPages > 1)
             {
-                <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-0">
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
                     <div class="text-muted small">
-                        Trang <strong>@Model.PageIndex</strong> / @Model.TotalPages
+                        Hiển thị @(Model.Items.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
+                        đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
+                        trong tổng <strong>@Model.TotalRecords</strong> bản ghi
                     </div>
-                    <nav>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                                <a class="page-link rounded-start-pill" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">Trước</a>
-                            </li>
 
-                            @for (int i = 1; i <= Model.TotalPages; i++)
-                            {
-                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2 fw-bold text-dark">Trang:</span>
+                        
+                        <nav>
+                            <ul class="pagination pagination-modern mb-0">
+                                <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">
+                                        <i class="fa-solid fa-chevron-left"></i> </a>
                                 </li>
-                            }
 
-                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                                <a class="page-link rounded-end-pill" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">Sau</a>
-                            </li>
-                        </ul>
-                    </nav>
+                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">
+                                        <i class="fa-solid fa-chevron-right"></i> </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             }
         </div>

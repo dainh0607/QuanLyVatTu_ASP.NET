@@ -17,9 +17,10 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
         // GET: /admin/hoa-don
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
-            var model = await _hoaDonService.GetOrdersForIndexAsync();
+            var model = await _hoaDonService.GetOrdersForIndexAsync(keyword, page, 15);
+            ViewBag.Keyword = keyword;
             return View(model);
         }
 

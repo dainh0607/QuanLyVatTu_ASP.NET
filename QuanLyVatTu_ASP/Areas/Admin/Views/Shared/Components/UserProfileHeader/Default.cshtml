@@ -1,0 +1,31 @@
+@model QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien.UserProfileViewModel
+
+@if (Model != null)
+{
+    <div class="user-profile-header d-flex align-items-center gap-3">
+        <div class="text-end d-none d-md-block text-white">
+            <div class="fw-bold">
+                @if (new[] { "NhanVien", "Nhân viên", "Employee" }.Contains(Model.VaiTro))
+                {
+                    <span>Nhân viên @Model.HoTen</span>
+                }
+                else if (new[] { "Admin", "QuanLy", "Quản lý", "Administrator" }.Contains(Model.VaiTro))
+                {
+                     <span>Admin @Model.HoTen</span>
+                }
+                else
+                {
+                    <span>@Model.HoTen</span>
+                }
+            </div>
+            <div class="small">@Model.VaiTro</div>
+        </div>
+        <div class="avatar-wrapper">
+            <img src="@Model.Avatar" alt="@Model.HoTen" 
+                 class="rounded-circle border" 
+                 width="40" height="40" 
+                 style="object-fit: cover;"
+                 onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.HoTen)&background=random'" />
+        </div>
+    </div>
+}

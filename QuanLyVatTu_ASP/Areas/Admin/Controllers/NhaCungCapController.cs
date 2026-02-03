@@ -20,7 +20,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index(string keyword = "", int page = 1)
         {
-            var model = await _nccService.GetAllPagingAsync(keyword, page, 10);
+            var model = await _nccService.GetAllPagingAsync(keyword, page, 15);
             ViewBag.Keyword = keyword;
             return View(model);
         }

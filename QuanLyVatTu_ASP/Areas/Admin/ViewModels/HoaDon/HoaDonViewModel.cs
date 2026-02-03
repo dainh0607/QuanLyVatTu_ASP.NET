@@ -6,6 +6,14 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
     public class HoaDonViewModel
     {
         public List<OrderForItem> Orders { get; set; } = new List<OrderForItem>();
+        
+        // Pagination
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public int TotalRecords { get; set; }
+        public int TotalPages => (int)Math.Ceiling(TotalRecords / (double)PageSize);
+        public bool HasPreviousPage => PageIndex > 1;
+        public bool HasNextPage => PageIndex < TotalPages;
 
         public class OrderForItem
         {

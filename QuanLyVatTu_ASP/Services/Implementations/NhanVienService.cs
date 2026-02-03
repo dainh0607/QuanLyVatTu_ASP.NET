@@ -162,5 +162,23 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             await _context.SaveChangesAsync();
             return null;
         }
+
+        public async Task<UserProfileViewModel?> GetByEmailAsync(string email)
+        {
+            var user = await _context.NhanViens
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null) return null;
+
+            return new UserProfileViewModel
+            {
+                Id = user.ID,
+                HoTen = user.HoTen,
+                VaiTro = user.VaiTro,
+                // Hardcode avatar or use placeholder
+                Avatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(user.HoTen)}&background=random&size=128"
+            };
+        }
     }
 }

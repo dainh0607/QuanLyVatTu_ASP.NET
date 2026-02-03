@@ -29,6 +29,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(100)")]
         public string? Email { get; set; }
 
+        [Column(TypeName = "varchar(255)")]
+        public string? AnhDaiDien { get; set; }
+
         [Required(ErrorMessage = "Vui lòng nhập tài khoản")]
         [Column(TypeName = "varchar(50)")]
         public string TaiKhoan { get; set; } = null!;
