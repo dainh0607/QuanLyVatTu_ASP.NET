@@ -41,5 +41,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
         public virtual ICollection<TuongTacDanhGia> TuongTacDanhGias { get; set; } = new List<TuongTacDanhGia>();
+        public virtual ICollection<YeuThich> YeuThichs { get; set; } = new List<YeuThich>();
     }
 }

@@ -1,26 +1,27 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
-    [Table("TuongTacDanhGia")]
-    public class TuongTacDanhGia
+    [Table("YeuThich")]
+    [Index(nameof(MaKhachHang), nameof(MaVatTu), IsUnique = true)] 
+    public class YeuThich
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [ForeignKey("DanhGia")]
-        public int MaDanhGia { get; set; }
-
         [ForeignKey("KhachHang")]
         public int MaKhachHang { get; set; }
 
-        public bool DaThich { get; set; } = true; // True = Like, False = Unlike
+        [ForeignKey("VatTu")]
+        public int MaVatTu { get; set; }
 
-        public DateTime NgayTuongTac { get; set; } = DateTime.Now;
+        public DateTime NgayThem { get; set; } = DateTime.Now;
 
-        public virtual DanhGia DanhGia { get; set; }
         public virtual KhachHang KhachHang { get; set; }
+        public virtual VatTu VatTu { get; set; }
     }
 }
