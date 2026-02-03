@@ -27,9 +27,18 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
         // GET: /admin/nha-cung-cap/them-moi
         [HttpGet("them-moi")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new NhaCungCapCreateEditViewModel());
+            var nextMa = await _nccService.GetNextMaHienThiAsync();
+            return View(new NhaCungCapCreateEditViewModel { MaHienThi = nextMa });
+        }
+
+        // API: /admin/nha-cung-cap/get-next-ma
+        [HttpGet("get-next-ma")]
+        public async Task<IActionResult> GetNextMaHienThi()
+        {
+            var nextMa = await _nccService.GetNextMaHienThiAsync();
+            return Json(new { maHienThi = nextMa });
         }
 
         // POST: /admin/nha-cung-cap/them-moi

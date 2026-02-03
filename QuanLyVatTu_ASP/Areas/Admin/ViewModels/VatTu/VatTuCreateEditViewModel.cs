@@ -35,6 +35,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu
         public int MaNhaCungCap { get; set; }
 
         [Display(Name = "Mã vật tư")]
-        public string MaHienThi => Id > 0 ? $"VT{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
     }
 }

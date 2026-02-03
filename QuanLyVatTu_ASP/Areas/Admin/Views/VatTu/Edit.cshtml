@@ -51,14 +51,16 @@
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Giá nhập <span class="text-danger">*</span></label>
-                                    <input asp-for="GiaNhap" class="form-control form-control-lg rounded-3 text-end" required />
+                                    <input asp-for="GiaNhap" class="form-control form-control-lg rounded-3 text-end" 
+                                           value="@(Model.GiaNhap?.ToString("0") ?? "")" required />
                                     <span asp-validation-for="GiaNhap" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Giá bán <span class="text-danger">*</span></label>
-                                    <input asp-for="GiaBan" class="form-control form-control-lg rounded-3 text-end" required />
+                                    <input asp-for="GiaBan" class="form-control form-control-lg rounded-3 text-end" 
+                                           value="@(Model.GiaBan?.ToString("0") ?? "")" required />
                                     <span asp-validation-for="GiaBan" class="text-danger"></span>
                                 </div>
                             </div>

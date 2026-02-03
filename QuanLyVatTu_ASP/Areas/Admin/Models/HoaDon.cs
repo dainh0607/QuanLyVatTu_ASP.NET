@@ -47,7 +47,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(50)")]
         public string TrangThai { get; set; } = "Đã thanh toán";
 
-        // Navigation
         [ForeignKey("MaDonHang")]
         public DonHang DonHang { get; set; } = null!;
 

@@ -25,7 +25,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    
+                    x.MaHienThi.ToLower().Contains(keyword) ||
                     x.HoTen.ToLower().Contains(keyword) ||
                     x.CCCD.ToLower().Contains(keyword) ||
                     x.SoDienThoai.ToLower().Contains(keyword) ||
@@ -95,7 +95,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var nhanVien = new NhanVien
             {
-                MaHienThi = "NV" + new Random().Next(1000, 9999),
+                MaHienThi = await GetNextMaHienThiAsync(),
                 HoTen = model.HoTen,
                 NgaySinh = model.NgaySinh,
                 CCCD = model.CCCD,
@@ -179,6 +179,34 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 // Hardcode avatar or use placeholder
                 Avatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(user.HoTen)}&background=random&size=128"
             };
+        }
+
+        /// <summary>
+        /// Sinh mã hiển thị tiếp theo - tìm mã bị thiếu trong dãy NV001, NV002...
+        /// </summary>
+        public async Task<string> GetNextMaHienThiAsync()
+        {
+            var existingCodes = await _context.NhanViens
+                .Select(x => x.MaHienThi)
+                .Where(x => x.StartsWith("NV"))
+                .ToListAsync();
+
+            var usedNumbers = existingCodes
+                .Select(x => {
+                    if (x.Length > 2 && int.TryParse(x.Substring(2), out int n))
+                        return n;
+                    return 0;
+                })
+                .Where(x => x > 0)
+                .ToHashSet();
+
+            int nextNumber = 1;
+            while (usedNumbers.Contains(nextNumber))
+            {
+                nextNumber++;
+            }
+
+            return $"NV{nextNumber:D3}";
         }
     }
 }

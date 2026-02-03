@@ -23,12 +23,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                keyword = keyword.Trim();
+                keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    x.MaHienThi.Contains(keyword) ||
-                    x.HoTen.Contains(keyword) ||
-                    x.Email.Contains(keyword) ||
-                    (x.SoDienThoai != null && x.SoDienThoai.Contains(keyword)));
+                    x.MaHienThi.ToLower().Contains(keyword) ||
+                    x.HoTen.ToLower().Contains(keyword) ||
+                    x.Email.ToLower().Contains(keyword) ||
+                    (x.SoDienThoai != null && x.SoDienThoai.ToLower().Contains(keyword)));
             }
 
             var total = await query.CountAsync();
@@ -85,8 +85,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (!string.IsNullOrEmpty(model.SoDienThoai) && await _context.KhachHangs.AnyAsync(x => x.SoDienThoai == model.SoDienThoai))
                 return "Số điện thoại này đã tồn tại.";
 
-            string randomSuffix = new Random().Next(1000, 9999).ToString();
-            string maHienThiAuto = "KH" + randomSuffix;
+            string maHienThiAuto = await GetNextMaHienThiAsync();
 
             var kh = new KhachHang
             {
@@ -151,6 +150,34 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             _context.KhachHangs.Remove(kh);
             await _context.SaveChangesAsync();
             return null;
+        }
+
+        /// <summary>
+        /// Sinh mã hiển thị tiếp theo - tìm mã bị thiếu trong dãy KH001, KH002...
+        /// </summary>
+        public async Task<string> GetNextMaHienThiAsync()
+        {
+            var existingCodes = await _context.KhachHangs
+                .Select(x => x.MaHienThi)
+                .Where(x => x.StartsWith("KH"))
+                .ToListAsync();
+
+            var usedNumbers = existingCodes
+                .Select(x => {
+                    if (x.Length > 2 && int.TryParse(x.Substring(2), out int n))
+                        return n;
+                    return 0;
+                })
+                .Where(x => x > 0)
+                .ToHashSet();
+
+            int nextNumber = 1;
+            while (usedNumbers.Contains(nextNumber))
+            {
+                nextNumber++;
+            }
+
+            return $"KH{nextNumber:D3}";
         }
     }
 }

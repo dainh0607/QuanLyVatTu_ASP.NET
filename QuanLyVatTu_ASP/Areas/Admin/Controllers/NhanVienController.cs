@@ -25,9 +25,18 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         }
 
         [HttpGet("them-moi")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new NhanVienCreateEditViewModel { NgaySinh = DateTime.Now.AddYears(-22) });
+            var nextMa = await _nhanVienService.GetNextMaHienThiAsync();
+            return View(new NhanVienCreateEditViewModel { NgaySinh = DateTime.Now.AddYears(-22), MaHienThi = nextMa });
+        }
+
+        // API: /admin/nhan-vien/get-next-ma
+        [HttpGet("get-next-ma")]
+        public async Task<IActionResult> GetNextMaHienThi()
+        {
+            var nextMa = await _nhanVienService.GetNextMaHienThiAsync();
+            return Json(new { maHienThi = nextMa });
         }
 
         [HttpPost("them-moi")]

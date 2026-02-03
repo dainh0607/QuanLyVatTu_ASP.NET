@@ -25,7 +25,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 keyword = keyword.ToLower();
                 query = query.Where(x =>
-                   
+                    x.MaHienThi.ToLower().Contains(keyword) ||
                     x.TenNhaCungCap.ToLower().Contains(keyword) ||
                     (x.Email != null && x.Email.ToLower().Contains(keyword)) ||
                     (x.SoDienThoai != null && x.SoDienThoai.ToLower().Contains(keyword)));
@@ -88,7 +88,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var ncc = new NhaCungCap
             {
-                MaHienThi = "NCC" + new Random().Next(1000, 9999),
+                MaHienThi = await GetNextMaHienThiAsync(),
                 TenNhaCungCap = model.TenNhaCungCap,
                 Email = model.Email ?? "",
                 SoDienThoai = model.SoDienThoai ?? "",
@@ -147,6 +147,34 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         public async Task<List<NhaCungCap>> GetLookupAsync()
         {
             return await _context.NhaCungCaps.OrderBy(x => x.TenNhaCungCap).ToListAsync();
+        }
+
+        /// <summary>
+        /// Sinh mã hiển thị tiếp theo - tìm mã bị thiếu trong dãy NCC001, NCC002...
+        /// </summary>
+        public async Task<string> GetNextMaHienThiAsync()
+        {
+            var existingCodes = await _context.NhaCungCaps
+                .Select(x => x.MaHienThi)
+                .Where(x => x.StartsWith("NCC"))
+                .ToListAsync();
+
+            var usedNumbers = existingCodes
+                .Select(x => {
+                    if (x.Length > 3 && int.TryParse(x.Substring(3), out int n))
+                        return n;
+                    return 0;
+                })
+                .Where(x => x > 0)
+                .ToHashSet();
+
+            int nextNumber = 1;
+            while (usedNumbers.Contains(nextNumber))
+            {
+                nextNumber++;
+            }
+
+            return $"NCC{nextNumber:D3}";
         }
     }
 }

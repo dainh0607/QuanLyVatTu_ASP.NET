@@ -39,9 +39,14 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Trạng thái</label>
-                                    @if (Model.TrangThai == "Hoàn thành")
+                                    @if (Model.TrangThai == "Đã giao")
                                     {
-                                        <input asp-for="TrangThai" class="form-control form-control-lg rounded-3 bg-light opacity-75" readonly />
+                                        <input asp-for="TrangThai" class="form-control form-control-lg rounded-3 bg-success text-white opacity-75" readonly />
+                                    }
+                                    else if (Model.TrangThai == "Đã hủy")
+                                    {
+                                        <input asp-for="TrangThai" class="form-control form-control-lg rounded-3 bg-danger text-white opacity-50" readonly disabled />
+                                        <small class="text-danger fst-italic">* Đơn hàng đã hủy không thể chỉnh sửa trạng thái</small>
                                     }
                                     else
                                     {
@@ -57,9 +62,10 @@
                                             }
 
                                             <option value="Đang xử lý">Đang xử lý</option>
-                                            <option value="Hoàn thành">Hoàn thành</option>
+                                            <option value="Đang giao">Đang giao</option>
+                                            <option value="Đã giao">Đã giao</option>
 
-                                            @if (Model.TrangThai != "Đang xử lý" && Model.TrangThai != "Hoàn thành")
+                                            @if (Model.TrangThai != "Đang xử lý" && Model.TrangThai != "Đang giao" && Model.TrangThai != "Đã giao")
                                             {
                                                 <option value="Đã hủy">Đã hủy</option>
                                             }
@@ -77,17 +83,19 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số tiền đặt cọc</label>
-                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" />
+                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" 
+                                           value="@(Model.SoTienDatCoc?.ToString("0") ?? "")" />
                                     <span asp-validation-for="SoTienDatCoc" class="text-danger"></span>
                                     <small id="depositHint" class="text-muted fst-italic">* Số tiền cần đặt cọc là @(((Model.TongTien ?? 0) * 0.1m).ToString("N0")) (10% giá trị đơn hàng)</small>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold">Phương thức đặt cọc</label>
-                                    <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3">
+                                    <label class="form-label fw-semibold">Phương thức thanh toán <span class="text-danger">*</span></label>
+                                    <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3" id="PhuongThucDatCoc" required>
                                         <option value="">-- Chọn phương thức --</option>
                                         <option value="Tiền mặt">Tiền mặt</option>
                                         <option value="Chuyển khoản">Chuyển khoản</option>
                                     </select>
+                                    <span asp-validation-for="PhuongThucDatCoc" class="text-danger"></span>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Ngày đặt cọc</label>
@@ -130,6 +138,14 @@
     <script>
         $(document).ready(function () {
             $('form').submit(function (e) {
+                // Validate phương thức thanh toán
+                if (!$('#PhuongThucDatCoc').val()) {
+                    e.preventDefault();
+                    $('#PhuongThucDatCoc').addClass('is-invalid');
+                    alert("Vui lòng chọn phương thức thanh toán!");
+                    return false;
+                }
+
                 // Remove formatting (commas, dots) to get raw numbers
                 var tongTienStr = $('#TongTien').val().replace(/[^0-9]/g, '');
                 var datCocStr = $('#SoTienDatCoc').val().replace(/[^0-9]/g, '');
@@ -142,12 +158,17 @@
                    e.preventDefault(); // Prevent submit
                    $('#depositHint').removeClass('text-muted').addClass('text-danger fw-bold');
                    alert("Số tiền đặt cọc chưa đủ 10% tổng giá trị đơn hàng!");
+                   return false;
                 } else {
                    $('#depositHint').removeClass('text-danger fw-bold').addClass('text-muted');
                 }
             });
 
-            // Optional: Reset warning on input change
+            // Reset validation on change
+            $('#PhuongThucDatCoc').on('change', function() {
+                $(this).removeClass('is-invalid');
+            });
+
             $('#SoTienDatCoc').on('input', function() {
                  $('#depositHint').removeClass('text-danger fw-bold').addClass('text-muted');
             });

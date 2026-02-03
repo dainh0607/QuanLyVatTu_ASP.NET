@@ -40,7 +40,16 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         public async Task<IActionResult> Create()
         {
             await PrepareViewBag();
-            return View(new VatTuCreateEditViewModel());
+            var nextMa = await _vatTuService.GetNextMaHienThiAsync();
+            return View(new VatTuCreateEditViewModel { MaHienThi = nextMa });
+        }
+
+        // API: /admin/vat-tu/get-next-ma
+        [HttpGet("get-next-ma")]
+        public async Task<IActionResult> GetNextMaHienThi()
+        {
+            var nextMa = await _vatTuService.GetNextMaHienThiAsync();
+            return Json(new { maHienThi = nextMa });
         }
 
         // POST: /admin/vat-tu/them-moi

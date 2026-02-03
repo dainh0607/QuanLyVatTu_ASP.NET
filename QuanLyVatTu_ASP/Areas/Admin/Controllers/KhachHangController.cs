@@ -25,9 +25,18 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         }
 
         [HttpGet("them-moi")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new KhachHangCreateEditViewModel());
+            var nextMa = await _khachHangService.GetNextMaHienThiAsync();
+            return View(new KhachHangCreateEditViewModel { MaHienThi = nextMa });
+        }
+
+        // API: /admin/khach-hang/get-next-ma
+        [HttpGet("get-next-ma")]
+        public async Task<IActionResult> GetNextMaHienThi()
+        {
+            var nextMa = await _khachHangService.GetNextMaHienThiAsync();
+            return Json(new { maHienThi = nextMa });
         }
 
         [HttpPost("them-moi")]

@@ -48,6 +48,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien
 
         // Hiển thị mã nhân viên (chỉ đọc)
         [Display(Name = "Mã nhân viên")]
-        public string MaHienThi => Id > 0 ? $"NV{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
     }
 }

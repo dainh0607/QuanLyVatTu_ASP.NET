@@ -12,13 +12,16 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
 
         [Required(ErrorMessage = "Vui lòng nhập email")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Email phải có đuôi @gmail.com")]
         [Display(Name = "Email")]
         public string Email { get; set; } = null!;
 
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải có 10 số và bắt đầu bằng 0")]
         [Display(Name = "Số điện thoại")]
         public string? SoDienThoai { get; set; }
 
+        [MaxLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 ký tự")]
         [Display(Name = "Địa chỉ")]
         public string? DiaChi { get; set; }
 
@@ -32,6 +35,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
         public string? MatKhau { get; set; }
 
         [Display(Name = "Mã khách hàng")]
-        public string MaHienThi => Id > 0 ? $"KH{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
     }
 }
