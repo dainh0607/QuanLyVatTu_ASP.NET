@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuanLyVatTu_ASP.Migrations
 {
     /// <inheritdoc />
-    public partial class addDb : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -134,7 +134,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     MaKhachHang = table.Column<int>(type: "int", nullable: false),
                     MaNhanVien = table.Column<int>(type: "int", nullable: true),
                     NgayDat = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GETDATE()"),
-                    TongTien = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
+                    TongTien = table.Column<decimal>(type: "decimal(18,2)", nullable: true, defaultValue: 0m),
                     SoTienDatCoc = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     PhuongThucDatCoc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     NgayDatCoc = table.Column<DateTime>(type: "datetime", nullable: true),
@@ -199,12 +199,12 @@ namespace QuanLyVatTu_ASP.Migrations
                     MaNhanVien = table.Column<int>(type: "int", nullable: false),
                     MaKhachHang = table.Column<int>(type: "int", nullable: false),
                     NgayLap = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    TongTienTruocThue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TongTienTruocThue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     TyLeThueGTGT = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 10m),
                     TienThueGTGT = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     TongTienSauThue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    ChietKhau = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
-                    SoTienDatCoc = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
+                    ChietKhau = table.Column<decimal>(type: "decimal(18,2)", nullable: true, defaultValue: 0m),
+                    SoTienDatCoc = table.Column<decimal>(type: "decimal(18,2)", nullable: true, defaultValue: 0m),
                     PhuongThucThanhToan = table.Column<string>(type: "nvarchar(50)", nullable: true),
                     TrangThai = table.Column<string>(type: "nvarchar(50)", nullable: false, defaultValue: "Đã thanh toán")
                 },
@@ -243,8 +243,8 @@ namespace QuanLyVatTu_ASP.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaHoaDon = table.Column<int>(type: "int", nullable: false),
                     MaVatTu = table.Column<int>(type: "int", nullable: false),
-                    SoLuong = table.Column<int>(type: "int", nullable: false),
-                    DonGia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SoLuong = table.Column<int>(type: "int", nullable: true),
+                    DonGia = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     ThanhTien = table.Column<decimal>(type: "decimal(18,2)", nullable: false, computedColumnSql: "[SoLuong] * [DonGia]", stored: true)
                 },
                 constraints: table =>

@@ -32,7 +32,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 1, 
                         TenVatTu = "Xi măng Holcim PCB40 (50kg)", 
                         DonGia = 125000, 
-                        SoLuong = 10, 
+                        SoLuong = 10,
+                        DonViTinh = "Bao",
+                        TrongLuong = 50, // 50kg/bao
                         HinhAnh = "https://placehold.co/120x120/0d6efd/ffffff?text=Xi+Mang" 
                     },
                     new CartItem 
@@ -40,7 +42,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 2, 
                         TenVatTu = "Thép hình chữ V 50x50x5mm (dài 6m)", 
                         DonGia = 285000, 
-                        SoLuong = 4, 
+                        SoLuong = 4,
+                        DonViTinh = "Cây",
+                        TrongLuong = 22.2m, // ~22.2kg/cây 6m
                         HinhAnh = "https://placehold.co/120x120/495057/ffffff?text=Thep+V" 
                     },
                     new CartItem 
@@ -48,7 +52,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 3, 
                         TenVatTu = "Dây điện Cadivi CV 2.5mm² (cuộn 100m)", 
                         DonGia = 850000, 
-                        SoLuong = 2, 
+                        SoLuong = 2,
+                        DonViTinh = "Cuộn",
+                        TrongLuong = 3.5m, // ~3.5kg/cuộn 100m
                         HinhAnh = "https://placehold.co/120x120/ff6b00/ffffff?text=Day+Dien" 
                     },
                     new CartItem 
@@ -56,7 +62,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 4, 
                         TenVatTu = "Sơn Dulux nội thất EasyClean (5L)", 
                         DonGia = 1250000, 
-                        SoLuong = 3, 
+                        SoLuong = 3,
+                        DonViTinh = "Thùng",
+                        TrongLuong = 7.5m, // ~7.5kg/thùng 5L
                         HinhAnh = "https://placehold.co/120x120/ffc107/333333?text=Son+Dulux" 
                     },
                     new CartItem 
@@ -64,7 +72,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 5, 
                         TenVatTu = "Ống nhựa PVC Bình Minh Ø90mm (4m)", 
                         DonGia = 185000, 
-                        SoLuong = 8, 
+                        SoLuong = 8,
+                        DonViTinh = "Cây",
+                        TrongLuong = 4.8m, // ~4.8kg/cây 4m
                         HinhAnh = "https://placehold.co/120x120/17a2b8/ffffff?text=Ong+PVC" 
                     },
                     new CartItem 
@@ -72,7 +82,9 @@ namespace QuanLyVatTu_ASP.Controllers
                         VatTuId = 6, 
                         TenVatTu = "Máy khoan Bosch GSB 550 Professional", 
                         DonGia = 1450000, 
-                        SoLuong = 1, 
+                        SoLuong = 1,
+                        DonViTinh = "Cái",
+                        TrongLuong = 1.7m, // 1.7kg
                         HinhAnh = "https://placehold.co/120x120/28a745/ffffff?text=May+Khoan" 
                     }
                 };
@@ -139,6 +151,32 @@ namespace QuanLyVatTu_ASP.Controllers
         {
 
             return View();
+        }
+
+        /// <summary>
+        /// Xuất báo giá từ giỏ hàng - trang print-friendly
+        /// </summary>
+        public IActionResult BaoGia()
+        {
+            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
+
+            // Sử dụng demo data nếu giỏ hàng trống
+            if (cart == null || !cart.Any())
+            {
+                cart = new List<CartItem>
+                {
+                    new CartItem { VatTuId = 1, TenVatTu = "Xi măng Holcim PCB40 (50kg)", DonGia = 125000, SoLuong = 10, DonViTinh = "Bao", TrongLuong = 50 },
+                    new CartItem { VatTuId = 2, TenVatTu = "Thép hình chữ V 50x50x5mm (dài 6m)", DonGia = 285000, SoLuong = 4, DonViTinh = "Cây", TrongLuong = 22.2m },
+                    new CartItem { VatTuId = 3, TenVatTu = "Dây điện Cadivi CV 2.5mm² (cuộn 100m)", DonGia = 850000, SoLuong = 2, DonViTinh = "Cuộn", TrongLuong = 3.5m },
+                    new CartItem { VatTuId = 4, TenVatTu = "Sơn Dulux nội thất EasyClean (5L)", DonGia = 1250000, SoLuong = 3, DonViTinh = "Thùng", TrongLuong = 7.5m },
+                };
+            }
+
+            ViewBag.Total = cart.Sum(x => x.ThanhTien);
+            ViewBag.TotalWeight = cart.Sum(x => x.TongTrongLuong);
+            ViewBag.QuoteDate = DateTime.Now;
+
+            return View(cart);
         }
 
     }

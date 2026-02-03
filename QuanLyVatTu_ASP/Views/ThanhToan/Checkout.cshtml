@@ -106,16 +106,29 @@
                             </div>
                             
                             <div class="shipping-options">
-                                <!-- Standard Shipping -->
+                                <!-- Self Delivery - No Unloading -->
                                 <label class="custom-radio-card">
-                                    <input type="radio" name="shippingMethod" value="standard" checked>
+                                    <input type="radio" name="shippingMethod" value="delivery" checked>
                                     <div class="radio-content">
                                         <div class="radio-circle"></div>
                                         <div class="radio-info">
-                                            <span class="radio-title">Giao hàng tiêu chuẩn</span>
-                                            <span class="radio-desc">Nhận hàng sau 3-5 ngày làm việc</span>
+                                            <span class="radio-title">🚚 Cửa hàng giao tận nơi (Không dỡ hàng)</span>
+                                            <span class="radio-desc">Xe cửa hàng giao đến công trình - Quý khách tự bốc xếp</span>
                                         </div>
-                                        <span class="radio-price">47.000₫</span>
+                                        <span class="radio-price">Phí theo khoảng cách</span>
+                                    </div>
+                                </label>
+                                
+                                <!-- Self Delivery - With Unloading -->
+                                <label class="custom-radio-card">
+                                    <input type="radio" name="shippingMethod" value="delivery_unload">
+                                    <div class="radio-content">
+                                        <div class="radio-circle"></div>
+                                        <div class="radio-info">
+                                            <span class="radio-title">🚚 Cửa hàng giao + Dỡ hàng</span>
+                                            <span class="radio-desc">Nhân viên cửa hàng hỗ trợ dỡ hàng tại điểm giao</span>
+                                        </div>
+                                        <span class="radio-price">Phí giao + 100.000₫/tấn</span>
                                     </div>
                                 </label>
                                 
@@ -125,12 +138,37 @@
                                     <div class="radio-content">
                                         <div class="radio-circle"></div>
                                         <div class="radio-info">
-                                            <span class="radio-title">Nhận tại cửa hàng</span>
-                                            <span class="radio-desc">Sẵn sàng sau 2 giờ</span>
+                                            <span class="radio-title">🏪 Nhận tại cửa hàng</span>
+                                            <span class="radio-desc">Quý khách tự đến lấy hàng tại kho</span>
                                         </div>
-                                        <span class="radio-price text-success">Miễn phí</span>
+                                        <span class="radio-price text-success">Miễn phí vận chuyển</span>
                                     </div>
                                 </label>
+                            </div>
+                            
+                            <!-- Self-delivery note -->
+                            <div class="delivery-note mt-3">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Cửa hàng <strong>tự vận chuyển</strong> bằng xe tải riêng. Phí giao hàng sẽ được nhân viên thông báo sau khi xác nhận đơn.</span>
+                            </div>
+                            
+                            <!-- Road Width Info -->
+                            <div class="road-width-section mt-3">
+                                <label class="form-label"><i class="fa-solid fa-road"></i> Độ rộng đường vào công trình</label>
+                                <div class="road-options">
+                                    <label class="road-option">
+                                        <input type="radio" name="roadWidth" value="large" checked>
+                                        <span>> 3.5m (Xe tải lớn)</span>
+                                    </label>
+                                    <label class="road-option">
+                                        <input type="radio" name="roadWidth" value="medium">
+                                        <span>2-3.5m (Xe tải nhỏ)</span>
+                                    </label>
+                                    <label class="road-option">
+                                        <input type="radio" name="roadWidth" value="narrow">
+                                        <span>< 2m (Xe ba gác)</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -204,7 +242,92 @@
                             </div>
                         </div>
 
-                        <!-- 4. Notes -->
+                        <!-- 4. VAT Invoice -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <h2 class="section-title">Xuất hóa đơn VAT</h2>
+                                <label class="toggle-switch ms-auto">
+                                    <input type="checkbox" name="xuatVAT" id="vatToggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div id="vatForm" class="vat-form" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Tên công ty <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-input w-100" name="tenCongTy" placeholder="Nhập tên công ty">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Mã số thuế <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-input w-100" name="maSoThue" placeholder="VD: 0123456789">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email nhận hóa đơn</label>
+                                        <input type="email" class="form-input w-100" name="emailVAT" placeholder="hoadon@congty.vn">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Địa chỉ ĐKKD <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-input w-100" name="diaChiDKKD" placeholder="Địa chỉ đăng ký kinh doanh">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Deposit Options -->
+                        <div class="form-section deposit-section">
+                            <div class="section-header">
+                                <div class="section-icon" style="background: #fef3c7;">
+                                    <i class="fa-solid fa-coins" style="color: #f59e0b;"></i>
+                                </div>
+                                <h2 class="section-title">Phương thức đặt cọc</h2>
+                            </div>
+                            
+                            <div class="deposit-info-box">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <p>Đơn hàng trên <strong>10.000.000₫</strong> bắt buộc đặt cọc. Quý khách vui lòng chọn mức cọc phù hợp.</p>
+                            </div>
+                            
+                            <div class="deposit-options">
+                                <label class="deposit-option">
+                                    <input type="radio" name="depositPercent" value="0" checked>
+                                    <div class="deposit-content">
+                                        <span class="deposit-percent">0%</span>
+                                        <span class="deposit-label">Không cọc</span>
+                                        <span class="deposit-note">(Đơn < 10 triệu)</span>
+                                    </div>
+                                </label>
+                                <label class="deposit-option">
+                                    <input type="radio" name="depositPercent" value="30">
+                                    <div class="deposit-content">
+                                        <span class="deposit-percent">30%</span>
+                                        <span class="deposit-label">Cọc chuẩn</span>
+                                        <span class="deposit-amount">@((total * 0.3m).ToString("N0"))₫</span>
+                                    </div>
+                                </label>
+                                <label class="deposit-option">
+                                    <input type="radio" name="depositPercent" value="50">
+                                    <div class="deposit-content">
+                                        <span class="deposit-percent">50%</span>
+                                        <span class="deposit-label">Ưu tiên giao</span>
+                                        <span class="deposit-amount">@((total * 0.5m).ToString("N0"))₫</span>
+                                    </div>
+                                </label>
+                                <label class="deposit-option">
+                                    <input type="radio" name="depositPercent" value="100">
+                                    <div class="deposit-content">
+                                        <span class="deposit-percent">100%</span>
+                                        <span class="deposit-label">Thanh toán hết</span>
+                                        <span class="deposit-amount">@total.ToString("N0")₫</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 6. Notes -->
                         <div class="form-section">
                             <div class="section-header">
                                 <div class="section-icon">
@@ -223,7 +346,7 @@
                             <div class="form-check mb-4">
                                 <input class="form-check-input" type="checkbox" id="termsCheck" required>
                                 <label class="form-check-label" for="termsCheck">
-                                    Tôi đã đọc và đồng ý với <a href="#">Điều khoản</a> và <a href="#">Chính sách mua hàng</a>
+                                    Tôi đã đọc và đồng ý với <a href="#" data-bs-toggle="modal" data-bs-target="#policyModal">Chính sách mua hàng</a>
                                 </label>
                             </div>
 
@@ -383,6 +506,302 @@
                 this.classList.remove('is-invalid');
             });
         });
+
+        // VAT Toggle
+        document.getElementById('vatToggle').addEventListener('change', function() {
+            const vatForm = document.getElementById('vatForm');
+            vatForm.style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Shipping fee update for new options
+        document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const shippingFeeEl = document.getElementById('shippingFee');
+                if (this.value === 'pickup') {
+                    shippingFeeEl.textContent = 'Miễn phí';
+                    shippingFeeEl.classList.add('text-success');
+                } else if (this.value === 'unloading') {
+                    shippingFeeEl.textContent = 'Tính theo trọng lượng';
+                    shippingFeeEl.classList.remove('text-success');
+                } else {
+                    shippingFeeEl.textContent = 'Tính theo khoảng cách';
+                    shippingFeeEl.classList.remove('text-success');
+                }
+            });
+        });
     </script>
+
+    <!-- Policy Modal - Full Scroll-to-Accept -->
+    <div class="modal fade" id="policyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content policy-modal">
+                <div class="modal-header policy-modal-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-file-shield fa-lg"></i>
+                        <div>
+                            <h5 class="modal-title mb-0">Chính sách mua hàng</h5>
+                            <small class="text-white-50">Vui lòng đọc kỹ và cuộn xuống cuối để tiếp tục</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <!-- Scroll Container -->
+                    <div class="policy-scroll-container" id="policyScrollContainer">
+                        
+                        <!-- 1. Chính sách thanh toán -->
+                        <div class="policy-section-modal">
+                            <h4 class="policy-section-title">
+                                <span class="section-number">1</span>
+                                <i class="fa-solid fa-credit-card"></i>
+                                Chính sách Thanh toán
+                            </h4>
+                            
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-coins"></i> Quy định đặt cọc</h5>
+                                <table class="policy-table">
+                                    <tr>
+                                        <td>Đơn hàng dưới 10 triệu</td>
+                                        <td><span class="badge bg-success">Không cọc</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Đơn hàng 10 - 50 triệu</td>
+                                        <td><span class="badge bg-warning text-dark">Cọc 30%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Đơn hàng trên 50 triệu</td>
+                                        <td><span class="badge bg-danger">Cọc 50%</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-chart-line"></i> Biến động giá</h5>
+                                <ul class="policy-list-modal">
+                                    <li>Giá sắt thép có thể thay đổi theo thị trường hàng ngày</li>
+                                    <li>Giá được <strong>khóa sau khi đặt cọc</strong></li>
+                                    <li>Nếu giá tăng sau cọc: Khách hàng giữ nguyên giá cũ</li>
+                                    <li>Nếu giá giảm sau cọc: Được điều chỉnh theo giá mới</li>
+                                </ul>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-wallet"></i> Phương thức thanh toán</h5>
+                                <div class="payment-methods-mini">
+                                    <div class="method-item">
+                                        <i class="fa-solid fa-money-bill-wave"></i>
+                                        <span>Tiền mặt khi nhận hàng (COD)</span>
+                                    </div>
+                                    <div class="method-item">
+                                        <i class="fa-solid fa-building-columns"></i>
+                                        <span>Chuyển khoản ngân hàng</span>
+                                    </div>
+                                    <div class="method-item">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                        <span>Xuất hóa đơn VAT (nếu yêu cầu)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Chính sách vận chuyển -->
+                        <div class="policy-section-modal">
+                            <h4 class="policy-section-title">
+                                <span class="section-number">2</span>
+                                <i class="fa-solid fa-truck"></i>
+                                Chính sách Vận chuyển
+                            </h4>
+                            
+                            <div class="policy-alert info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <div>Cửa hàng <strong>tự vận chuyển</strong> bằng xe tải riêng. Phí sẽ được thông báo sau khi xác nhận đơn.</div>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-location-dot"></i> Phạm vi giao hàng</h5>
+                                <table class="policy-table">
+                                    <tr>
+                                        <td><strong>Giao cổng công trình</strong></td>
+                                        <td>Tài xế giao đến cổng, quý khách tự bốc xếp</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Dịch vụ dỡ hàng</strong></td>
+                                        <td>+100.000₫/tấn hàng</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Nhận tại kho</strong></td>
+                                        <td>Miễn phí vận chuyển</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-road"></i> Yêu cầu đường vào công trình</h5>
+                                <ul class="policy-list-modal">
+                                    <li><strong>Đường > 3.5m:</strong> Xe tải lớn vào được</li>
+                                    <li><strong>Đường 2-3.5m:</strong> Xe tải nhỏ/ba gác</li>
+                                    <li><strong>Đường < 2m:</strong> Cần trung chuyển, phát sinh chi phí</li>
+                                </ul>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-clock"></i> Phí chờ xe</h5>
+                                <table class="policy-table">
+                                    <tr>
+                                        <td>0 - 30 phút</td>
+                                        <td><span class="text-success fw-bold">Miễn phí</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>30 phút - 1 giờ</td>
+                                        <td>100.000₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quá 2 giờ</td>
+                                        <td>100.000₫/giờ tiếp theo</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. Chính sách đổi trả -->
+                        <div class="policy-section-modal">
+                            <h4 class="policy-section-title">
+                                <span class="section-number">3</span>
+                                <i class="fa-solid fa-rotate-left"></i>
+                                Chính sách Đổi trả
+                            </h4>
+                            
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-check-circle"></i> Điều kiện đổi trả</h5>
+                                <ul class="policy-list-modal">
+                                    <li>Hàng <strong>nguyên đai, nguyên kiện</strong></li>
+                                    <li>Trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng</li>
+                                    <li>Có hóa đơn mua hàng hoặc phiếu giao hàng</li>
+                                    <li><strong>Phí nhập kho:</strong> 10-15% giá trị sản phẩm</li>
+                                </ul>
+                            </div>
+
+                            <div class="policy-alert danger">
+                                <i class="fa-solid fa-ban"></i>
+                                <div>
+                                    <strong>KHÔNG chấp nhận đổi trả:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Xi măng rách bao</li>
+                                        <li>Sơn đã pha màu theo yêu cầu</li>
+                                        <li>Thép/Tôn đã cắt theo kích thước</li>
+                                        <li>Hàng đặt theo yêu cầu riêng</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Chính sách bảo hành -->
+                        <div class="policy-section-modal">
+                            <h4 class="policy-section-title">
+                                <span class="section-number">4</span>
+                                <i class="fa-solid fa-shield-halved"></i>
+                                Chính sách Bảo hành
+                            </h4>
+                            
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-medal"></i> Cam kết chất lượng</h5>
+                                <div class="commitment-list">
+                                    <div class="commit-item">
+                                        <i class="fa-solid fa-check-double"></i>
+                                        <span>100% hàng chính hãng, có nguồn gốc rõ ràng</span>
+                                    </div>
+                                    <div class="commit-item">
+                                        <i class="fa-solid fa-check-double"></i>
+                                        <span>Đúng mác thép, đủ khối lượng như cam kết</span>
+                                    </div>
+                                    <div class="commit-item">
+                                        <i class="fa-solid fa-check-double"></i>
+                                        <span><strong>SAI HÀNG ĐỀN GẤP ĐÔI</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="policy-subsection">
+                                <h5><i class="fa-solid fa-wrench"></i> Bảo hành thiết bị</h5>
+                                <table class="policy-table">
+                                    <tr>
+                                        <td>Máy móc điện cầm tay</td>
+                                        <td>6 - 12 tháng</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thiết bị vệ sinh (bồn cầu, lavabo)</td>
+                                        <td>12 - 24 tháng</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sơn (theo lô sản xuất)</td>
+                                        <td>Theo hạn sử dụng</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scroll End Marker -->
+                        <div class="scroll-end-marker" id="scrollEndMarker">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Bạn đã đọc hết chính sách</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer policy-modal-footer">
+                    <div class="scroll-indicator" id="scrollIndicator">
+                        <i class="fa-solid fa-arrow-down"></i>
+                        <span>Cuộn xuống để đọc hết chính sách</span>
+                    </div>
+                    <a href="/ChinhSach" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-external-link-alt me-1"></i> Xem trang chính sách
+                    </a>
+                    <button type="button" class="btn btn-primary" id="policyAcceptBtn" disabled>
+                        <i class="fa-solid fa-check me-1"></i> Tôi đã đọc và đồng ý
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy Modal Scroll Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollContainer = document.getElementById('policyScrollContainer');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const acceptBtn = document.getElementById('policyAcceptBtn');
+            const modal = document.getElementById('policyModal');
+
+            // Check if scrolled to bottom
+            scrollContainer.addEventListener('scroll', function() {
+                const isAtBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop <= scrollContainer.clientHeight + 50;
+                if (isAtBottom) {
+                    scrollIndicator.classList.add('hidden');
+                    acceptBtn.disabled = false;
+                    acceptBtn.classList.add('btn-success');
+                    acceptBtn.classList.remove('btn-primary');
+                }
+            });
+
+            // Reset on modal open
+            modal.addEventListener('show.bs.modal', function() {
+                scrollContainer.scrollTop = 0;
+                scrollIndicator.classList.remove('hidden');
+                acceptBtn.disabled = true;
+                acceptBtn.classList.remove('btn-success');
+                acceptBtn.classList.add('btn-primary');
+            });
+
+            // Close modal and check checkbox on accept
+            acceptBtn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    document.getElementById('termsCheck').checked = true;
+                    bootstrap.Modal.getInstance(modal).hide();
+                }
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

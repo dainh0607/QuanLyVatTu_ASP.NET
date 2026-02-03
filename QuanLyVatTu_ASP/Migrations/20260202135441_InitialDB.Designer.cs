@@ -12,8 +12,8 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260202103427_FixNullableDepend")]
-    partial class FixNullableDepend
+    [Migration("20260202135441_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

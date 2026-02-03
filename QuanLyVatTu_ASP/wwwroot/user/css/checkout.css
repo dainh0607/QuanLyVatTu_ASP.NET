@@ -904,3 +904,708 @@ textarea.form-control {
         transform: rotate(360deg);
     }
 }
+
+/* === Road Width Section === */
+.road-width-section {
+    padding: 16px;
+    background: var(--checkout-gray-50);
+    border-radius: var(--checkout-radius-md);
+    border: 1px solid var(--checkout-gray-200);
+}
+
+/* Delivery Note */
+.delivery-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+    border-radius: var(--checkout-radius-md);
+    border-left: 4px solid #3b82f6;
+    font-size: 0.9rem;
+    color: #1e40af;
+}
+
+.delivery-note i {
+    color: #3b82f6;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.delivery-note strong {
+    color: #1d4ed8;
+}
+
+.road-width-section .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--checkout-gray-700);
+}
+
+.road-width-section .form-label i {
+    color: var(--checkout-gray-600);
+}
+
+.road-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.road-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--checkout-white);
+    border: 1.5px solid var(--checkout-gray-300);
+    border-radius: var(--checkout-radius-sm);
+    cursor: pointer;
+    transition: var(--checkout-transition);
+    font-size: 0.85rem;
+}
+
+.road-option:hover {
+    border-color: var(--checkout-primary);
+}
+
+.road-option input {
+    accent-color: var(--checkout-primary);
+}
+
+.road-option input:checked+span {
+    font-weight: 600;
+    color: var(--checkout-primary-dark);
+}
+
+/* === Toggle Switch === */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--checkout-gray-300);
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.toggle-switch .slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.slider {
+    background-color: var(--checkout-success);
+}
+
+.toggle-switch input:checked+.slider::before {
+    transform: translateX(22px);
+}
+
+/* === VAT Form === */
+.vat-form {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--checkout-gray-50);
+    border-radius: var(--checkout-radius-md);
+    border: 1px dashed var(--checkout-gray-300);
+    animation: fadeIn 0.3s ease;
+}
+
+/* === Deposit Section === */
+.deposit-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fef3c7;
+    border-radius: var(--checkout-radius-md);
+    border-left: 4px solid #f59e0b;
+    margin-bottom: 16px;
+}
+
+.deposit-info-box i {
+    color: #f59e0b;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.deposit-info-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #92400e;
+    line-height: 1.5;
+}
+
+.deposit-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.deposit-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.deposit-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.deposit-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    background: var(--checkout-white);
+    border: 2px solid var(--checkout-gray-300);
+    border-radius: var(--checkout-radius-md);
+    transition: var(--checkout-transition);
+    text-align: center;
+    min-height: 100px;
+}
+
+.deposit-option:hover .deposit-content {
+    border-color: var(--checkout-gray-400);
+    background: var(--checkout-gray-50);
+}
+
+.deposit-option input:checked+.deposit-content {
+    border-color: var(--checkout-primary);
+    background: rgba(255, 215, 0, 0.08);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.deposit-percent {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--checkout-gray-900);
+    margin-bottom: 4px;
+}
+
+.deposit-option input:checked+.deposit-content .deposit-percent {
+    color: var(--checkout-primary-dark);
+}
+
+.deposit-label {
+    font-size: 0.8rem;
+    color: var(--checkout-gray-600);
+    font-weight: 500;
+}
+
+.deposit-amount {
+    font-size: 0.85rem;
+    color: var(--checkout-danger);
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.deposit-note {
+    font-size: 0.75rem;
+    color: var(--checkout-gray-500);
+    margin-top: 2px;
+}
+
+/* === Policy Modal === */
+.policy-tabs {
+    background: var(--checkout-gray-100);
+    padding: 8px 16px 0;
+    border-bottom: 1px solid var(--checkout-gray-200);
+}
+
+.policy-tabs .nav-link {
+    color: var(--checkout-gray-600);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--checkout-radius-sm) var(--checkout-radius-sm) 0 0;
+    transition: var(--checkout-transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.policy-tabs .nav-link:hover {
+    color: var(--checkout-gray-900);
+    background: var(--checkout-gray-50);
+}
+
+.policy-tabs .nav-link.active {
+    color: var(--checkout-primary-dark);
+    background: var(--checkout-white);
+    font-weight: 600;
+}
+
+.policy-tabs .nav-link i {
+    font-size: 0.85rem;
+}
+
+.policy-content {
+    padding: 24px;
+}
+
+.policy-content h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--checkout-gray-900);
+    margin-bottom: 10px;
+    margin-top: 16px;
+}
+
+.policy-content h6:first-child {
+    margin-top: 0;
+}
+
+.policy-content ul {
+    padding-left: 20px;
+    margin-bottom: 16px;
+}
+
+.policy-content ul li {
+    margin-bottom: 8px;
+    color: var(--checkout-gray-700);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.policy-content p {
+    color: var(--checkout-gray-600);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* === Deposit Responsive === */
+@media (max-width: 768px) {
+    .deposit-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .road-options {
+        flex-direction: column;
+    }
+
+    .road-option {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   POLICY MODAL - Scroll to Accept
+   ======================================== */
+
+/* CRITICAL: Hide modal by default */
+#policyModal {
+    display: none !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1055;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+}
+
+#policyModal.show {
+    display: block !important;
+}
+
+/* Dark Backdrop - Apply to Bootstrap backdrop element */
+.modal-backdrop.show {
+    background-color: #000 !important;
+    opacity: 0.8 !important;
+}
+
+#policyModal .modal-dialog {
+    max-width: 700px;
+    margin: 1.75rem auto;
+}
+
+/* Modal Content - Rounded corners with white background */
+#policyModal .modal-content.policy-modal {
+    border-radius: 20px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* Modal Header */
+.policy-modal .modal-header.policy-modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    border-radius: 20px 20px 0 0;
+}
+
+.policy-modal .modal-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Accept Button - Beautiful gradient */
+#policyAcceptBtn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    transition: all 0.3s ease;
+}
+
+#policyAcceptBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+#policyAcceptBtn:disabled {
+    background: #94a3b8;
+    box-shadow: none;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+#policyAcceptBtn.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 25px rgba(16, 185, 129, 0.7);
+    }
+}
+
+/* Scroll Container */
+.policy-scroll-container {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+.policy-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.policy-scroll-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.policy-scroll-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-radius: 4px;
+}
+
+/* Policy Sections */
+.policy-section-modal {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.policy-section-modal:last-of-type {
+    border-bottom: none;
+}
+
+.policy-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.25rem;
+}
+
+.section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.policy-section-title i {
+    color: #3b82f6;
+}
+
+/* Subsections */
+.policy-subsection {
+    margin-bottom: 1.25rem;
+}
+
+.policy-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.policy-subsection h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.policy-subsection h5 i {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Policy Table */
+.policy-table {
+    width: 100%;
+    font-size: 0.9rem;
+    border-collapse: collapse;
+}
+
+.policy-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.policy-table tr:last-child td {
+    border-bottom: none;
+}
+
+.policy-table td:first-child {
+    color: #374151;
+}
+
+.policy-table td:last-child {
+    text-align: right;
+    color: #111827;
+    font-weight: 500;
+}
+
+/* Policy List */
+.policy-list-modal {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.policy-list-modal li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+/* Policy Alerts */
+.policy-alert {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.policy-alert i {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.policy-alert.info {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    color: #1e40af;
+}
+
+.policy-alert.info i {
+    color: #3b82f6;
+}
+
+.policy-alert.danger {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+}
+
+.policy-alert.danger i {
+    color: #ef4444;
+}
+
+.policy-alert ul {
+    margin: 0;
+    padding-left: 1rem;
+    font-size: 0.85rem;
+}
+
+/* Payment Methods Mini */
+.payment-methods-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.payment-methods-mini .method-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.payment-methods-mini .method-item i {
+    color: #10b981;
+}
+
+/* Commitment List */
+.commitment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.commit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: #f0fdf4;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #166534;
+}
+
+.commit-item i {
+    color: #10b981;
+}
+
+/* Scroll End Marker */
+.scroll-end-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.scroll-end-marker i {
+    font-size: 1.25rem;
+    color: #10b981;
+}
+
+/* Modal Footer */
+.policy-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: none;
+    background: #f8fafc;
+    padding: 1.25rem 2rem;
+    border-radius: 0 0 20px 20px;
+}
+
+.scroll-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fef3c7;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #92400e;
+    animation: bounce 1s infinite;
+}
+
+.scroll-indicator.hidden {
+    display: none;
+}
+
+.scroll-indicator i {
+    animation: arrowBounce 1s infinite;
+}
+
+@keyframes arrowBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(4px);
+    }
+}
+
+#policyAcceptBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .policy-scroll-container {
+        max-height: 50vh;
+    }
+
+    .policy-section-modal {
+        padding: 1rem;
+    }
+
+    .policy-modal-footer {
+        flex-direction: column;
+    }
+
+    .policy-modal-footer .btn {
+        width: 100%;
+    }
+}

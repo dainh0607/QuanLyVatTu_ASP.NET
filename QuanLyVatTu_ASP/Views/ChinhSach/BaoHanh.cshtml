@@ -1,0 +1,240 @@
+@{
+    ViewData["Title"] = "Chính sách Bảo hành";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<link rel="stylesheet" href="~/user/css/policies.css" asp-append-version="true" />
+
+<div class="policies-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/ChinhSach">Chính sách</a></li>
+                <li class="breadcrumb-item active">Bảo hành</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="policy-header single">
+            <div class="header-icon warranty">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="header-text">
+                <h1>Chính sách Bảo hành</h1>
+                <p>Cam kết chất lượng và bảo hành sản phẩm</p>
+            </div>
+        </div>
+
+        <!-- Policy Content -->
+        <div class="policy-content">
+            
+            <!-- Section 1: Cam kết chất lượng -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-award"></i>
+                    Cam kết chất lượng
+                </h2>
+                <div class="section-content">
+                    <div class="callout success">
+                        <i class="fa-solid fa-medal"></i>
+                        <div>
+                            <strong>Cam kết đúng chủng loại - Đền gấp đôi!</strong>
+                            Chúng tôi cam kết cung cấp đúng chủng loại, mác thép, thương hiệu như đã đặt hàng. Nếu sai, chúng tôi sẽ đền bù gấp đôi giá trị sản phẩm.
+                        </div>
+                    </div>
+
+                    <div class="commitment-grid">
+                        <div class="commitment-item">
+                            <i class="fa-solid fa-certificate"></i>
+                            <h4>Hàng chính hãng</h4>
+                            <p>100% sản phẩm có nguồn gốc, xuất xứ rõ ràng từ các thương hiệu uy tín</p>
+                        </div>
+                        <div class="commitment-item">
+                            <i class="fa-solid fa-industry"></i>
+                            <h4>Đúng mác thép</h4>
+                            <p>Thép Hòa Phát, Pomina, Việt Nhật... đúng mác CB300, CB400 như cam kết</p>
+                        </div>
+                        <div class="commitment-item">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <h4>Đủ khối lượng</h4>
+                            <p>Cân đo đong đếm chính xác, có phiếu cân tại kho cho đơn hàng lớn</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Bảo hành thiết bị -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    Bảo hành thiết bị
+                </h2>
+                <div class="section-content">
+                    <p>Các thiết bị điện, vệ sinh được bảo hành theo chính sách của nhà sản xuất:</p>
+
+                    <div class="info-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Loại thiết bị</th>
+                                    <th>Thời gian bảo hành</th>
+                                    <th>Điều kiện</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa-solid fa-toilet"></i> Thiết bị vệ sinh (TOTO, Inax, Viglacera)</td>
+                                    <td><strong>12 - 24 tháng</strong></td>
+                                    <td>Lắp đặt đúng kỹ thuật</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-faucet-drip"></i> Sen vòi, phụ kiện</td>
+                                    <td><strong>12 tháng</strong></td>
+                                    <td>Lỗi kỹ thuật, không bao gồm hao mòn tự nhiên</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-pump-soap"></i> Máy bơm nước</td>
+                                    <td><strong>12 - 18 tháng</strong></td>
+                                    <td>Bảo hành tại hãng</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-lightbulb"></i> Đèn LED, thiết bị điện</td>
+                                    <td><strong>12 - 24 tháng</strong></td>
+                                    <td>Có tem bảo hành</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-drill"></i> Máy khoan, dụng cụ cầm tay</td>
+                                    <td><strong>6 - 12 tháng</strong></td>
+                                    <td>Bảo hành tại trung tâm hãng</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Bảo hành sơn -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-paint-roller"></i>
+                    Bảo hành sơn
+                </h2>
+                <div class="section-content">
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-palette"></i>
+                            <strong>Bảo hành màu 3-5 năm:</strong> Sơn nội thất/ngoại thất cao cấp (Dulux, Jotun, Nippon) được bảo hành màu theo chính sách hãng.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-droplet"></i>
+                            <strong>Chống thấm:</strong> Các sản phẩm chống thấm được bảo hành 3-5 năm với điều kiện thi công đúng quy cách.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-ban"></i>
+                            <strong>Không bảo hành:</strong> Sơn đã pha màu theo yêu cầu riêng, sơn dư thừa đã mở nắp.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 4: Các trường hợp không bảo hành -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-xmark-circle"></i>
+                    Không áp dụng bảo hành
+                </h2>
+                <div class="section-content">
+                    <div class="callout warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div>
+                            Các trường hợp sau đây <strong>KHÔNG</strong> được bảo hành:
+                        </div>
+                    </div>
+
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Hư hỏng do sử dụng sai cách, không đúng hướng dẫn của nhà sản xuất
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Hư hỏng do lắp đặt không đúng kỹ thuật (không do đơn vị chúng tôi lắp đặt)
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Hư hỏng do thiên tai, hỏa hoạn, điện áp không ổn định
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Sản phẩm đã bị tự ý sửa chữa, thay đổi cấu trúc
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Mất tem bảo hành, không có hóa đơn mua hàng
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-times text-danger"></i>
+                            Hao mòn tự nhiên trong quá trình sử dụng
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 5: Quy trình bảo hành -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-list-check"></i>
+                    Quy trình bảo hành
+                </h2>
+                <div class="section-content">
+                    <div class="warranty-process">
+                        <div class="process-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Liên hệ</h4>
+                                <p>Gọi hotline hoặc gửi email kèm hình ảnh sản phẩm lỗi</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Xác nhận</h4>
+                                <p>Nhân viên xác nhận thông tin và hẹn lịch kiểm tra</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Xử lý</h4>
+                                <p>Sửa chữa hoặc đổi mới trong 3-7 ngày làm việc</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Hoàn tất</h4>
+                                <p>Giao trả sản phẩm và cập nhật phiếu bảo hành</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="policy-navigation">
+            <a href="/ChinhSach/DoiTra" class="nav-link back">
+                <i class="fa-solid fa-arrow-left"></i>
+                Đổi trả
+            </a>
+            <a href="/ChinhSach" class="nav-link next">
+                Về trang chính sách
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+</div>

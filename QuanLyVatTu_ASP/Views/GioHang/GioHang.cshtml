@@ -10,6 +10,8 @@
     decimal subtotal = cartItems.Sum(x => x.ThanhTien);
     decimal discount = 0;
     decimal total = subtotal - discount;
+    // Tính tổng trọng lượng ước tính
+    decimal totalWeight = cartItems.Sum(x => x.TongTrongLuong);
 }
 
 <!-- Modern Shopping Cart Page -->
@@ -127,11 +129,15 @@
                         </div>
                     </div>
 
-                    <!-- Continue Shopping Button -->
+                    <!-- Action Buttons -->
                     <div class="continue-shopping-section">
                         <a href="/SanPham/Index" class="btn-continue-shopping">
                             <i class="fa-solid fa-arrow-left"></i>
                             Tiếp tục mua sắm
+                        </a>
+                        <a href="/GioHang/BaoGia" class="btn-export-quote" target="_blank">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            Tải báo giá
                         </a>
                     </div>
                 </div>
@@ -182,6 +188,12 @@
                         <div class="summary-row discount-row" id="discountRow" style="display: none;">
                             <span class="summary-label">Giảm giá</span>
                             <span class="summary-value discount-value">-@discount.ToString("N0")₫</span>
+                        </div>
+
+                        <!-- Total Weight Estimate -->
+                        <div class="shipping-note weight-estimate">
+                            <i class="fa-solid fa-weight-hanging"></i>
+                            <span>Trọng lượng ước tính: <strong>@totalWeight.ToString("N1") kg</strong></span>
                         </div>
 
                         <!-- Shipping Note -->

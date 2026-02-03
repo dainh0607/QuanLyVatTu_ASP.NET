@@ -26,6 +26,7 @@
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0px);
@@ -380,6 +381,47 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Export Quote Button */
+.btn-export-quote {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 30px;
+  border: 2px solid #dc3545;
+  color: #dc3545;
+  background: transparent;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+  margin-left: 15px;
+}
+
+.btn-export-quote:hover {
+  background: #dc3545;
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-export-quote i {
+  font-size: 1.1rem;
+}
+
+/* Weight Estimate */
+.weight-estimate {
+  background: rgba(255, 152, 0, 0.08) !important;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.weight-estimate i {
+  color: #ff9800 !important;
+}
+
+.weight-estimate strong {
+  color: #e65100;
+  font-weight: 700;
+}
+
 /* ===== Order Summary Sidebar ===== */
 .order-summary-sidebar {
   position: sticky;
@@ -443,11 +485,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 193, 7, 0.1),
-    rgba(255, 152, 0, 0.1)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 193, 7, 0.1),
+      rgba(255, 152, 0, 0.1));
   border: 2px dashed var(--warning);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -455,11 +495,9 @@
 }
 
 .discount-toggle:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 193, 7, 0.15),
-    rgba(255, 152, 0, 0.15)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 193, 7, 0.15),
+      rgba(255, 152, 0, 0.15));
   border-color: var(--accent);
 }
 
@@ -593,12 +631,10 @@
 /* Divider */
 .summary-divider {
   height: 2px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--gray-light),
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      var(--gray-light),
+      transparent);
   margin: 20px 0;
 }
 
@@ -655,6 +691,7 @@
 }
 
 @keyframes arrowPulse {
+
   0%,
   100% {
     transform: translateX(0);
@@ -688,11 +725,9 @@
 .freeship-progress-card {
   margin-top: 20px;
   padding: 20px;
-  background: linear-gradient(
-    135deg,
-    rgba(13, 110, 253, 0.05),
-    rgba(108, 117, 125, 0.05)
-  );
+  background: linear-gradient(135deg,
+      rgba(13, 110, 253, 0.05),
+      rgba(108, 117, 125, 0.05));
   border-radius: var(--radius-md);
   border: 2px solid rgba(13, 110, 253, 0.2);
 }
@@ -745,12 +780,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
   animation: shimmer 2s infinite;
 }
 
