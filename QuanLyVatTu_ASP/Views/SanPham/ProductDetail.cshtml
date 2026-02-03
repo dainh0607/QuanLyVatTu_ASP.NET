@@ -67,9 +67,14 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase" onclick="addToCart(@Model.ID)">
-                            Thêm vào giỏ hàng
-                        </button>
+                        <div class="d-flex gap-2 w-100">
+                            <button class="btn btn-dark flex-grow-1 py-3 rounded-3 fw-bold text-uppercase" onclick="addToCart(@Model.ID)">
+                                Thêm vào giỏ hàng
+                            </button>
+                            <button class="btn btn-danger flex-grow-1 py-3 rounded-3 fw-bold text-uppercase" onclick="buyNow(@Model.ID)">
+                                Mua ngay
+                            </button>
+                        </div>
                     </div>
                 }
                 else
@@ -124,26 +129,60 @@
         <div class="related-products mt-5 pt-5 border-top">
             <h3 class="fw-bold mb-4">Sản phẩm liên quan</h3>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                @for(int i = 1; i <= 4; i++)
+                @{
+                    var relatedProducts = ViewBag.RelatedProducts as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>;
+                }
+                @if (relatedProducts != null && relatedProducts.Any())
                 {
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card-hover">
-                            <div class="position-relative overflow-hidden rounded-top">
-                                <img src="https://placehold.co/300x200?text=SanPham+@i" class="card-img-top" alt="...">
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title fw-bold text-truncate">Máy khoan cầm tay mẫu @i</h6>
-                                <p class="card-text text-warning fw-bold">1.250.000đ</p>
-                            </div>
-                            <div class="card-footer bg-transparent border-0 pb-3">
-                                <a href="#" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
+                    @foreach(var item in relatedProducts)
+                    {
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm product-card-hover">
+                                <div class="position-relative overflow-hidden rounded-top">
+                                    <!-- Sử dụng placeholder vì chưa có trường ảnh trong DB -->
+                                    <img src="https://placehold.co/300x200?text=@System.Net.WebUtility.UrlEncode(item.TenVatTu)" class="card-img-top" alt="@item.TenVatTu" style="height: 200px; object-fit: cover;">
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold text-truncate" title="@item.TenVatTu">@item.TenVatTu</h6>
+                                    <p class="card-text text-warning fw-bold">@(item.GiaBan?.ToString("N0") ?? "0")đ</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-0 pb-3">
+                                    <a href="/SanPham/ProductDetail/@item.ID" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
+                                </div>
                             </div>
                         </div>
+                    }
+                }
+                else
+                {
+                     <div class="col-12 text-center text-muted py-4">
+                        <p>Không có sản phẩm liên quan nào.</p>
                     </div>
                 }
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal Thông báo thêm giỏ hàng -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold text-success" id="cartModalLabel">
+            <i class="fas fa-check-circle me-2"></i>Thành công
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="mb-0 fs-5">Sản phẩm đã được thêm vào giỏ hàng!</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4 rounded-3" data-bs-dismiss="modal">Tiếp tục mua sắm</button>
+        <a href="/GioHang/GioHang" class="btn btn-primary px-4 rounded-3">Xem giỏ hàng</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 @section Scripts {
@@ -175,8 +214,21 @@
             var qty = $('#qty').val();
             $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
                 if(res.success) {
-                    alert("Đã thêm vào giỏ hàng thành công!");
+                    var myModal = new bootstrap.Modal(document.getElementById('cartModal'));
+                    myModal.show();
                     if(res.count) $('.cart-count').text(res.count);
+                } else {
+                    alert("Có lỗi xảy ra: " + res.message);
+                }
+            });
+        }
+
+        // Mua ngay
+        function buyNow(id) {
+            var qty = $('#qty').val();
+            $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
+                if(res.success) {
+                    window.location.href = "/GioHang/GioHang";
                 } else {
                     alert("Có lỗi xảy ra: " + res.message);
                 }
