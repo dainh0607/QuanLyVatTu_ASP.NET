@@ -1,0 +1,370 @@
+@{
+    ViewData["Title"] = "Chính sách Giao hàng";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<link rel="stylesheet" href="~/user/css/policies.css" asp-append-version="true" />
+
+<div class="policies-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/ChinhSach">Chính sách</a></li>
+                <li class="breadcrumb-item active">Giao hàng</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="policy-header single">
+            <div class="header-icon shipping">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+            <div class="header-text">
+                <h1>Giao hàng & Vận chuyển</h1>
+                <p>Quy định về phạm vi giao hàng và phí vận chuyển</p>
+            </div>
+        </div>
+
+        <!-- Policy Content -->
+        <div class="policy-content">
+            
+            <!-- Section 1: Phạm vi hạ hàng -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Phạm vi hạ hàng
+                </h2>
+                <div class="section-content">
+                    <div class="callout danger">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div>
+                            <strong>Quy định quan trọng:</strong>
+                            Nhà bán hàng chỉ giao hàng đến <strong>chân công trình</strong> nơi xe tải tiếp cận được. Việc bốc vác vào kho hoặc lên tầng là <strong>trách nhiệm của khách hàng</strong> hoặc tính phí riêng.
+                        </div>
+                    </div>
+
+                    <div class="delivery-options">
+                        <div class="delivery-option">
+                            <div class="option-header">
+                                <i class="fa-solid fa-truck"></i>
+                                <h4>Giao tại chân công trình</h4>
+                                <span class="badge included">Bao gồm</span>
+                            </div>
+                            <ul>
+                                <li>Xe tải đỗ tại vị trí tiếp cận được</li>
+                                <li>Tài xế hỗ trợ mở cửa/dỡ hàng xuống xe</li>
+                                <li>Không bao gồm di chuyển vào trong</li>
+                            </ul>
+                        </div>
+                        <div class="delivery-option">
+                            <div class="option-header">
+                                <i class="fa-solid fa-people-carry-box"></i>
+                                <h4>Bốc xếp tận nơi</h4>
+                                <span class="badge extra">Tính phí thêm</span>
+                            </div>
+                            <ul>
+                                <li>Di chuyển hàng vào kho/vị trí chỉ định</li>
+                                <li>Bốc vác lên tầng (nếu có)</li>
+                                <li>Phí tính theo khối lượng và tầng cao</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Loại xe vận chuyển -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-truck-moving"></i>
+                    Loại xe vận chuyển
+                </h2>
+                <div class="section-content">
+                    <p>Chúng tôi lựa chọn xe phù hợp dựa trên <strong>khối lượng đơn hàng</strong> và <strong>độ rộng đường</strong> giao hàng:</p>
+
+                    <div class="info-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Loại xe</th>
+                                    <th>Tải trọng</th>
+                                    <th>Độ rộng đường tối thiểu</th>
+                                    <th>Phí cơ bản</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa-solid fa-motorcycle"></i> Xe ba gác</td>
+                                    <td>Dưới 500kg</td>
+                                    <td>Hẻm nhỏ (< 2m)</td>
+                                    <td>50.000₫ - 100.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-truck-pickup"></i> Xe tải nhỏ 1 tấn</td>
+                                    <td>500kg - 1 tấn</td>
+                                    <td>Đường 2m - 4m</td>
+                                    <td>150.000₫ - 300.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-truck"></i> Xe tải 2.5 tấn</td>
+                                    <td>1 - 2.5 tấn</td>
+                                    <td>Đường > 4m</td>
+                                    <td>300.000₫ - 500.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-truck-moving"></i> Xe tải 5+ tấn</td>
+                                    <td>Trên 2.5 tấn</td>
+                                    <td>Đường lớn > 6m</td>
+                                    <td>500.000₫ - 1.000.000₫</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout info">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <div>
+                            <strong>Mẹo:</strong> Khi đặt hàng, vui lòng cho biết độ rộng đường để chúng tôi điều xe phù hợp. Xe không vào được sẽ phải trung chuyển và phát sinh chi phí.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Vận chuyển theo loại vật tư -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    Vận chuyển theo loại vật tư
+                </h2>
+                <div class="section-content">
+                    <p>Cửa hàng <strong>tự vận chuyển</strong> bằng xe tải riêng. Phí và phương thức giao hàng tùy thuộc vào loại vật tư:</p>
+
+                    <div class="material-shipping-grid">
+                        <!-- Nhóm 1: Vật tư nặng -->
+                        <div class="material-card heavy">
+                            <div class="card-header">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                <h4>Vật tư nặng</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="material-list">
+                                    <span class="material-tag">Sắt thép</span>
+                                    <span class="material-tag">Xi măng</span>
+                                    <span class="material-tag">Thép hình</span>
+                                    <span class="material-tag">Tôn lợp</span>
+                                </div>
+                                <div class="shipping-info">
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-truck-moving"></i>
+                                        <span>Xe tải 2.5 - 10 tấn</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-coins"></i>
+                                        <span>Phí: <strong>50.000 - 100.000₫/tấn</strong></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-clock"></i>
+                                        <span>Giao trong ngày hoặc hôm sau</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhóm 2: Vật liệu xây dựng -->
+                        <div class="material-card building">
+                            <div class="card-header">
+                                <i class="fa-solid fa-cubes"></i>
+                                <h4>Vật liệu xây dựng</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="material-list">
+                                    <span class="material-tag">Gạch các loại</span>
+                                    <span class="material-tag">Cát xây dựng</span>
+                                    <span class="material-tag">Đá dăm</span>
+                                    <span class="material-tag">Ngói lợp</span>
+                                </div>
+                                <div class="shipping-info">
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-truck"></i>
+                                        <span>Xe tải 1 - 5 tấn</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-coins"></i>
+                                        <span>Phí: <strong>30.000 - 80.000₫/m³</strong></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-clock"></i>
+                                        <span>Cần đặt trước 1 ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhóm 3: Máy móc & Dụng cụ -->
+                        <div class="material-card tools">
+                            <div class="card-header">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                                <h4>Máy móc & Dụng cụ</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="material-list">
+                                    <span class="material-tag">Máy khoan</span>
+                                    <span class="material-tag">Máy cắt</span>
+                                    <span class="material-tag">Dụng cụ cầm tay</span>
+                                    <span class="material-tag">Thiết bị điện</span>
+                                </div>
+                                <div class="shipping-info">
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-truck-pickup"></i>
+                                        <span>Xe tải nhỏ / Giao kèm</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-coins"></i>
+                                        <span>Phí: <strong>Miễn phí khi mua kèm</strong></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-box"></i>
+                                        <span>Đóng gói cẩn thận</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhóm 4: Sơn & Hóa chất -->
+                        <div class="material-card paint">
+                            <div class="card-header">
+                                <i class="fa-solid fa-fill-drip"></i>
+                                <h4>Sơn & Hóa chất</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="material-list">
+                                    <span class="material-tag">Sơn nước</span>
+                                    <span class="material-tag">Sơn dầu</span>
+                                    <span class="material-tag">Keo dán</span>
+                                    <span class="material-tag">Chống thấm</span>
+                                </div>
+                                <div class="shipping-info">
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-truck-pickup"></i>
+                                        <span>Xe tải nhỏ (tránh rung lắc)</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-coins"></i>
+                                        <span>Phí: <strong>Theo khoảng cách</strong></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <i class="fa-solid fa-temperature-half"></i>
+                                        <span>Vận chuyển trong điều kiện mát</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout success mt-4">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>
+                            <strong>Lưu ý:</strong> Khi đặt hàng nhiều loại vật tư khác nhau, nhân viên sẽ liên hệ để sắp xếp lịch giao hàng phù hợp và tối ưu chi phí vận chuyển.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Thời gian chờ -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-clock"></i>
+                    Thời gian chờ & Phí phát sinh
+                </h2>
+                <div class="section-content">
+                    <div class="callout warning">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                        <div>
+                            <strong>Quan trọng:</strong>
+                            Nếu xe tải đến mà công trình <strong>chưa dọn chỗ đổ hàng</strong> và xe phải chờ quá <strong>30 phút</strong>, sẽ tính thêm phí chờ.
+                        </div>
+                    </div>
+
+                    <div class="info-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Thời gian chờ</th>
+                                    <th>Phí phát sinh</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>0 - 30 phút</td>
+                                    <td><span class="text-success">Miễn phí</span></td>
+                                </tr>
+                                <tr>
+                                    <td>30 phút - 1 giờ</td>
+                                    <td>100.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>1 giờ - 2 giờ</td>
+                                    <td>200.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>Quá 2 giờ</td>
+                                    <td>100.000₫/giờ tiếp theo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-phone"></i>
+                            Tài xế sẽ gọi điện trước <strong>30 phút</strong> khi gần đến để khách hàng chuẩn bị.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-calendar-xmark"></i>
+                            Nếu không giao được hàng và phải quay về, khách hàng chịu phí vận chuyển <strong>2 chiều</strong>.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 4: Khu vực giao hàng -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-map"></i>
+                    Khu vực giao hàng
+                </h2>
+                <div class="section-content">
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Nội thành TP.HCM:</strong> Giao trong ngày hoặc hôm sau (tùy thời điểm đặt)
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Các tỉnh lân cận:</strong> Long An, Bình Dương, Đồng Nai, Tây Ninh - Giao trong 1-2 ngày
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Các tỉnh khác:</strong> Liên hệ để được báo giá vận chuyển riêng
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="policy-navigation">
+            <a href="/ChinhSach/ThanhToan" class="nav-link back">
+                <i class="fa-solid fa-arrow-left"></i>
+                Thanh toán
+            </a>
+            <a href="/ChinhSach/DoiTra" class="nav-link next">
+                Đổi trả & Hoàn tiền
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+</div>

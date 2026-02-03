@@ -1,0 +1,413 @@
+@using QuanLyVatTu_ASP.Models.ViewModels
+@model List<CartItem>
+@{
+    Layout = null; // Standalone print page
+    var quoteDate = ViewBag.QuoteDate as DateTime? ?? DateTime.Now;
+    var total = (decimal?)ViewBag.Total ?? Model.Sum(x => x.ThanhTien);
+    var totalWeight = (decimal?)ViewBag.TotalWeight ?? Model.Sum(x => x.TongTrongLuong);
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Báo giá - Cửa hàng Vật tư Xây dựng</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            padding: 20px;
+        }
+        
+        .quote-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        /* Header */
+        .quote-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #1e3a8a;
+            margin-bottom: 25px;
+        }
+        
+        .company-info h1 {
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+        
+        .company-info p {
+            font-size: 12px;
+            color: #666;
+            margin: 3px 0;
+        }
+        
+        .quote-title {
+            text-align: right;
+        }
+        
+        .quote-title h2 {
+            font-size: 28px;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .quote-title .quote-number {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        .quote-title .quote-date {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        /* Customer Info */
+        .customer-section {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .customer-section h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .customer-section p {
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        
+        /* Quote Table */
+        .quote-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        
+        .quote-table thead {
+            background: #1e3a8a;
+            color: white;
+        }
+        
+        .quote-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        
+        .quote-table th:nth-child(3),
+        .quote-table th:nth-child(4),
+        .quote-table th:nth-child(5),
+        .quote-table th:nth-child(6) {
+            text-align: right;
+        }
+        
+        .quote-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .quote-table td:nth-child(3),
+        .quote-table td:nth-child(4),
+        .quote-table td:nth-child(5),
+        .quote-table td:nth-child(6) {
+            text-align: right;
+        }
+        
+        .quote-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        .quote-table .stt {
+            width: 40px;
+            text-align: center;
+        }
+        
+        /* Summary */
+        .quote-summary {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+        }
+        
+        .summary-box {
+            width: 300px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #d1d5db;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-row.total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a8a;
+            padding-top: 12px;
+            border-top: 2px solid #1e3a8a;
+            margin-top: 8px;
+        }
+        
+        /* Notes */
+        .quote-notes {
+            background: #fef3c7;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .quote-notes h4 {
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        
+        .quote-notes ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 12px;
+            color: #78350f;
+        }
+        
+        .quote-notes li {
+            margin: 4px 0;
+        }
+        
+        /* Footer */
+        .quote-footer {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .signature-box {
+            width: 200px;
+            text-align: center;
+        }
+        
+        .signature-box p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 60px;
+        }
+        
+        .signature-box .signature-line {
+            border-top: 1px solid #333;
+            padding-top: 8px;
+            font-weight: 600;
+        }
+        
+        /* Print Styles */
+        .no-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .btn-print {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        
+        .btn-print:hover {
+            background: #1e40af;
+        }
+        
+        .btn-back {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            background: #4b5563;
+        }
+        
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                padding: 0;
+                font-size: 12px;
+            }
+            
+            .quote-header {
+                padding-bottom: 15px;
+            }
+            
+            .quote-table th,
+            .quote-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Print Buttons -->
+    <div class="no-print">
+        <button class="btn-print" onclick="window.print()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+            </svg>
+            In báo giá
+        </button>
+        <a href="/GioHang/GioHang" class="btn-back">← Quay lại</a>
+    </div>
+
+    <div class="quote-container">
+        
+        <!-- Header -->
+        <div class="quote-header">
+            <div class="company-info">
+                <h1>🔧 Cửa hàng Vật tư Xây dựng</h1>
+                <p><strong>Địa chỉ:</strong> 123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh</p>
+                <p><strong>Điện thoại:</strong> 0302 370 432 | <strong>Email:</strong> dainhtb01722@gmail.com</p>
+                <p><strong>Website:</strong> www.vattustore.vn</p>
+            </div>
+            <div class="quote-title">
+                <h2>Báo Giá</h2>
+                <p class="quote-number">Số: BG-@quoteDate.ToString("yyyyMMdd")-@(new Random().Next(1000,9999))</p>
+                <p class="quote-date">Ngày: @quoteDate.ToString("dd/MM/yyyy")</p>
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="customer-section">
+            <h3>Thông tin khách hàng</h3>
+            <p><strong>Tên:</strong> _________________________________________________</p>
+            <p><strong>Địa chỉ công trình:</strong> _________________________________________________</p>
+            <p><strong>Điện thoại:</strong> _________________________</p>
+        </div>
+
+        <!-- Quote Table -->
+        <table class="quote-table">
+            <thead>
+                <tr>
+                    <th class="stt">STT</th>
+                    <th>Tên vật tư</th>
+                    <th>ĐVT</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var stt = 1; }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="stt">@(stt++)</td>
+                        <td>@item.TenVatTu</td>
+                        <td>@item.DonViTinh</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DonGia.ToString("N0")₫</td>
+                        <td>@item.ThanhTien.ToString("N0")₫</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Summary -->
+        <div class="quote-summary">
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Số lượng mặt hàng:</span>
+                    <span>@Model.Count</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tổng trọng lượng ước tính:</span>
+                    <span>@totalWeight.ToString("N1") kg</span>
+                </div>
+                <div class="summary-row total">
+                    <span>TỔNG CỘNG:</span>
+                    <span>@total.ToString("N0")₫</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="quote-notes">
+            <h4>📌 Lưu ý quan trọng:</h4>
+            <ul>
+                <li>Báo giá có hiệu lực trong vòng <strong>24 giờ</strong> kể từ ngày lập</li>
+                <li>Giá trên chưa bao gồm phí vận chuyển (tính theo khoảng cách và trọng lượng thực tế)</li>
+                <li>Đơn hàng trên 10.000.000₫ yêu cầu đặt cọc 30-50%</li>
+                <li>Giá có thể thay đổi theo biến động thị trường vật tư</li>
+            </ul>
+        </div>
+
+        <!-- Footer Signatures -->
+        <div class="quote-footer">
+            <div class="signature-box">
+                <p>Người lập báo giá</p>
+                <div class="signature-line">Nhân viên bán hàng</div>
+            </div>
+            <div class="signature-box">
+                <p>Xác nhận của khách hàng</p>
+                <div class="signature-line">Ký & ghi rõ họ tên</div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

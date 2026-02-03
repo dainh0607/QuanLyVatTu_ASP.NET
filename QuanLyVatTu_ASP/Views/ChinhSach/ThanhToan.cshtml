@@ -1,0 +1,185 @@
+@{
+    ViewData["Title"] = "Chính sách Thanh toán";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<link rel="stylesheet" href="~/user/css/policies.css" asp-append-version="true" />
+
+<div class="policies-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/ChinhSach">Chính sách</a></li>
+                <li class="breadcrumb-item active">Thanh toán</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="policy-header single">
+            <div class="header-icon payment">
+                <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div class="header-text">
+                <h1>Chính sách Thanh toán</h1>
+                <p>Quy định về phương thức thanh toán và đặt cọc</p>
+            </div>
+        </div>
+
+        <!-- Policy Content -->
+        <div class="policy-content">
+            
+            <!-- Section 1: Phương thức thanh toán -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-wallet"></i>
+                    Phương thức thanh toán
+                </h2>
+                <div class="section-content">
+                    <div class="payment-methods-grid">
+                        <div class="payment-method">
+                            <div class="method-icon cod">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <h4>Thanh toán khi nhận hàng (COD)</h4>
+                            <p>Thanh toán tiền mặt hoặc chuyển khoản cho nhân viên giao hàng tại công trình</p>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon bank">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <h4>Chuyển khoản ngân hàng</h4>
+                            <p>Chuyển khoản trước qua Internet Banking hoặc quét mã QR</p>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon deposit">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </div>
+                            <h4>Đặt cọc trước</h4>
+                            <p>Thanh toán trước 30-50% giá trị đơn hàng, phần còn lại thanh toán khi nhận hàng</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Quy định đặt cọc -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-coins"></i>
+                    Quy định về đặt cọc
+                </h2>
+                <div class="section-content">
+                    <div class="callout warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div>
+                            <strong>Lưu ý quan trọng:</strong>
+                            Với đơn hàng có giá trị <strong>trên 10.000.000₫</strong>, khách hàng cần đặt cọc trước ít nhất <strong>30%</strong> giá trị đơn hàng trước khi chúng tôi xuất kho.
+                        </div>
+                    </div>
+
+                    <div class="info-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Giá trị đơn hàng</th>
+                                    <th>Yêu cầu đặt cọc</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Dưới 10.000.000₫</td>
+                                    <td><span class="badge success">Không bắt buộc</span></td>
+                                    <td>Có thể COD hoặc chuyển khoản đầy đủ</td>
+                                </tr>
+                                <tr>
+                                    <td>10.000.000₫ - 50.000.000₫</td>
+                                    <td><span class="badge warning">Tối thiểu 30%</span></td>
+                                    <td>Phần còn lại thanh toán khi nhận hàng</td>
+                                </tr>
+                                <tr>
+                                    <td>Trên 50.000.000₫</td>
+                                    <td><span class="badge danger">Tối thiểu 50%</span></td>
+                                    <td>Có thể thương lượng với đại lý lớn</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Biến động giá -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Biến động giá vật tư
+                </h2>
+                <div class="section-content">
+                    <div class="callout info">
+                        <i class="fa-solid fa-info-circle"></i>
+                        <div>
+                            <strong>Về biến động giá:</strong>
+                            Do đặc thù ngành vật tư xây dựng, giá sắt thép, cát đá có thể thay đổi theo ngày dựa trên biến động thị trường.
+                        </div>
+                    </div>
+
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-check"></i>
+                            <strong>Giá tại thời điểm chốt đơn là giá cuối cùng:</strong> Khi quý khách đặt hàng và thanh toán (hoặc đặt cọc), giá sản phẩm sẽ được "khóa" theo giá hiển thị lúc đó.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check"></i>
+                            <strong>Báo giá có hiệu lực trong 24 giờ:</strong> Các báo giá gửi qua email/Zalo chỉ có giá trị trong vòng 24 giờ kể từ lúc gửi.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check"></i>
+                            <strong>Hàng đặt trước:</strong> Với các đơn hàng lớn cần đặt trước từ nhà máy, giá sẽ được xác nhận lại trước khi xuất kho.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 4: Hóa đơn VAT -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    Hóa đơn VAT
+                </h2>
+                <div class="section-content">
+                    <p>Chúng tôi xuất <strong>hóa đơn giá trị gia tăng (VAT)</strong> đầy đủ cho tất cả các đơn hàng theo yêu cầu:</p>
+                    
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-circle-info"></i>
+                            Hóa đơn điện tử được gửi qua email trong vòng <strong>3 ngày làm việc</strong> sau khi giao hàng thành công.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-info"></i>
+                            Yêu cầu cung cấp đầy đủ thông tin: <strong>Tên công ty, Mã số thuế, Địa chỉ đăng ký kinh doanh</strong>.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-info"></i>
+                            Việc thay đổi thông tin hóa đơn sau khi xuất sẽ mất phí xử lý <strong>50.000₫/lần</strong>.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="policy-navigation">
+            <a href="/ChinhSach" class="nav-link back">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại
+            </a>
+            <a href="/ChinhSach/GiaoHang" class="nav-link next">
+                Giao hàng & Vận chuyển
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+</div>

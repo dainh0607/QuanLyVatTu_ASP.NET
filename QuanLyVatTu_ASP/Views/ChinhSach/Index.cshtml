@@ -1,0 +1,141 @@
+@{
+    ViewData["Title"] = "Chính sách mua hàng";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<link rel="stylesheet" href="~/user/css/policies.css" asp-append-version="true" />
+
+<div class="policies-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item active">Chính sách mua hàng</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="policy-header">
+            <h1 class="policy-main-title">
+                <i class="fa-solid fa-file-contract"></i>
+                Chính Sách Mua Hàng
+            </h1>
+            <p class="policy-subtitle">Cam kết dịch vụ tốt nhất cho Quý khách hàng</p>
+        </div>
+
+        <!-- Policy Cards Grid -->
+        <div class="policy-cards-grid">
+            
+            <!-- Thanh toán -->
+            <a href="/ChinhSach/ThanhToan" class="policy-card">
+                <div class="policy-card-icon payment">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <div class="policy-card-content">
+                    <h3>Chính sách Thanh toán</h3>
+                    <p>Quy định về đặt cọc, phương thức thanh toán và biến động giá vật tư</p>
+                    <span class="policy-card-link">
+                        Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Giao hàng -->
+            <a href="/ChinhSach/GiaoHang" class="policy-card">
+                <div class="policy-card-icon shipping">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="policy-card-content">
+                    <h3>Giao hàng & Vận chuyển</h3>
+                    <p>Thông tin về phạm vi giao hàng, phí vận chuyển và thời gian chờ</p>
+                    <span class="policy-card-link">
+                        Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Đổi trả -->
+            <a href="/ChinhSach/DoiTra" class="policy-card">
+                <div class="policy-card-icon returns">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </div>
+                <div class="policy-card-content">
+                    <h3>Đổi trả & Hoàn tiền</h3>
+                    <p>Điều kiện đổi trả hàng thừa, phí nhập kho và hàng không được trả</p>
+                    <span class="policy-card-link">
+                        Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Bảo hành -->
+            <a href="/ChinhSach/BaoHanh" class="policy-card">
+                <div class="policy-card-icon warranty">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="policy-card-content">
+                    <h3>Chính sách Bảo hành</h3>
+                    <p>Cam kết bảo hành thiết bị, sơn và đúng chủng loại vật tư</p>
+                    <span class="policy-card-link">
+                        Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Quick Summary -->
+        <div class="policy-summary-section">
+            <h2 class="summary-title">
+                <i class="fa-solid fa-star"></i>
+                Cam Kết Của Chúng Tôi
+            </h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Giá cả cạnh tranh, công khai minh bạch</span>
+                </div>
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Đặt cọc linh hoạt cho đơn hàng lớn</span>
+                </div>
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Giao hàng đúng hẹn, xe tải đa kích cỡ</span>
+                </div>
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Hỗ trợ đổi trả hàng thừa trong 7 ngày</span>
+                </div>
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Cam kết đúng chủng loại, mác thép</span>
+                </div>
+                <div class="summary-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Xuất hóa đơn VAT đầy đủ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="policy-cta">
+            <div class="cta-content">
+                <h3>Bạn có thắc mắc?</h3>
+                <p>Liên hệ ngay với chúng tôi để được tư vấn và giải đáp</p>
+            </div>
+            <div class="cta-actions">
+                <a href="tel:0302370432" class="btn-cta primary">
+                    <i class="fa-solid fa-phone"></i>
+                    Gọi ngay: 0302370432
+                </a>
+                <a href="mailto:dainhtb01722@gmail.com" class="btn-cta secondary">
+                    <i class="fa-solid fa-envelope"></i>
+                    Gửi email
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>

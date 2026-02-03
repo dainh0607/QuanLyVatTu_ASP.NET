@@ -1,0 +1,220 @@
+@{
+    ViewData["Title"] = "Chính sách Đổi trả";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<link rel="stylesheet" href="~/user/css/policies.css" asp-append-version="true" />
+
+<div class="policies-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/ChinhSach">Chính sách</a></li>
+                <li class="breadcrumb-item active">Đổi trả</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="policy-header single">
+            <div class="header-icon returns">
+                <i class="fa-solid fa-rotate-left"></i>
+            </div>
+            <div class="header-text">
+                <h1>Đổi trả & Hoàn tiền</h1>
+                <p>Chính sách đổi trả hàng thừa và hoàn tiền</p>
+            </div>
+        </div>
+
+        <!-- Policy Content -->
+        <div class="policy-content">
+            
+            <!-- Section 1: Điều kiện đổi trả -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    Điều kiện đổi trả hàng thừa
+                </h2>
+                <div class="section-content">
+                    <div class="callout success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>
+                            <strong>Hỗ trợ trả hàng thừa:</strong>
+                            Chúng tôi hiểu rằng xây dựng xong thường dư vật tư. Bạn có thể trả lại hàng thừa theo các điều kiện sau.
+                        </div>
+                    </div>
+
+                    <ul class="policy-list large">
+                        <li>
+                            <i class="fa-solid fa-box"></i>
+                            <div>
+                                <strong>Nguyên đai, nguyên kiện</strong>
+                                <p>Hàng phải còn nguyên bao bì, tem niêm phong của nhà sản xuất, chưa qua sử dụng.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <div>
+                                <strong>Trong vòng 7 ngày</strong>
+                                <p>Kể từ ngày nhận hàng. Quá thời hạn này, chúng tôi không nhận trả lại.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-receipt"></i>
+                            <div>
+                                <strong>Có hóa đơn mua hàng</strong>
+                                <p>Xuất trình hóa đơn hoặc mã đơn hàng để đối chiếu.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 2: Phí nhập kho -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-coins"></i>
+                    Phí nhập kho (Restocking Fee)
+                </h2>
+                <div class="section-content">
+                    <div class="callout warning">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <div>
+                            <strong>Lưu ý:</strong>
+                            Khi trả hàng thừa, khách hàng sẽ chịu phí nhập kho để bù chi phí kiểm tra, tái nhập kho và xử lý.
+                        </div>
+                    </div>
+
+                    <div class="info-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Loại hàng</th>
+                                    <th>Phí nhập kho</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gạch, đá ốp lát</td>
+                                    <td><span class="badge warning">10%</span></td>
+                                    <td>Phải nguyên thùng</td>
+                                </tr>
+                                <tr>
+                                    <td>Sắt thép, ống nước</td>
+                                    <td><span class="badge warning">10%</span></td>
+                                    <td>Nguyên bó, chưa cắt</td>
+                                </tr>
+                                <tr>
+                                    <td>Sơn, keo, vữa</td>
+                                    <td><span class="badge warning">15%</span></td>
+                                    <td>Thùng nguyên seal</td>
+                                </tr>
+                                <tr>
+                                    <td>Thiết bị điện, vệ sinh</td>
+                                    <td><span class="badge warning">15%</span></td>
+                                    <td>Nguyên hộp, chưa lắp đặt</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p><strong>Hoàn tiền:</strong> Sau khi nhận hàng và trừ phí nhập kho, tiền sẽ được hoàn trong <strong>3-5 ngày làm việc</strong> qua chuyển khoản.</p>
+                </div>
+            </section>
+
+            <!-- Section 3: Hàng không được trả -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-ban"></i>
+                    Hàng KHÔNG được trả lại
+                </h2>
+                <div class="section-content">
+                    <div class="callout danger">
+                        <i class="fa-solid fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Quan trọng:</strong>
+                            Các loại hàng sau đây <strong>KHÔNG</strong> được đổi trả dưới bất kỳ hình thức nào.
+                        </div>
+                    </div>
+
+                    <div class="no-return-grid">
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-mound"></i>
+                            <h4>Cát, đá, sỏi rời</h4>
+                            <p>Đã đổ xuống không thể hốt lại</p>
+                        </div>
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-box-open"></i>
+                            <h4>Xi măng rách bao</h4>
+                            <p>Bao bị rách, thủng, ẩm</p>
+                        </div>
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-paint-roller"></i>
+                            <h4>Sơn đã pha màu</h4>
+                            <p>Sơn đã được pha theo yêu cầu</p>
+                        </div>
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-scissors"></i>
+                            <h4>Hàng đã cắt/gia công</h4>
+                            <p>Thép, ống đã cắt theo kích thước</p>
+                        </div>
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-wrench"></i>
+                            <h4>Hàng đã lắp đặt</h4>
+                            <p>Thiết bị đã tháo ra khỏi bao bì</p>
+                        </div>
+                        <div class="no-return-item">
+                            <i class="fa-solid fa-tags"></i>
+                            <h4>Hàng khuyến mãi/Sale</h4>
+                            <p>Hàng giảm giá đặc biệt</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Hàng lỗi -->
+            <section class="policy-section">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-exchange-alt"></i>
+                    Đổi hàng lỗi / Hư hao vận chuyển
+                </h2>
+                <div class="section-content">
+                    <ul class="policy-list">
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Đổi 1-1:</strong> Gạch vỡ quá tỷ lệ cho phép (>3% số lượng) do vận chuyển sẽ được đổi miễn phí.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Kiểm tra tại chỗ:</strong> Quý khách vui lòng kiểm tra hàng ngay khi nhận và ghi nhận với tài xế nếu có vấn đề.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Khiếu nại:</strong> Thời hạn khiếu nại hàng lỗi là <strong>24 giờ</strong> kể từ khi nhận hàng.
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-check-circle text-success"></i>
+                            <strong>Chụp hình:</strong> Cần có hình ảnh/video chứng minh hàng lỗi để xử lý.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="policy-navigation">
+            <a href="/ChinhSach/GiaoHang" class="nav-link back">
+                <i class="fa-solid fa-arrow-left"></i>
+                Giao hàng
+            </a>
+            <a href="/ChinhSach/BaoHanh" class="nav-link next">
+                Bảo hành
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+</div>
