@@ -111,7 +111,7 @@
     margin: 0 auto 16px;
 }
 
-.user-avatar {
+.sidebar-user-card .user-avatar {
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -143,20 +143,20 @@
     transform: scale(1.1);
 }
 
-.user-name {
+.sidebar-user-card .user-name {
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--profile-gray-900);
     margin-bottom: 4px;
 }
 
-.user-email {
+.sidebar-user-card .user-email {
     font-size: 0.875rem;
     color: var(--profile-gray-500);
     margin-bottom: 16px;
 }
 
-.user-stats {
+.sidebar-user-card .user-stats {
     display: flex;
     justify-content: center;
     gap: 24px;

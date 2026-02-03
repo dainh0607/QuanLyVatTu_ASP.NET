@@ -35,7 +35,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     d.ID,
                     d.SoSao,
-                    d.ChatLuongSanPham,
+                    // d.ChatLuongSanPham,
                     d.BinhLuan,
                     d.LuotThich,
                     d.NgayDanhGia,
@@ -99,7 +99,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 MaKhachHang = khachHangId.Value,
                 MaVatTu = request.MaVatTu,
                 SoSao = request.SoSao,
-                ChatLuongSanPham = request.ChatLuongSanPham ?? request.SoSao,
+                // ChatLuongSanPham = request.ChatLuongSanPham ?? request.SoSao,
                 BinhLuan = request.BinhLuan?.Trim(),
                 NgayDanhGia = DateTime.Now,
                 LuotThich = 0

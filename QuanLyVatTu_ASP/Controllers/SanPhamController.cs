@@ -88,6 +88,11 @@ namespace QuanLyVatTu_ASP.Controllers
                 .ToList();
             ViewBag.RelatedProducts = relatedProducts;
 
+            ViewBag.RelatedProducts = relatedProducts;
+
+            // Get Reviews
+            // ViewBag.Reviews = await _unitOfWork.DanhGiaRepository.GetByProductIdAsync(id);
+
             return View(product);
         }
 

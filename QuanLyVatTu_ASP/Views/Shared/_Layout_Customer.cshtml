@@ -124,31 +124,54 @@
                             </div>
                         </div>
 
-                @if (Context.Session.GetString("Role") == "Customer")
+
+                @if (!string.IsNullOrEmpty(Context.Session.GetString("UserName")))
                 {
                     <div class="user-dropdown">
-                        <a href="#" class="user-info d-flex align-items-center gap-2 text-decoration-none">
-                            <div class="user-avatar-small">
-                                <i class="fas fa-user-circle"></i>
+                        <a href="/Customer/Profile" class="user-info">
+                            @{
+                                var avatarUrl = Context.Session.GetString("AvatarUrl");
+                                if (string.IsNullOrEmpty(avatarUrl))
+                                {
+                                    avatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Context.Session.GetString("UserName") ?? "User")}&background=0D8ABC&color=fff";
+                                }
+                            }
+                            <img src="@avatarUrl" alt="Avatar" class="user-avatar" />
+                            <div class="d-flex flex-column" style="line-height: 1.2;">
+                                <span class="user-name">@Context.Session.GetString("UserName")</span>
+                                <span style="font-size: 0.7em; opacity: 0.8; font-weight: normal;">Thành viên</span>
                             </div>
-                            <span class="user-name-text">@Context.Session.GetString("UserName")</span>
-                            <i class="fas fa-chevron-down" style="font-size: 0.7em;"></i>
+                            <i class="fas fa-chevron-down ms-2"></i>
                         </a>
-                        <div class="user-menu">
-                            <a href="/Customer/Profile" class="menu-item">
-                                <i class="fas fa-user"></i>
-                                Tài khoản của tôi
-                            </a>
-                            <a href="/Customer/Orders" class="menu-item">
-                                <i class="fas fa-shopping-bag"></i>
-                                Đơn hàng của tôi
-                            </a>
-                            <div class="menu-divider"></div>
-                            <a href="/Account/Logout" class="menu-item logout">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Đăng xuất
-                            </a>
-                        </div>
+                        <ul class="user-menu">
+                            <li>
+                                <div class="user-menu-header">
+                                    <strong>@Context.Session.GetString("UserName")</strong>
+                                    <small>@Context.Session.GetString("Email")</small>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="/Customer/Profile">
+                                    <i class="fas fa-user-circle"></i>
+                                    Thông tin tài khoản
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/Customer/Orders">
+                                    <i class="fas fa-box-open"></i>
+                                    Đơn hàng của tôi
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="/Account/Logout" class="text-danger">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 }
                 else

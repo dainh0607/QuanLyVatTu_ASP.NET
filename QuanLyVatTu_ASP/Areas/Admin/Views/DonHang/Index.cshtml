@@ -15,7 +15,7 @@
                                    placeholder="Nhập từ khóa tìm kiếm..."
                                    name="keyword"
                                    value="@ViewBag.Keyword">
-                            <i class="bi bi-search position-absolute top-50 ms-3 translate-middle-y text-muted"></i>
+                            <i class="bi bi-search position-absolute top-50 ms-2 translate-middle-y text-muted"></i>
                         </div>
                         <select class="form-select rounded-3" style="min-width: 160px; max-width: 220px;">
                             <option value="">Tất cả trạng thái</option>
@@ -88,11 +88,12 @@
                                         var status = (item.TrangThai ?? "").Trim();
                                         var badgeClass = status switch
                                         {
-                                            "Đã xác nhận" => "bg-success",
+                                            "Đã xác nhận" => "bg-info text-white",
                                             "Đang xử lý" => "bg-warning text-dark",
-                                            "Đã hủy" => "bg-danger",
-                                            "Hoàn thành" => "bg-primary",
-                                            _ => "bg-secondary"
+                                            "Đang giao" => "bg-primary text-white",
+                                            "Đã giao" => "bg-success text-white",
+                                            "Đã hủy" => "bg-danger text-white",
+                                            _ => "bg-secondary text-white"
                                         };
                                     }
                                     <span class="badge @badgeClass px-3 py-2">@status</span>

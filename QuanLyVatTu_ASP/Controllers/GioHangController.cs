@@ -141,7 +141,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 cartTotal = cart.Sum(x => x.ThanhTien)
             });
         }
-        public IActionResult Wishlist()
+        public async Task<IActionResult> Wishlist()
         {
             var wishlist = HttpContext.Session.Get<List<WishlistItem>>("WISHLIST") ?? new List<WishlistItem>();
             ViewBag.Total = wishlist.Count;

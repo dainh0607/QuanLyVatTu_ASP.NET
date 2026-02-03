@@ -18,13 +18,24 @@
             <div class="col-lg-5 col-md-6">
                 <div class="product-gallery">
                     <div class="main-image mb-3 border rounded overflow-hidden position-relative">
-                        <img src="https://placehold.co/600x600?text=@Model.TenVatTu" id="currentImg" class="img-fluid w-100" alt="@Model.TenVatTu" style="object-fit: cover; aspect-ratio: 1/1;">
+                       <img src="/user/images/@($"{Model.TenVatTu}.jpg")"alt="@Model.TenVatTu"     class="img-fluid w-100"     style="object-fit: cover; aspect-ratio: 1/1;" /> 
                     </div>
                     <div class="d-flex gap-2 thumbnail-list">
-                        <img src="https://placehold.co/100x100?text=1" class="img-thumbnail active-thumb" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=2" class="img-thumbnail" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=3" class="img-thumbnail" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=4" class="img-thumbnail" onclick="changeImage(this)">
+                       <img src="/user/images/@($"{Model.TenVatTu}.jpg")" 
+                                class="img-thumbnail active-thumb" 
+                                onclick="changeImage(this)" 
+                                alt="@Model.TenVatTu">
+
+                            @if (ViewBag.RelatedProducts != null)
+                            {
+                                foreach (var item in (IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>)ViewBag.RelatedProducts)
+                                {
+                                    <img src="/user/images/@($"{item.TenVatTu}.jpg")" 
+                                        class="img-thumbnail" 
+                                        onclick="changeImage(this)" 
+                                        alt="@item.TenVatTu">
+                                }
+                            }
                     </div>
                 </div>
             </div>
@@ -126,6 +137,198 @@
             </div>
         </div>
 
+        <!-- Chi tiết sản phẩm và Đánh giá -->
+        <div class="product-details-section mt-5 pt-4">
+            <ul class="nav nav-tabs border-bottom" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+                        <i class="fas fa-info-circle me-2"></i>Chi tiết sản phẩm
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                        <i class="fas fa-comments me-2"></i>Đánh giá sản phẩm
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content bg-light rounded-bottom p-4" id="productTabsContent">
+                <!-- Tab Chi tiết sản phẩm -->
+                <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
+                            <table class="table table-bordered bg-white">
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold bg-light" style="width: 40%;">Mã sản phẩm</td>
+                                        <td>@Model.ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold bg-light">Tên sản phẩm</td>
+                                        <td>@Model.TenVatTu</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold bg-light">Danh mục</td>
+                                        <td>@ViewBag.TenLoai</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold bg-light">Giá bán</td>
+                                        <td class="text-danger fw-bold">@(Model.GiaBan?.ToString("N0") ?? "0")đ</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold bg-light">Số lượng tồn kho</td>
+                                        <td>
+                                            @if (Model.SoLuongTon > 10)
+                                            {
+                                                <span class="badge bg-success">@Model.SoLuongTon sản phẩm</span>
+                                            }
+                                            else if (Model.SoLuongTon > 0)
+                                            {
+                                                <span class="badge bg-warning text-dark">Còn @Model.SoLuongTon sản phẩm</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Hết hàng</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold bg-light">Đơn vị tính</td>
+                                        <td>@(Model.DonViTinh ?? "Cái")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-3">Mô tả sản phẩm</h5>
+                            <div class="bg-white p-3 rounded border">
+                                <p class="text-secondary mb-3">@Model.MoTa</p>
+                                <div class="product-features">
+                                    <h6 class="fw-bold mb-2">Ưu điểm nổi bật:</h6>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Chất lượng cao, bền bỉ</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Giá cả hợp lý</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Đảm bảo tiêu chuẩn chất lượng</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hỗ trợ tư vấn 24/7</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Giao hàng nhanh chóng</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Đánh giá sản phẩm -->
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                    @{
+                        var reviewList = (ViewBag.Reviews as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia>) ?? new List<QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia>();
+                        int count = reviewList.Count();
+                        double avg = count > 0 ? reviewList.Average(r => r.SoSao) : 0;
+                        var counts = new int[6];
+                        foreach(var r in reviewList) { if(r.SoSao >=1 && r.SoSao <= 5) counts[r.SoSao]++; }
+                    }
+                    <div class="reviews-section">
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <div class="rating-summary bg-white p-4 rounded border text-center">
+                                    <h3 class="display-4 fw-bold text-warning mb-2">@avg.ToString("0.0")</h3>
+                                    <div class="stars mb-2">
+                                        @for(int i=1; i<=5; i++) {
+                                            if(i <= avg) { <i class="fas fa-star text-warning"></i> }
+                                            else if(i - 0.5 <= avg) { <i class="fas fa-star-half-alt text-warning"></i> }
+                                            else { <i class="far fa-star text-warning"></i> }
+                                        }
+                                    </div>
+                                    <p class="text-muted mb-0">Dựa trên @count đánh giá</p>
+                                </div>
+                                <div class="rating-breakdown bg-white mt-3 p-4 rounded border">
+                                    @for(int i=5; i>=1; i--) {
+                                        var pct = count > 0 ? (counts[i] * 100 / count) : 0;
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">@i <i class="fas fa-star text-warning small"></i></span>
+                                            <div class="progress flex-grow-1">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: @pct%"></div>
+                                            </div>
+                                            <span class="ms-2 small text-muted">@pct%</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <!-- Form viết đánh giá -->
+                                    @if(Context.Session.GetString("Email") != null)
+                                    {
+                                        <div class="write-review bg-white p-4 rounded border mb-4">
+                                            <h5 class="fw-bold mb-3">Viết đánh giá của bạn</h5>
+                                            <form id="reviewForm">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Đánh giá của bạn:</label>
+                                                    <div class="star-rating">
+                                                        <i class="far fa-star rating-star" data-rating="1"></i>
+                                                        <i class="far fa-star rating-star" data-rating="2"></i>
+                                                        <i class="far fa-star rating-star" data-rating="3"></i>
+                                                        <i class="far fa-star rating-star" data-rating="4"></i>
+                                                        <i class="far fa-star rating-star" data-rating="5"></i>
+                                                    </div>
+                                                    <input type="hidden" id="ratingValue" value="0">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <!-- Hide Name input, we get it from Session/DB -->
+                                                    <p class="mb-1">Đánh giá dưới tên: <strong>@Context.Session.GetString("UserName")</strong></p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="reviewComment" class="form-label fw-bold">Nội dung đánh giá</label>
+                                                    <textarea class="form-control" id="reviewComment" rows="4" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="submitReview()">
+                                                    <i class="fas fa-paper-plane me-2"></i>Gửi đánh giá
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning text-center">
+                                            Vui lòng <a href="/Account/Login" class="fw-bold text-decoration-underline">đăng nhập</a> để viết đánh giá.
+                                        </div>
+                                    }
+
+                                <!-- Danh sách đánh giá -->
+                                <div class="reviews-list">
+                                    <h5 class="fw-bold mb-3">Đánh giá từ khách hàng</h5>
+                                    @if(count > 0) {
+                                        @foreach(var review in reviewList) {
+                                            <div class="review-item bg-white p-4 rounded border mb-3">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1">@(review.KhachHang?.HoTen ?? "Khách hàng ẩn danh")</h6>
+                                                        <div class="stars mb-2">
+                                                            @for(int i=0; i<review.SoSao; i++) { <i class="fas fa-star text-warning small"></i> }
+                                                            @for(int i=review.SoSao; i<5; i++) { <i class="far fa-star text-warning small"></i> }
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-muted small">@review.NgayDanhGia.ToString("dd/MM/yyyy")</span>
+                                                </div>
+                                                <p class="text-secondary mb-0">@review.BinhLuan</p>
+                                            </div>
+                                        }
+                                    } else {
+                                        <div class="text-center py-4 text-muted bg-white border rounded">
+                                            <i class="far fa-comment-dots fa-3x mb-3"></i>
+                                            <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="related-products mt-5 pt-5 border-top">
             <h3 class="fw-bold mb-4">Sản phẩm liên quan</h3>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
@@ -134,20 +337,25 @@
                 }
                 @if (relatedProducts != null && relatedProducts.Any())
                 {
-                    @foreach(var item in relatedProducts)
+                   
+                    foreach (var item in relatedProducts)
                     {
                         <div class="col">
                             <div class="card h-100 border-0 shadow-sm product-card-hover">
-                                <div class="position-relative overflow-hidden rounded-top">
-                                    <!-- Sử dụng placeholder vì chưa có trường ảnh trong DB -->
-                                    <img src="https://placehold.co/300x200?text=@System.Net.WebUtility.UrlEncode(item.TenVatTu)" class="card-img-top" alt="@item.TenVatTu" style="height: 200px; object-fit: cover;">
+                                <div class="position-relative overflow-hidden rounded-top bg-light" style="aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;">
+                                    <img src="/user/images/@($"{item.TenVatTu}.jpg")" 
+                                        class="w-100 h-100" 
+                                        alt="@item.TenVatTu" 
+                                        style="object-fit: contain; padding: 5px;">
                                 </div>
+                                
                                 <div class="card-body">
                                     <h6 class="card-title fw-bold text-truncate" title="@item.TenVatTu">@item.TenVatTu</h6>
                                     <p class="card-text text-warning fw-bold">@(item.GiaBan?.ToString("N0") ?? "0")đ</p>
                                 </div>
+                                
                                 <div class="card-footer bg-transparent border-0 pb-3">
-                                    <a href="/SanPham/ProductDetail/@item.ID" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
+                                    <a asp-action="ProductDetail" asp-route-id="@item.ID" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
                                 </div>
                             </div>
                         </div>
@@ -333,6 +541,74 @@
             }
         }
 
+        // Validate quantity input - prevent user from typing more than available stock
+        $(document).ready(function() {
+            $('#qty').on('input', function() {
+                var max = parseInt($(this).attr('max'));
+                var value = parseInt($(this).val());
+                
+                if (value > max) {
+                    $(this).val(max);
+                    // Show warning message
+                    showQuantityWarning(max);
+                } else if (value < 1 || isNaN(value)) {
+                    $(this).val(1);
+                }
+            });
+
+            // Star rating click handler
+            $('.rating-star').on('click', function() {
+                var rating = $(this).data('rating');
+                $('#ratingValue').val(rating);
+                
+                // Update star display
+                $('.rating-star').each(function(index) {
+                    if (index < rating) {
+                        $(this).removeClass('far').addClass('fas');
+                    } else {
+                        $(this).removeClass('fas').addClass('far');
+                    }
+                });
+            });
+
+            // Star rating hover effect
+            $('.rating-star').on('mouseenter', function() {
+                var rating = $(this).data('rating');
+                $('.rating-star').each(function(index) {
+                    if (index < rating) {
+                        $(this).removeClass('far').addClass('fas');
+                    } else {
+                        $(this).removeClass('fas').addClass('far');
+                    }
+                });
+            });
+
+            // Reset stars on mouse leave to selected rating
+            $('.star-rating').on('mouseleave', function() {
+                var selectedRating = $('#ratingValue').val();
+                $('.rating-star').each(function(index) {
+                    if (index < selectedRating) {
+                        $(this).removeClass('far').addClass('fas');
+                    } else {
+                        $(this).removeClass('fas').addClass('far');
+                    }
+                });
+            });
+        });
+
+        // Show quantity warning
+        function showQuantityWarning(max) {
+            // Create a temporary toast/alert
+            var toast = $('<div class="alert alert-warning alert-dismissible fade show position-fixed top-0 end-0 m-3" role="alert" style="z-index: 9999;">' +
+                          '<i class="fas fa-exclamation-triangle me-2"></i>Số lượng tối đa: ' + max + ' sản phẩm' +
+                          '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                          '</div>');
+            $('body').append(toast);
+            setTimeout(function() {
+                toast.alert('close');
+            }, 3000);
+        }
+
         // Xử lý đổi ảnh khi click thumbnail
         function changeImage(element) {
             var mainImg = document.getElementById('currentImg');
@@ -345,6 +621,15 @@
         // Ajax thêm vào giỏ hàng
         function addToCart(id) {
             var qty = $('#qty').val();
+            var max = parseInt($('#qty').attr('max'));
+            
+            // Validate before adding to cart
+            if (parseInt(qty) > max) {
+                showQuantityWarning(max);
+                $('#qty').val(max);
+                return;
+            }
+            
             $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
                 if(res.success) {
                     var myModal = new bootstrap.Modal(document.getElementById('cartModal'));
@@ -359,6 +644,15 @@
         // Mua ngay
         function buyNow(id) {
             var qty = $('#qty').val();
+            var max = parseInt($('#qty').attr('max'));
+            
+            // Validate before buying
+            if (parseInt(qty) > max) {
+                showQuantityWarning(max);
+                $('#qty').val(max);
+                return;
+            }
+            
             $.post('/GioHang/AddToCart', { productId: id, quantity: qty }, function(res) {
                 if(res.success) {
                     window.location.href = "/GioHang/GioHang";
@@ -532,9 +826,6 @@
                             $(btn).removeClass('liked');
                             $(btn).find('i').removeClass('fas').addClass('far');
                         }
-                    } else {
-                        alert(res.message);
-                    }
                 }
             });
         }
@@ -574,7 +865,7 @@
         }
 
         .service-box {
-            background-color: #f8f9fa; /* Màu xám nhạt giống ảnh */
+            background-color: #f8f9fa;
         }
         .btn-dark {
             background-color: #000;
@@ -582,6 +873,86 @@
         }
         .btn-dark:hover {
             background-color: #333;
+        }
+
+        /* Product Details Tabs */
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 12px 24px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #0d6efd;
+            border-bottom-color: #e9ecef;
+        }
+        .nav-tabs .nav-link.active {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+            background: transparent;
+        }
+
+        /* Star Rating */
+        .star-rating {
+            font-size: 2rem;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .star-rating i {
+            color: #ffc107;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+        .star-rating i:hover {
+            transform: scale(1.2);
+        }
+        .rating-star {
+            cursor: pointer;
+        }
+
+        /* Review Items */
+        .review-item {
+            transition: box-shadow 0.3s;
+        }
+        .review-item:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important;
+        }
+
+        /* Rating Summary */
+        .rating-summary {
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+
+        /* Progress bars for rating breakdown */
+        .progress {
+            height: 8px;
+        }
+
+        /* Tab content styling */
+        .tab-content {
+            min-height: 400px;
+        }
+
+        /* Product features list */
+        .product-features ul li {
+            font-size: 0.95rem;
+        }
+
+        /* Write review form */
+        .write-review {
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .star-rating {
+                font-size: 1.5rem;
+            }
+            .nav-tabs .nav-link {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 }

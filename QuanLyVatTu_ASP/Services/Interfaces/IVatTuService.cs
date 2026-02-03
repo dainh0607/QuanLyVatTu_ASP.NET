@@ -16,5 +16,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<string?> DeleteAsync(int id);
 
         Task<(List<LoaiVatTu> LoaiList, List<NhaCungCap> NccList)> GetDropdownDataAsync();
+
+        Task<string> GetNextMaHienThiAsync();
     }
 }

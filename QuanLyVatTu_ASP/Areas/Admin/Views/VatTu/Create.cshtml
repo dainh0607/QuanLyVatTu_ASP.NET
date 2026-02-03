@@ -14,7 +14,7 @@
                     </h3>
                 </div>
                 <div class="card-body p-5">
-                    <form asp-action="Create" asp-controller="VatTu" method="post">
+                    <form asp-action="Create" asp-controller="VatTu" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
 
                         <div class="row g-4">
@@ -78,6 +78,22 @@
                                         <option value="">-- Chọn nhà cung cấp --</option>
                                     </select>
                                     <span asp-validation-for="MaNhaCungCap" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label asp-for="HinhAnhFile" class="form-label fw-semibold">Hình ảnh sản phẩm</label>
+                                    <input asp-for="HinhAnhFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
+                                    <small class="text-muted">Chấp nhận JPG, PNG, GIF</small>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Xem trước</label>
+                                    <div id="imagePreview" class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
+                                        <span class="text-muted">Chưa có ảnh</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -29,6 +29,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<ChiTietHoaDon> ChiTietHoaDons { get; set; }
         public DbSet<DanhGia> DanhGias { get; set; }
         public DbSet<TuongTacDanhGia> TuongTacDanhGias { get; set; }
+        public DbSet<YeuThich> YeuThichs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -173,6 +174,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             modelBuilder.Entity<DanhGia>(entity =>
             {
                 entity.ToTable("DanhGia");
+                entity.Ignore(e => e.TenNguoiDanhGia); // Explicitly ignore column
                 entity.Property(e => e.NgayDanhGia).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.LuotThich).HasDefaultValue(0);
 
@@ -206,6 +208,23 @@ namespace QuanLyVatTu_ASP.DataAccess
                     .WithMany(p => p.TuongTacDanhGias)
                     .HasForeignKey(d => d.MaKhachHang)
                     .OnDelete(DeleteBehavior.Restrict); 
+            });
+
+            // --- 12. YeuThich ---
+            modelBuilder.Entity<YeuThich>(entity =>
+            {
+                entity.ToTable("YeuThich");
+                entity.Property(e => e.NgayThem).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.YeuThichs)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Cascade); // Xóa User -> xóa luôn danh sách yêu thích
+
+                entity.HasOne(d => d.VatTu)
+                    .WithMany(p => p.YeuThichs)
+                    .HasForeignKey(d => d.MaVatTu)
+                    .OnDelete(DeleteBehavior.Cascade); // Xóa SP -> xóa khỏi danh sách yêu thích
             });
         }
     }

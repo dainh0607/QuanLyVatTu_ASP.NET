@@ -14,6 +14,7 @@ namespace QuanLyVatTu_ASP.Repositories
         IHoaDonRepository HoaDonRepository { get; }
         IChiTietHoaDonRepository ChiTietHoaDonRepository { get; }
 
+
         int Save();
     }
 }

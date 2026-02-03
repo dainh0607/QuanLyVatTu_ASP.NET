@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuanLyVatTu_ASP.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDB : Migration
+    public partial class AddHinhAnhColumn : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,9 +21,10 @@ namespace QuanLyVatTu_ASP.Migrations
                     HoTen = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", nullable: false),
                     SoDienThoai = table.Column<string>(type: "varchar(10)", nullable: true),
-                    DiaChi = table.Column<string>(type: "nvarchar(255)", nullable: true),
+                    DiaChi = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    AnhDaiDien = table.Column<string>(type: "varchar(255)", nullable: true),
                     TaiKhoan = table.Column<string>(type: "varchar(50)", nullable: false),
-                    MatKhau = table.Column<string>(type: "varchar(50)", nullable: false),
+                    MatKhau = table.Column<string>(type: "varchar(255)", nullable: false),
                     DangNhapGoogle = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
@@ -78,6 +79,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     CCCD = table.Column<string>(type: "varchar(12)", nullable: false),
                     SoDienThoai = table.Column<string>(type: "varchar(10)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", nullable: true),
+                    AnhDaiDien = table.Column<string>(type: "varchar(255)", nullable: true),
                     TaiKhoan = table.Column<string>(type: "varchar(50)", nullable: false),
                     MatKhau = table.Column<string>(type: "varchar(50)", nullable: false),
                     VaiTro = table.Column<string>(type: "nvarchar(50)", nullable: false),
@@ -96,6 +98,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaHienThi = table.Column<string>(type: "varchar(20)", nullable: false, computedColumnSql: "'VT' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)"),
                     TenVatTu = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    HinhAnh = table.Column<string>(type: "varchar(255)", nullable: true),
                     DonViTinh = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     GiaNhap = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     GiaBan = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -157,6 +160,63 @@ namespace QuanLyVatTu_ASP.Migrations
                         principalTable: "NhanVien",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DanhGia",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaKhachHang = table.Column<int>(type: "int", nullable: false),
+                    MaVatTu = table.Column<int>(type: "int", nullable: false),
+                    SoSao = table.Column<int>(type: "int", nullable: false),
+                    BinhLuan = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LuotThich = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    NgayDanhGia = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DanhGia", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DanhGia_KhachHang_MaKhachHang",
+                        column: x => x.MaKhachHang,
+                        principalTable: "KhachHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DanhGia_VatTu_MaVatTu",
+                        column: x => x.MaVatTu,
+                        principalTable: "VatTu",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "YeuThich",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaKhachHang = table.Column<int>(type: "int", nullable: false),
+                    MaVatTu = table.Column<int>(type: "int", nullable: false),
+                    NgayThem = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_YeuThich", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_YeuThich_KhachHang_MaKhachHang",
+                        column: x => x.MaKhachHang,
+                        principalTable: "KhachHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_YeuThich_VatTu_MaVatTu",
+                        column: x => x.MaVatTu,
+                        principalTable: "VatTu",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,6 +296,34 @@ namespace QuanLyVatTu_ASP.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TuongTacDanhGia",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaDanhGia = table.Column<int>(type: "int", nullable: false),
+                    MaKhachHang = table.Column<int>(type: "int", nullable: false),
+                    DaThich = table.Column<bool>(type: "bit", nullable: false),
+                    NgayTuongTac = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TuongTacDanhGia", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TuongTacDanhGia_DanhGia_MaDanhGia",
+                        column: x => x.MaDanhGia,
+                        principalTable: "DanhGia",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TuongTacDanhGia_KhachHang_MaKhachHang",
+                        column: x => x.MaKhachHang,
+                        principalTable: "KhachHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChiTietHoaDon",
                 columns: table => new
                 {
@@ -282,6 +370,16 @@ namespace QuanLyVatTu_ASP.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ChiTietHoaDon_MaVatTu",
                 table: "ChiTietHoaDon",
+                column: "MaVatTu");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DanhGia_MaKhachHang",
+                table: "DanhGia",
+                column: "MaKhachHang");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DanhGia_MaVatTu",
+                table: "DanhGia",
                 column: "MaVatTu");
 
             migrationBuilder.CreateIndex(
@@ -334,6 +432,17 @@ namespace QuanLyVatTu_ASP.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TuongTacDanhGia_MaDanhGia_MaKhachHang",
+                table: "TuongTacDanhGia",
+                columns: new[] { "MaDanhGia", "MaKhachHang" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TuongTacDanhGia_MaKhachHang",
+                table: "TuongTacDanhGia",
+                column: "MaKhachHang");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VatTu_MaLoaiVatTu",
                 table: "VatTu",
                 column: "MaLoaiVatTu");
@@ -342,6 +451,17 @@ namespace QuanLyVatTu_ASP.Migrations
                 name: "IX_VatTu_MaNhaCungCap",
                 table: "VatTu",
                 column: "MaNhaCungCap");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_YeuThich_MaKhachHang_MaVatTu",
+                table: "YeuThich",
+                columns: new[] { "MaKhachHang", "MaVatTu" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_YeuThich_MaVatTu",
+                table: "YeuThich",
+                column: "MaVatTu");
         }
 
         /// <inheritdoc />
@@ -354,25 +474,34 @@ namespace QuanLyVatTu_ASP.Migrations
                 name: "ChiTietHoaDon");
 
             migrationBuilder.DropTable(
+                name: "TuongTacDanhGia");
+
+            migrationBuilder.DropTable(
+                name: "YeuThich");
+
+            migrationBuilder.DropTable(
                 name: "HoaDon");
 
             migrationBuilder.DropTable(
-                name: "VatTu");
+                name: "DanhGia");
 
             migrationBuilder.DropTable(
                 name: "DonHang");
 
             migrationBuilder.DropTable(
-                name: "LoaiVatTu");
-
-            migrationBuilder.DropTable(
-                name: "NhaCungCap");
+                name: "VatTu");
 
             migrationBuilder.DropTable(
                 name: "KhachHang");
 
             migrationBuilder.DropTable(
                 name: "NhanVien");
+
+            migrationBuilder.DropTable(
+                name: "LoaiVatTu");
+
+            migrationBuilder.DropTable(
+                name: "NhaCungCap");
         }
     }
 }

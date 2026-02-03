@@ -12,6 +12,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(100)")]
         public string TenVatTu { get; set; } = string.Empty;
 
+        [Column(TypeName = "varchar(255)")]
+        public string? HinhAnh { get; set; }
+
         [Required(ErrorMessage = "Vui lòng nhập đơn vị tính")]
         [Column(TypeName = "nvarchar(50)")]
         public string DonViTinh { get; set; } = string.Empty;
@@ -46,6 +49,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [ForeignKey("MaNhaCungCap")]
         public virtual NhaCungCap? NhaCungCap { get; set; }
 
+        [NotMapped]
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+        [NotMapped]
+        public virtual ICollection<YeuThich> YeuThichs { get; set; } = new List<YeuThich>();
     }
 }

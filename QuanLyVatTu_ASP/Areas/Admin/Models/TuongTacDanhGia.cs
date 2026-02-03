@@ -7,6 +7,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
     public class TuongTacDanhGia
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         [ForeignKey("DanhGia")]

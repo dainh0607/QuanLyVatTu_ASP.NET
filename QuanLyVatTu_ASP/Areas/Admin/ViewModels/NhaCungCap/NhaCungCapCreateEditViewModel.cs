@@ -23,6 +23,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhaCungCap
         public string? DiaChi { get; set; }
 
         [Display(Name = "Mã nhà cung cấp")]
-        public string MaHienThi => Id > 0 ? $"NCC{Id:000}" : "Tự động tạo";
+        public string MaHienThi { get; set; } = "Tự động tạo";
     }
 }

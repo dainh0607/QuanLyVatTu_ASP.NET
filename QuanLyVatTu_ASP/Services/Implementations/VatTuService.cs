@@ -83,6 +83,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 GiaNhap = vt.GiaNhap,
                 GiaBan = vt.GiaBan,
                 SoLuongTon = vt.SoLuongTon,
+                HinhAnh = vt.HinhAnh,
 
                 // Cập nhật lại tên biến theo đúng SQL
                 MaLoaiVatTu = vt.MaLoaiVatTu,
@@ -97,9 +98,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 return "Tên vật tư này đã tồn tại trong kho.";
             }
 
-            // Tạo mã hiển thị tự động (VTxxxx)
-            string randomSuffix = new Random().Next(1000, 9999).ToString();
-            string maHienThiAuto = "VT" + randomSuffix;
+            // Tạo mã hiển thị tự động - tìm mã bị thiếu
+            string maHienThiAuto = await GetNextMaHienThiAsync();
 
             var vt = new VatTu
             {
@@ -109,6 +109,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 GiaNhap = model.GiaNhap,
                 GiaBan = model.GiaBan,
                 SoLuongTon = model.SoLuongTon,
+                HinhAnh = model.HinhAnh,
 
                 MaLoaiVatTu = model.MaLoaiVatTu,
                 MaNhaCungCap = model.MaNhaCungCap,
@@ -137,6 +138,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             vt.GiaNhap = model.GiaNhap;
             vt.GiaBan = model.GiaBan;
             vt.SoLuongTon = model.SoLuongTon;
+
+            // Cập nhật hình ảnh nếu có
+            if (!string.IsNullOrEmpty(model.HinhAnh))
+            {
+                vt.HinhAnh = model.HinhAnh;
+            }
 
             vt.MaLoaiVatTu = model.MaLoaiVatTu;
             vt.MaNhaCungCap = model.MaNhaCungCap;
@@ -168,6 +175,38 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var loaiList = await _context.LoaiVatTus.OrderBy(l => l.TenLoaiVatTu).ToListAsync();
             var nccList = await _context.NhaCungCaps.OrderBy(n => n.TenNhaCungCap).ToListAsync();
             return (loaiList, nccList);
+        }
+
+        /// <summary>
+        /// Sinh mã hiển thị tiếp theo - tìm mã bị thiếu trong dãy VT001, VT002...
+        /// Ví dụ: Nếu xóa VT003 thì mã mới sẽ là VT003
+        /// </summary>
+        public async Task<string> GetNextMaHienThiAsync()
+        {
+            // Lấy tất cả mã hiện có
+            var existingCodes = await _context.VatTus
+                .Select(x => x.MaHienThi)
+                .Where(x => x.StartsWith("VT"))
+                .ToListAsync();
+
+            // Parse số từ mã
+            var usedNumbers = existingCodes
+                .Select(x => {
+                    if (x.Length > 2 && int.TryParse(x.Substring(2), out int n))
+                        return n;
+                    return 0;
+                })
+                .Where(x => x > 0)
+                .ToHashSet();
+
+            // Tìm số nhỏ nhất chưa sử dụng
+            int nextNumber = 1;
+            while (usedNumbers.Contains(nextNumber))
+            {
+                nextNumber++;
+            }
+
+            return $"VT{nextNumber:D3}"; // VT001, VT002...
         }
     }
 }

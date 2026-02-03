@@ -46,11 +46,12 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             bool isPasswordValid = false;
             try
             {
-                isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.MatKhau);
+                isPasswordValid = !string.IsNullOrEmpty(user.MatKhau) && BCrypt.Net.BCrypt.Verify(password, user.MatKhau);
             }
-            catch
+            catch (Exception)
             {
-                return null;
+                // Fallback nếu password trong DB chưa được hash (dữ liệu cũ)
+                if (user.MatKhau == password) isPasswordValid = true;
             }
 
             if (isPasswordValid)

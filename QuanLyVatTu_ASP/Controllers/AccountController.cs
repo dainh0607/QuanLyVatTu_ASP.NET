@@ -168,7 +168,18 @@ namespace QuanLyVatTu_ASP.Controllers
 
         public IActionResult Logout()
         {
+            // Xóa toàn bộ Session
             HttpContext.Session.Clear();
+            
+            // Xóa Cookie Session để ngăn chặn việc sử dụng lại Session ID cũ
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                if (cookie == ".AspNetCore.Session" || cookie == "AspNetCore.Antiforgery")
+                {
+                    Response.Cookies.Delete(cookie);
+                }
+            }
+            
             return RedirectToAction("Login");
         }
     }

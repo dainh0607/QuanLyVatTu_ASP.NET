@@ -16,5 +16,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<string?> DeleteAsync(int id);
 
         Task<List<NhaCungCap>> GetLookupAsync();
+
+        Task<string> GetNextMaHienThiAsync();
     }
 }

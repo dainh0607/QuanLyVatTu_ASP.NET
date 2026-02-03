@@ -26,7 +26,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             {
                 keyword = keyword.ToLower();
                 query = query.Where(x =>
-                    
+                    x.MaHienThi.ToLower().Contains(keyword) ||
                     x.TenLoaiVatTu.ToLower().Contains(keyword) ||
                     (x.MoTa != null && x.MoTa.ToLower().Contains(keyword)));
             }
@@ -79,7 +79,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var loai = new LoaiVatTu
             {
-                MaHienThi = "LVT" + new Random().Next(1000, 9999),
+                MaHienThi = await GetNextMaHienThiAsync(),
                 TenLoaiVatTu = model.TenLoaiVatTu,
                 MoTa = model.MoTa,
                 NgayTao = DateTime.Now
@@ -128,6 +128,34 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         public async Task<List<LoaiVatTu>> GetLookupAsync()
         {
             return await _context.LoaiVatTus.OrderBy(x => x.TenLoaiVatTu).ToListAsync();
+        }
+
+        /// <summary>
+        /// Sinh mã hiển thị tiếp theo - tìm mã bị thiếu trong dãy LVT001, LVT002...
+        /// </summary>
+        public async Task<string> GetNextMaHienThiAsync()
+        {
+            var existingCodes = await _context.LoaiVatTus
+                .Select(x => x.MaHienThi)
+                .Where(x => x.StartsWith("LVT"))
+                .ToListAsync();
+
+            var usedNumbers = existingCodes
+                .Select(x => {
+                    if (x.Length > 3 && int.TryParse(x.Substring(3), out int n))
+                        return n;
+                    return 0;
+                })
+                .Where(x => x > 0)
+                .ToHashSet();
+
+            int nextNumber = 1;
+            while (usedNumbers.Contains(nextNumber))
+            {
+                nextNumber++;
+            }
+
+            return $"LVT{nextNumber:D3}";
         }
     }
 }
