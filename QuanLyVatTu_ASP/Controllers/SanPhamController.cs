@@ -90,5 +90,42 @@ namespace QuanLyVatTu_ASP.Controllers
 
             return View(product);
         }
+
+        /// <summary>
+        /// Tìm kiếm sản phẩm theo từ khóa
+        /// </summary>
+        public async Task<IActionResult> Search(string q, int page = 1)
+        {
+            var allProducts = await _unitOfWork.VatTuRepository.GetAllAsync();
+            var products = allProducts.AsQueryable();
+
+            ViewBag.SearchQuery = q;
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var keyword = q.Trim().ToLower();
+                products = products.Where(p =>
+                    (p.TenVatTu != null && p.TenVatTu.ToLower().Contains(keyword)) ||
+                    (p.MoTa != null && p.MoTa.ToLower().Contains(keyword))
+                );
+            }
+
+            // Pagination
+            int pageSize = 15;
+            int totalItems = products.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var pagedProducts = products.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
+            // Get categories and suppliers for sidebar
+            ViewBag.Categories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
+            ViewBag.Suppliers = await _unitOfWork.NhaCungCapRepository.GetAllAsync();
+
+            return View("Index", pagedProducts);
+        }
     }
 }

@@ -197,55 +197,10 @@
                                         </div>
                                     </div>
 
-                                    <!-- Giới tính -->
+                                    <!-- Address -->
                                     <div class="form-group">
-                                        <label class="form-label">Giới tính</label>
-                                        <div class="gender-options">
-                                            <label class="gender-option">
-                                                <input type="radio" name="gioiTinh" value="nam" checked>
-                                                <span>Nam</span>
-                                            </label>
-                                            <label class="gender-option">
-                                                <input type="radio" name="gioiTinh" value="nu">
-                                                <span>Nữ</span>
-                                            </label>
-                                            <label class="gender-option">
-                                                <input type="radio" name="gioiTinh" value="khac">
-                                                <span>Khác</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Ngày sinh -->
-                                    <div class="form-group">
-                                        <label class="form-label">Ngày sinh</label>
-                                        <input type="date" class="form-input" id="ngaySinh" value="1985-03-15">
-                                    </div>
-
-                                    <!-- Công ty -->
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label class="form-label">Công ty/Tổ chức</label>
-                                            <input type="text" class="form-input" id="congTy" value="Công ty TNHH Xây Dựng ABC" placeholder="Tên công ty (nếu có)">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Chức vụ</label>
-                                            <select class="form-select" id="chucVu">
-                                                <option value="">-- Chọn chức vụ --</option>
-                                                <option value="chudoanhnghiep">Chủ doanh nghiệp</option>
-                                                <option value="giamdoc">Giám đốc</option>
-                                                <option value="quanlykho" selected>Quản lý kho</option>
-                                                <option value="nhanvienmuahang">Nhân viên mua hàng</option>
-                                                <option value="kythuat">Kỹ thuật</option>
-                                                <option value="khac">Khác</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- MST -->
-                                    <div class="form-group">
-                                        <label class="form-label">Mã số thuế</label>
-                                        <input type="text" class="form-input" id="maSoThue" value="0123456789" placeholder="MST công ty (nếu có)">
+                                        <label class="form-label">Địa chỉ</label>
+                                        <input type="text" class="form-input" id="diaChi" value="@Model.KhachHang.DiaChi" placeholder="Nhập địa chỉ">
                                     </div>
 
                                     <button type="button" class="btn-primary" onclick="saveProfile()">
@@ -874,7 +829,33 @@
 
     // Save functions
     function saveProfile() {
-        showToast('Đã lưu thông tin hồ sơ thành công!', 'success');
+        const data = {
+            id: @Model.KhachHang.ID,
+            hoTen: document.getElementById('hoTen')?.value,
+            soDienThoai: document.getElementById('soDienThoai')?.value,
+            diaChi: document.getElementById('diaChi')?.value || ''
+        };
+
+        fetch('/Customer/UpdateProfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                showToast(result.message, 'success');
+                // Cập nhật tên hiển thị trên sidebar
+                document.querySelector('.user-name').textContent = data.hoTen;
+            } else {
+                showToast(result.message || 'Có lỗi xảy ra!', 'error');
+            }
+        })
+        .catch(() => {
+            showToast('Không thể kết nối đến server!', 'error');
+        });
     }
 
     function saveOptions() {

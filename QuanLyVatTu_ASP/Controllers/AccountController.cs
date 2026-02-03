@@ -49,36 +49,20 @@ namespace QuanLyVatTu_ASP.Controllers
                 ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
                 return View();
             }
-            // 1. Tìm Nhân viên => COMMENT LẠI THEO YÊU CẦU
-            /*
-            var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
-            if (nhanVien != null)
-            {
-                HttpContext.Session.SetString("UserName", nhanVien.HoTen);
-                HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
-
-                string role = (nhanVien.VaiTro == "Quản lý") ? "Admin" : "Employee";
-                HttpContext.Session.SetString("Role", role);
-
-                return RedirectToRoute("AdminDonHang");
-            }
-
-            // 2. Tìm Khách hàng
+            // 1. Tìm Khách hàng trong database
             var khachHang = _unitOfWork.KhachHangRepository.GetByLogin(email, password);
             if (khachHang != null)
             {
                 HttpContext.Session.SetString("UserName", khachHang.HoTen);
                 HttpContext.Session.SetString("Email", khachHang.Email ?? "");
+                HttpContext.Session.SetInt32("KhachHangId", khachHang.ID);
                 HttpContext.Session.SetString("Role", "Customer");
 
                 // Khách hàng thì về Trang chủ (Home) chứ không vào Admin
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
-            */
 
-            // --- GÁN CỨNG TÀI KHOẢN THEO YÊU CẦU ---
-
-            // Admin: admin@gmail.com / 123456
+            // 2. Kiểm tra tài khoản Admin (hardcode cho mục đích demo)
             if (email == "admin@gmail.com" && password == "123456")
             {
                 HttpContext.Session.SetString("UserName", "Admin User");
@@ -87,60 +71,72 @@ namespace QuanLyVatTu_ASP.Controllers
                 return RedirectToRoute("AdminDonHang");
             }
 
-            // Client: client@gmail.com / 123456
-            if (email == "client@gmail.com" && password == "123456")
-            {
-                HttpContext.Session.SetString("UserName", "Client User");
-                HttpContext.Session.SetString("Email", email);
-                HttpContext.Session.SetString("Role", "Customer");
-                return RedirectToAction("Index", "Home", new { area = "" });
-            }
-
-            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác (Hardcoded Check)";
+            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác";
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(string hoTen, string email, string password, string confirmPassword)
+        public async Task<IActionResult> Register(string hoTen, string email, string password, string confirmPassword)
         {
+            // Lưu lại giá trị form để hiển thị lại nếu có lỗi
+            ViewBag.HoTen = hoTen;
+            ViewBag.Email = email;
+            ViewBag.ShowRegister = true;
+
             if (string.IsNullOrEmpty(hoTen) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
             {
-                ViewBag.Error = "Vui lòng điền đầy đủ thông tin đăng ký.";
+                ViewBag.RegisterError = "Vui lòng điền đầy đủ thông tin đăng ký.";
                 return View("Login");
             }
             if (password.Length < 6)
             {
-                ViewBag.Error = "Mật khẩu phải có tối thiểu 6 ký tự.";
+                ViewBag.RegisterError = "Mật khẩu phải có tối thiểu 6 ký tự.";
                 return View("Login");
             }
 
             // Kiểm tra ký tự đặc biệt trong Tên
             if (Regex.IsMatch(hoTen, @"[!@#$%^&*(),.?""':{}|<>]"))
             {
-                ViewBag.Error = "Họ tên không được chứa ký tự đặc biệt.";
+                ViewBag.RegisterError = "Họ tên không được chứa ký tự đặc biệt.";
                 return View("Login");
             }
             if (password != confirmPassword)
             {
-                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                ViewBag.RegisterError = "Mật khẩu xác nhận không khớp.";
                 return View("Login");
             }
 
+            // Kiểm tra email đã tồn tại chưa
+            var existingByEmail = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (existingByEmail != null)
+            {
+                ViewBag.RegisterError = "Email này đã được sử dụng. Vui lòng chọn email khác!";
+                return View("Login");
+            }
+
+            // Tạo tài khoản tự động từ email
+            string taiKhoanTuDong = email.Split('@')[0];
+
+            // Kiểm tra tài khoản đã tồn tại chưa
+            var existingByTaiKhoan = await _unitOfWork.KhachHangRepository.GetByTaiKhoanAsync(taiKhoanTuDong);
+            if (existingByTaiKhoan != null)
+            {
+                // Thêm số ngẫu nhiên nếu tài khoản đã tồn tại
+                taiKhoanTuDong = taiKhoanTuDong + new Random().Next(100, 999).ToString();
+            }
+
+            // Tạo MaHienThi tự động
+            string maHienThi = "KH" + DateTime.Now.ToString("yyyyMMddHHmmss") + new Random().Next(10, 99).ToString();
+
             try
             {
-                // var khachCu = _unitOfWork.KhachHangRepository.GetByLogin(email, ""); // Có thể cần comment check trùng nếu bỏ DB, nhưng user chỉ nói bỏ check mật khẩu/login. Để lại check trùng email cũng được, hoặc comment nốt. 
-                // Tạm thời user bảo "lấy thông tin ... từ DB" -> có thể hiểu là Login. Register vẫn cần insert?
-                // "comment lại các thành phần liên quan đến mã hóa mật khẩu" -> Done below.
-                
-                var khachCu = _unitOfWork.KhachHangRepository.GetByLogin(email, "");
-                string taiKhoanTuDong = email.Split('@')[0];
                 var newKhach = new QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
                 {
+                    MaHienThi = maHienThi,
                     HoTen = hoTen,
                     Email = email,
-                    // MatKhau = BCrypt.Net.BCrypt.HashPassword(password), // COMMENT MÃ HÓA
-                    MatKhau = password, // Lưu plain text
+                    MatKhau = BCrypt.Net.BCrypt.HashPassword(password), // Mã hóa BCrypt
                     DiaChi = "",
                     SoDienThoai = "",
                     TaiKhoan = taiKhoanTuDong,
@@ -152,17 +148,18 @@ namespace QuanLyVatTu_ASP.Controllers
                 _unitOfWork.Save();
 
                 ViewBag.Success = "Đăng ký thành công! Vui lòng đăng nhập.";
+                ViewBag.ShowRegister = false;
                 return View("Login");
             }
             catch (Exception ex)
             {
                 if (ex.InnerException != null && ex.InnerException.Message.Contains("UNIQUE KEY constraint"))
                 {
-                    ViewBag.Error = "Email này đã được sử dụng. Vui lòng chọn email khác!";
+                    ViewBag.RegisterError = "Email hoặc tài khoản đã được sử dụng. Vui lòng thử lại!";
                 }
                 else
                 {
-                    ViewBag.Error = "Lỗi đăng ký: " + ex.Message;
+                    ViewBag.RegisterError = "Lỗi đăng ký: " + ex.Message;
                 }
 
                 return View("Login");

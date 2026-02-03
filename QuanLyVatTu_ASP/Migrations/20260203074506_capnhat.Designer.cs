@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203074506_capnhat")]
+    partial class capnhat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,7 +313,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.Property<string>("MatKhau")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("NgayTao")
                         .ValueGeneratedOnAdd()

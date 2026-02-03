@@ -1,0 +1,708 @@
+@using QuanLyVatTu_ASP.Areas.Admin.Models
+@model IEnumerable<DonHang>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+    var khachHang = ViewBag.KhachHang as KhachHang;
+}
+
+@functions {
+    string GetStatusColor(string? trangThai)
+    {
+        return trangThai?.ToLower() switch
+        {
+            "đã giao" or "da giao" or "hoàn thành" => "#10b981",
+            "đang giao" or "dang giao" => "#3b82f6",
+            "đang xử lý" or "dang xu ly" or "chờ xác nhận" => "#f59e0b",
+            "đã hủy" or "da huy" => "#ef4444",
+            _ => "#6b7280"
+        };
+    }
+    
+    string GetStatusIcon(string? trangThai)
+    {
+        return trangThai?.ToLower() switch
+        {
+            "đã giao" or "da giao" or "hoàn thành" => "fa-check-circle",
+            "đang giao" or "dang giao" => "fa-truck",
+            "đang xử lý" or "dang xu ly" or "chờ xác nhận" => "fa-clock",
+            "đã hủy" or "da huy" => "fa-times-circle",
+            _ => "fa-box"
+        };
+    }
+}
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Reuse Profile CSS for consistent styling -->
+<link rel="stylesheet" href="~/user/css/profile-new.css" asp-append-version="true" />
+
+<style>
+    /* Orders Page Specific Styles */
+    .orders-page {
+        min-height: 100vh;
+        background: var(--profile-gray-50);
+        padding: 24px 0 60px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .orders-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* Header Section */
+    .orders-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .orders-header-left h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 4px 0;
+    }
+
+    .orders-header-left p {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .orders-count-badge {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #1a1a2e;
+        padding: 8px 16px;
+        border-radius: 24px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* Stats Cards */
+    .orders-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .stat-icon.processing { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .stat-icon.completed { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .stat-icon.cancelled { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+    .stat-info h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    .stat-info p {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin: 2px 0 0 0;
+    }
+
+    /* Filter Tabs */
+    .orders-filter {
+        display: flex;
+        gap: 8px;
+        background: white;
+        padding: 8px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .filter-tab {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-tab:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+
+    .filter-tab.active {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #1a1a2e;
+    }
+
+    .filter-tab .count {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+    }
+
+    .filter-tab.active .count {
+        background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Orders List */
+    .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .order-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .order-id-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .order-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1a1a2e;
+        font-size: 1rem;
+    }
+
+    .order-id {
+        font-weight: 700;
+        color: #111827;
+        font-size: 1rem;
+    }
+
+    .order-date {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 2px;
+    }
+
+    .order-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .order-card-body {
+        padding: 20px;
+    }
+
+    .order-items {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .item-thumb {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        background: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        font-size: 1.5rem;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .item-meta {
+        color: #6b7280;
+        font-size: 0.85rem;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: #111827;
+        text-align: right;
+    }
+
+    .order-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .order-total {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .order-total-label {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .order-total-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ef4444;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-order {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-order-detail {
+        background: white;
+        border: 1.5px solid #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-order-detail:hover {
+        border-color: #fbbf24;
+        color: #111827;
+    }
+
+    .btn-order-reorder {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border: none;
+        color: #1a1a2e;
+    }
+
+    .btn-order-reorder:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    }
+
+    /* Empty State */
+    .orders-empty {
+        text-align: center;
+        padding: 80px 40px;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .orders-empty-icon {
+        width: 100px;
+        height: 100px;
+        background: #f3f4f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2.5rem;
+        color: #9ca3af;
+    }
+
+    .orders-empty h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 8px 0;
+    }
+
+    .orders-empty p {
+        color: #6b7280;
+        margin: 0 0 24px 0;
+    }
+
+    .btn-shop-now {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #1a1a2e;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-shop-now:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        color: #1a1a2e;
+    }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .orders-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .orders-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .orders-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        
+        .order-card-footer {
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .order-actions {
+            width: 100%;
+        }
+        
+        .btn-order {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="orders-page">
+    <div class="orders-container">
+        <!-- Breadcrumb -->
+        <nav class="profile-breadcrumb">
+            <a href="/">Trang chủ</a>
+            <span class="separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="/Customer/Profile">Tài khoản</a>
+            <span class="separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="current">Đơn hàng của tôi</span>
+        </nav>
+
+        <!-- Header -->
+        <div class="orders-header">
+            <div class="orders-header-left">
+                <h1><i class="fas fa-shopping-bag" style="color: #f59e0b; margin-right: 12px;"></i>Đơn hàng của tôi</h1>
+                <p>Xem và quản lý tất cả đơn hàng của bạn</p>
+            </div>
+            @if (Model != null && Model.Any())
+            {
+                <span class="orders-count-badge">
+                    <i class="fas fa-box"></i> @Model.Count() đơn hàng
+                </span>
+            }
+        </div>
+
+        @{
+            var pendingCount = 0;
+            var shippingCount = 0;
+            var completedCount = 0;
+            var cancelledCount = 0;
+            if (Model != null && Model.Any())
+            {
+                pendingCount = Model.Count(d => d.TrangThai?.ToLower().Contains("chờ") == true || d.TrangThai?.ToLower().Contains("xử lý") == true);
+                shippingCount = Model.Count(d => d.TrangThai?.ToLower().Contains("giao") == true && !(d.TrangThai?.ToLower().Contains("đã giao") == true));
+                completedCount = Model.Count(d => d.TrangThai?.ToLower().Contains("đã giao") == true || d.TrangThai?.ToLower().Contains("hoàn thành") == true);
+                cancelledCount = Model.Count(d => d.TrangThai?.ToLower().Contains("hủy") == true);
+            }
+        }
+
+        @if (Model != null && Model.Any())
+        {
+
+            <!-- Stats Cards -->
+            <div class="orders-stats">
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@pendingCount</h3>
+                        <p>Chờ xử lý</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon processing">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@shippingCount</h3>
+                        <p>Đang giao</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@completedCount</h3>
+                        <p>Hoàn thành</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon cancelled">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@cancelledCount</h3>
+                        <p>Đã hủy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="orders-filter">
+                <button class="filter-tab active" data-filter="all">
+                    <i class="fas fa-list"></i> Tất cả
+                    <span class="count">@Model.Count()</span>
+                </button>
+                <button class="filter-tab" data-filter="pending">
+                    <i class="fas fa-clock"></i> Chờ xử lý
+                    <span class="count">@pendingCount</span>
+                </button>
+                <button class="filter-tab" data-filter="shipping">
+                    <i class="fas fa-truck"></i> Đang giao
+                    <span class="count">@shippingCount</span>
+                </button>
+                <button class="filter-tab" data-filter="completed">
+                    <i class="fas fa-check-circle"></i> Hoàn thành
+                    <span class="count">@completedCount</span>
+                </button>
+            </div>
+
+            <!-- Orders List -->
+            <div class="orders-list">
+                @foreach (var order in Model.OrderByDescending(o => o.NgayDat))
+                {
+                    <div class="order-card" data-status="@order.TrangThai?.ToLower()">
+                        <div class="order-card-header">
+                            <div class="order-id-section">
+                                <div class="order-icon">
+                                    <i class="fas @GetStatusIcon(order.TrangThai)"></i>
+                                </div>
+                                <div>
+                                    <div class="order-id">Đơn hàng #@order.ID</div>
+                                    <div class="order-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        @order.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="order-status" style="background: @GetStatusColor(order.TrangThai);">
+                                <i class="fas @GetStatusIcon(order.TrangThai)"></i>
+                                @(order.TrangThai ?? "Chờ xác nhận")
+                            </div>
+                        </div>
+
+                        <div class="order-card-body">
+                            <div class="order-items">
+                                @if (order.ChiTietDonHangs != null && order.ChiTietDonHangs.Any())
+                                {
+                                    @foreach (var ct in order.ChiTietDonHangs.Take(3))
+                                    {
+                                        <div class="order-item">
+                                            <div class="item-thumb">
+                                                <i class="fas fa-box"></i>
+                                            </div>
+                                            <div class="item-details">
+                                                <div class="item-name">@(ct.VatTu?.TenVatTu ?? "Sản phẩm")</div>
+                                                <div class="item-meta">Số lượng: @ct.SoLuong • Đơn giá: @(ct.DonGia?.ToString("N0") ?? "0")đ</div>
+                                            </div>
+                                            <div class="item-price">@ct.ThanhTien.ToString("N0")đ</div>
+                                        </div>
+                                    }
+                                    @if (order.ChiTietDonHangs.Count > 3)
+                                    {
+                                        <div style="text-align: center; color: #6b7280; font-size: 0.85rem; padding: 8px;">
+                                            <i class="fas fa-ellipsis-h"></i> Và @(order.ChiTietDonHangs.Count - 3) sản phẩm khác
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="order-item">
+                                        <div class="item-thumb">
+                                            <i class="fas fa-box"></i>
+                                        </div>
+                                        <div class="item-details">
+                                            <div class="item-name">Không có thông tin chi tiết</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="order-card-footer">
+                            <div class="order-total">
+                                <span class="order-total-label">Tổng tiền:</span>
+                                <span class="order-total-value">@(order.TongTien?.ToString("N0") ?? "0")đ</span>
+                            </div>
+                            <div class="order-actions">
+                                <a href="/Customer/TrackOrder?id=@order.ID" class="btn-order btn-order-detail">
+                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                </a>
+                                <button class="btn-order btn-order-reorder" onclick="reorder(@order.ID)">
+                                    <i class="fas fa-redo"></i> Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="orders-empty">
+                <div class="orders-empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3>Bạn chưa có đơn hàng nào</h3>
+                <p>Hãy khám phá các sản phẩm vật tư chất lượng cao của chúng tôi!</p>
+                <a href="/SanPham" class="btn-shop-now">
+                    <i class="fas fa-shopping-cart"></i>
+                    Mua sắm ngay
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Filter functionality
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const filter = this.dataset.filter;
+            const orders = document.querySelectorAll('.order-card');
+
+            orders.forEach(order => {
+                const status = order.dataset.status || '';
+                
+                if (filter === 'all') {
+                    order.style.display = 'block';
+                } else if (filter === 'pending' && (status.includes('chờ') || status.includes('xử lý'))) {
+                    order.style.display = 'block';
+                } else if (filter === 'shipping' && status.includes('giao') && !status.includes('đã giao')) {
+                    order.style.display = 'block';
+                } else if (filter === 'completed' && (status.includes('đã giao') || status.includes('hoàn thành'))) {
+                    order.style.display = 'block';
+                } else if (filter !== 'all') {
+                    order.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Reorder functionality
+    function reorder(orderId) {
+        if (typeof showGlobalConfirm === 'function') {
+            showGlobalConfirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?', function() {
+                // TODO: Implement reorder logic - add items to cart
+                if (typeof showGlobalMessage === 'function') {
+                    showGlobalMessage('Chức năng đang được phát triển!', 'Thông báo', 'info');
+                } else {
+                    alert('Chức năng đang được phát triển!');
+                }
+            });
+        } else {
+            if (confirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?')) {
+                alert('Chức năng đang được phát triển!');
+            }
+        }
+    }
+</script>
+}

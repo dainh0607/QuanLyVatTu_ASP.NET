@@ -34,7 +34,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string TaiKhoan { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
-        [Column(TypeName = "varchar(50)")]
+        [Column(TypeName = "varchar(255)")]
         public string MatKhau { get; set; } = null!;
 
         public bool DangNhapGoogle { get; set; } = false;

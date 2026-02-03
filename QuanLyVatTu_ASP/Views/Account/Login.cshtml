@@ -9,27 +9,165 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="~/user/css/login.css">
     <title>Login page</title>
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+        .success-message {
+            color: #155724;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+        }
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        /* Updated Password toggle design - Shared Container */
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin: 8px 0;
+            background-color: #eee; /* Match the original input background */
+            border-radius: 8px; /* Match original radius */
+            display: flex;
+            align-items: center;
+            padding: 0 15px; /* Match input visible padding */
+            box-sizing: border-box;
+            border: 1px solid transparent; /* Placeholder for focus state if needed */
+        }
+        
+        .password-container input {
+            background-color: transparent !important;
+            border: none;
+            margin: 0;
+            padding: 10px 0; /* Vertical padding only */
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+            flex-grow: 1; /* Take remaining space */
+        }
+
+        .toggle-password {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #333;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0 0 10px; /* Spacing from text */
+            margin: 0;
+            outline: none;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #000;
+        }
+        
+        /* Focus state styling to mimic input focus if needed */
+        .password-container:focus-within {
+            /* optional: border: 1px solid #aaa; */
+        }
+
+        .validation-error {
+            color: #dc3545;
+            font-size: 0.75em;
+            margin-top: 3px;
+            display: none;
+            text-align: left;
+            padding-left: 5px;
+        }
+        
+        .input-group {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .input-group input.error {
+            border: 1px solid #dc3545 !important;
+        }
+        /* New style for container error to replace inner input error */
+        .password-container.error {
+            border: 1px solid #dc3545 !important;
+        }
+        /* Ensure inner input doesn't get border if container has it */
+        .password-container input.error {
+            border: none !important;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container" id="container">
+    <div class="container @(ViewBag.ShowRegister == true ? "active" : "")" id="container">
         <div class="form-container sign-up">
-            <form method="post" asp-controller="Account" asp-action="Register">
+            <form method="post" asp-controller="Account" asp-action="Register" id="registerForm">
                 <h1>Tạo Tài Khoản</h1>
                 <div class="social-icons">
                 </div>
                 <span>hoặc sử dụng email của bạn để đăng ký</span>
-                <input type="text" name="hoTen" placeholder="Họ và tên" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <input type="password" name="confirmPassword" placeholder="Xác nhận Password">
+                
+                @if (ViewBag.RegisterError != null)
+                {
+                    <div class="error-message">@ViewBag.RegisterError</div>
+                }
+                @if (ViewBag.Success != null)
+                {
+                    <div class="success-message">@ViewBag.Success</div>
+                }
+
+                <div class="input-group">
+                    <input type="text" name="hoTen" id="regHoTen" placeholder="Họ và tên" 
+                           value="@ViewBag.HoTen" required>
+                    <div class="validation-error" id="hoTenError"></div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" name="email" id="regEmail" placeholder="Email" 
+                           value="@ViewBag.Email" required>
+                    <div class="validation-error" id="emailError"></div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="password-container">
+                        <input type="password" name="password" id="regPassword" placeholder="Mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('regPassword', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="validation-error" id="passwordError"></div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="password-container">
+                        <input type="password" name="confirmPassword" id="regConfirmPassword" placeholder="Xác nhận mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="validation-error" id="confirmPasswordError"></div>
+                </div>
 
                 <button type="submit">Đăng Ký</button>
             </form>
         </div>
 
         <div class="form-container sign-in">
-            <form method="post" asp-controller="Account" asp-action="Login">
+            <form method="post" asp-controller="Account" asp-action="Login" id="loginForm">
                 <h1>Đăng Nhập</h1>
                 <div class="social-icons">
                 </div>
@@ -37,11 +175,21 @@
 
                 @if (ViewBag.Error != null)
                 {
-                    <div style="color: red; font-size: 0.9em; margin-bottom: 10px;">@ViewBag.Error</div>
+                    <div class="error-message">@ViewBag.Error</div>
                 }
 
-                <input type="email" name="Email" placeholder="Email" required>
-                <input type="password" name="Password" placeholder="Password" required>
+                <div class="input-group">
+                    <input type="email" name="Email" id="loginEmail" placeholder="Email" required>
+                </div>
+                
+                <div class="input-group">
+                    <div class="password-container">
+                        <input type="password" name="Password" id="loginPassword" placeholder="Mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('loginPassword', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
 
                 <a href="#">Quên mật khẩu?</a>
                 <button type="submit">Đăng Nhập</button>
@@ -64,5 +212,129 @@
         </div>
     </div>
     <script src="~/user/js/login.js"></script>
+    <script>
+        // Toggle password visibility
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Client-side validation for registration form
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            const hoTen = document.getElementById('regHoTen');
+            const email = document.getElementById('regEmail');
+            const password = document.getElementById('regPassword');
+            const confirmPassword = document.getElementById('regConfirmPassword');
+
+            // Reset errors
+            document.querySelectorAll('.validation-error').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            document.querySelectorAll('.input-group input').forEach(el => {
+                el.classList.remove('error');
+                // Remove error from parent container too
+                if (el.closest('.password-container')) {
+                    el.closest('.password-container').classList.remove('error');
+                }
+            });
+
+            // Validate họ tên
+            const specialChars = /[!@@#$%^&*(),.?":{}|<>]/;
+            if (specialChars.test(hoTen.value)) {
+                document.getElementById('hoTenError').textContent = 'Họ tên không được chứa ký tự đặc biệt';
+                document.getElementById('hoTenError').style.display = 'block';
+                hoTen.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate email
+            const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email.value)) {
+                document.getElementById('emailError').textContent = 'Email không hợp lệ';
+                document.getElementById('emailError').style.display = 'block';
+                email.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate password length
+            if (password.value.length < 6) {
+                document.getElementById('passwordError').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+                document.getElementById('passwordError').style.display = 'block';
+                password.classList.add('error');
+                password.closest('.password-container').classList.add('error'); // Add error to container
+                isValid = false;
+            }
+
+            // Validate password match
+            if (password.value !== confirmPassword.value) {
+                document.getElementById('confirmPasswordError').textContent = 'Mật khẩu xác nhận không khớp';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                confirmPassword.classList.add('error');
+                confirmPassword.closest('.password-container').classList.add('error'); // Add error to container
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Real-time password match validation
+        document.getElementById('regConfirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = this.value;
+            const errorDiv = document.getElementById('confirmPasswordError');
+
+            if (confirmPassword && password !== confirmPassword) {
+                errorDiv.textContent = 'Mật khẩu xác nhận không khớp';
+                errorDiv.style.display = 'block';
+                this.classList.add('error');
+                this.closest('.password-container').classList.add('error');
+            } else {
+                errorDiv.style.display = 'none';
+                this.classList.remove('error');
+                this.closest('.password-container').classList.remove('error');
+            }
+        });
+
+        // Real-time password length validation
+        document.getElementById('regPassword').addEventListener('input', function() {
+            const errorDiv = document.getElementById('passwordError');
+            const confirmPassword = document.getElementById('regConfirmPassword');
+            const confirmErrorDiv = document.getElementById('confirmPasswordError');
+
+            if (this.value.length > 0 && this.value.length < 6) {
+                errorDiv.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+                errorDiv.style.display = 'block';
+                this.classList.add('error');
+                this.closest('.password-container').classList.add('error');
+            } else {
+                errorDiv.style.display = 'none';
+                this.classList.remove('error');
+            }
+
+            // Also check confirm password match when password changes
+            if (confirmPassword.value && this.value !== confirmPassword.value) {
+                confirmErrorDiv.textContent = 'Mật khẩu xác nhận không khớp';
+                confirmErrorDiv.style.display = 'block';
+                confirmPassword.classList.add('error');
+            } else if (confirmPassword.value) {
+                confirmErrorDiv.style.display = 'none';
+                confirmPassword.classList.remove('error');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -20,37 +20,29 @@ namespace QuanLyVatTu_ASP.Controllers
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
+            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
             
-            // DEMO DATA GENERATION IF CART IS EMPTY
-            if (cart == null || !cart.Any())
+            // Nếu giỏ hàng trống, redirect về trang sản phẩm
+            if (!cart.Any())
             {
-                cart = new List<CartItem>
-                {
-                    new CartItem { VatTuId = 101, TenVatTu = "Máy khoan Bosch GSB 550", DonGia = 1250000, SoLuong = 1, HinhAnh = "https://placehold.co/100x100/0d6efd/ffffff?text=Khoan" },
-                    new CartItem { VatTuId = 102, TenVatTu = "Bộ mũi khoan đa năng", DonGia = 350000, SoLuong = 2, HinhAnh = "https://placehold.co/100x100/ffc107/ffffff?text=Mui+Khoan" },
-                    new CartItem { VatTuId = 103, TenVatTu = "Găng tay bảo hộ 3M", DonGia = 45000, SoLuong = 5, HinhAnh = "https://placehold.co/100x100/198754/ffffff?text=Gang+Tay" }
-                };
+                TempData["Warning"] = "Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.";
+                return RedirectToAction("Index", "SanPham");
             }
 
-            // MOCK USER DATA IF NOT LOGGED IN
-            KhachHang? khachHang = null;
+            // Kiểm tra đăng nhập
             var email = HttpContext.Session.GetString("Email");
-            
-            if (!string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email))
             {
-                 khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+                TempData["Warning"] = "Vui lòng đăng nhập để tiếp tục thanh toán.";
+                return RedirectToAction("Login", "Account");
             }
-            
+
+            // Lấy thông tin khách hàng từ database
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
             if (khachHang == null)
             {
-                khachHang = new KhachHang 
-                { 
-                    HoTen = "Nguyễn Văn A", 
-                    SoDienThoai = "0987654321", 
-                    DiaChi = "123 Đường Số 1, Phường Bến Nghé, Quận 1, TP.HCM",
-                    Email = "nguyenvana@example.com"
-                };
+                TempData["Error"] = "Không tìm thấy thông tin tài khoản.";
+                return RedirectToAction("Login", "Account");
             }
 
             ViewBag.Cart = cart;
@@ -60,44 +52,48 @@ namespace QuanLyVatTu_ASP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessCheckout(string diaChi, string soDienThoai, string ghiChu)
+        public async Task<IActionResult> ProcessCheckout(
+            string diaChi, 
+            string soDienThoai, 
+            string ghiChu,
+            string paymentMethod = "cod",
+            string shippingMethod = "delivery")
         {
             var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
-            if (cart == null || !cart.Any()) return RedirectToAction("Index", "Home");
+            if (cart == null || !cart.Any()) 
+            {
+                TempData["Warning"] = "Giỏ hàng của bạn đang trống.";
+                return RedirectToAction("Index", "SanPham");
+            }
 
             var email = HttpContext.Session.GetString("Email");
-            var khachHang = !string.IsNullOrEmpty(email) 
-                ? await _unitOfWork.KhachHangRepository.GetByEmailAsync(email) 
-                : null;
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["Warning"] = "Vui lòng đăng nhập để tiếp tục.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) 
+            {
+                TempData["Error"] = "Không tìm thấy thông tin tài khoản.";
+                return RedirectToAction("Login", "Account");
+            }
 
             decimal tongTien = 0;
-
-            // TODO: Tạm thời vô hiệu hóa để test - cần bật lại sau
-            // if (khachHang == null) return RedirectToAction("Login", "Account");
-            
-            // Mock user if not logged in
-            if (khachHang == null)
-            {
-                khachHang = new KhachHang
-                {
-                    ID = 1,
-                    HoTen = "Nguyễn Văn An",
-                    Email = "nguyenvanan@example.com",
-                    SoDienThoai = soDienThoai,
-                    DiaChi = diaChi
-                };
-            }
 
             try
             {
                 // 1. Tạo Đơn Hàng
                 var donHang = new DonHang
                 {
+                    MaHienThi = "DH" + DateTime.Now.ToString("yyyyMMddHHmmss") + new Random().Next(100, 999), 
                     KhachHangId = khachHang.ID,
                     NgayDat = DateTime.Now,
-                    TrangThai = "Chờ xử lý",
+                    TrangThai = paymentMethod == "bank" ? "Chờ thanh toán" : "Chờ xử lý",
                     GhiChu = ghiChu,
                     TongTien = 0,
+                    PhuongThucDatCoc = paymentMethod == "bank" ? "Chuyển khoản" : "COD"
                 };
 
                 if (khachHang.DiaChi != diaChi || khachHang.SoDienThoai != soDienThoai)
@@ -108,6 +104,8 @@ namespace QuanLyVatTu_ASP.Controllers
                 }
 
                 await _unitOfWork.DonHangRepository.AddAsync(donHang);
+                // Save first to get DonHang ID if needed for FK (though EF usually handles it, sometimes needed for logic)
+                _unitOfWork.Save();
 
                 foreach (var item in cart)
                 {
@@ -127,7 +125,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
                     var chiTiet = new ChiTietDonHang
                     {
-                        DonHang = donHang,
+                        MaDonHang = donHang.ID, // Corrected property name
                         MaVatTu = item.VatTuId,
                         SoLuong = item.SoLuong,
                         DonGia = item.DonGia,
@@ -137,22 +135,67 @@ namespace QuanLyVatTu_ASP.Controllers
                     tongTien += item.ThanhTien;
                     await _unitOfWork.ChiTietDonHangRepository.AddAsync(chiTiet);
                 }
-                donHang.TongTien = tongTien;
+                // Tính toán cọc nếu đơn hàng > 5.000.000 VÀ không phải là COD (khách chọn COD thì không bắt cọc)
+                if (tongTien > 5000000 && paymentMethod != "cod")
+                {
+                    donHang.SoTienDatCoc = tongTien * 0.1m; // 10%
+                    donHang.TrangThai = "Chờ đặt cọc";
+                    donHang.PhuongThucDatCoc = "Chuyển khoản (QR)";
+                    donHang.GhiChu += " | Đơn hàng cần cọc 10%.";
+                }
 
+                donHang.TongTien = tongTien;
+                _unitOfWork.DonHangRepository.Update(donHang); 
                 _unitOfWork.Save();
+
+                // Lưu thông tin vào TempData để hiển thị ở trang success
+                // Serialize DonHang to JSON to avoid DefaultTempDataSerializer issues with EF entities
+                TempData["DonHangJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(donHang, new Newtonsoft.Json.JsonSerializerSettings { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore });
+                
+                // TempData["DonHang"] = donHang; // REMOVED: Causes InvalidOperationException
+                TempData["CartItemsJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(cart); // Also serialize cart list just in case
+                TempData["CartItems"] = null; // Clear old key if present to avoid confusion
+                TempData["TongTien"] = tongTien.ToString();
+                TempData["PaymentMethod"] = paymentMethod;
+                TempData["ShippingMethod"] = shippingMethod;
+                TempData["HoTen"] = khachHang.HoTen;
+                TempData["SoDienThoai"] = soDienThoai;
+                TempData["MaHienThi"] = donHang.MaHienThi;
+                TempData["SoTienDatCoc"] = donHang.SoTienDatCoc.ToString(); // Pass deposit amount as string
+
                 HttpContext.Session.Remove(CART_KEY);
 
-                return RedirectToAction("OrderSuccess");
+                // Redirect logic
+                if (donHang.SoTienDatCoc > 0)
+                {
+                    // Redirect to QR page specifically for deposit
+                    return RedirectToAction("OrderSuccessQR"); 
+                }
+                else if (paymentMethod == "bank")
+                {
+                    return RedirectToAction("OrderSuccessQR");
+                }
+                return RedirectToAction("OrderSuccessThankYou");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log lỗi
-                TempData["Error"] = "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.";
+                // Log lỗi chi tiết ra TempData để debug
+                TempData["Error"] = "Lỗi xử lý đơn hàng: " + ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : "");
                 return RedirectToAction("Checkout");
             }
         }
 
         public IActionResult OrderSuccess()
+        {
+            return View();
+        }
+
+        public IActionResult OrderSuccessThankYou()
+        {
+            return View();
+        }
+
+        public IActionResult OrderSuccessQR()
         {
             return View();
         }

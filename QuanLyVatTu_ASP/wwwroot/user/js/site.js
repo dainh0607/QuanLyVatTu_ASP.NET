@@ -162,9 +162,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cart Functionality
     // =====================
     function updateCartCount(count) {
-        const cartBadges = document.querySelectorAll('.cart-count, .quick-access-bar .badge');
+        // Target multiple potential cart badges
+        const cartBadges = document.querySelectorAll('.cart-count, #headerCartCount, .quick-access-bar .badge');
         cartBadges.forEach(badge => {
             badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none'; // Optional: hide if 0? Actually user might want to see 0. Let's keep it visible or just text.
+            badge.style.display = ''; // Reset display
+
             badge.style.animation = 'none';
             setTimeout(() => {
                 badge.style.animation = 'pulse 0.5s ease';
@@ -172,19 +176,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         const cartIcon = document.querySelector('.cart-icon');
-        if (count > 0) {
-            cartIcon.classList.add('has-items');
-        } else {
-            cartIcon.classList.remove('has-items');
+        if (cartIcon) {
+            if (count > 0) {
+                cartIcon.classList.add('has-items');
+            } else {
+                cartIcon.classList.remove('has-items');
+            }
         }
 
         // Save to localStorage
         localStorage.setItem('cartCount', count);
     }
 
-    // Initialize cart count
-    const savedCartCount = localStorage.getItem('cartCount') || 0;
-    updateCartCount(parseInt(savedCartCount));
+    // Initialize cart count - REMOVED to prevent overwriting server-side session data
+    // const savedCartCount = localStorage.getItem('cartCount') || 0;
+    // updateCartCount(parseInt(savedCartCount));
 
     // Simulate adding to cart
     document.addEventListener('click', function (e) {
@@ -495,5 +501,52 @@ style.textContent = `
             opacity: 1;
         }
     }
+
+    /* Spinner CSS - Added to ensure visibility control */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: none; /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none; /* Default to no blocking */
+    }
+    .loading-overlay.active {
+        display: flex;
+        opacity: 1;
+        pointer-events: all; /* Block clicks only when active */
+    }
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 `;
 document.head.appendChild(style);
+
+// Force hide loading on window load to prevent infinite spinning
+window.addEventListener('load', function () {
+    hideLoading();
+    // Also remove any rogue overlays if they exist
+    const rogueOverlays = document.querySelectorAll('.loading-overlay');
+    rogueOverlays.forEach(el => {
+        if (!el.classList.contains('active')) {
+            el.style.display = 'none';
+            el.style.pointerEvents = 'none'; // Double safety
+        }
+    });
+});

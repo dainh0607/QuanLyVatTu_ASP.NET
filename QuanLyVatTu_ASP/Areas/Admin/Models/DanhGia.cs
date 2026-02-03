@@ -31,8 +31,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         public DateTime NgayDanhGia { get; set; } = DateTime.Now;
 
-        public virtual KhachHang KhachHang { get; set; }
-        public virtual VatTu VatTu { get; set; }
+        public virtual KhachHang? KhachHang { get; set; }
+        public virtual VatTu? VatTu { get; set; }
         public virtual ICollection<TuongTacDanhGia> TuongTacDanhGias { get; set; } = new List<TuongTacDanhGia>();
     }
 }

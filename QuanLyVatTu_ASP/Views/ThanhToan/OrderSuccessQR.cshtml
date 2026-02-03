@@ -1,0 +1,534 @@
+@using QuanLyVatTu_ASP.Models.ViewModels
+@using QuanLyVatTu_ASP.Areas.Admin.Models
+@{
+    Layout = null;
+    
+    // Deserialize DonHang
+    var donHangJson = TempData["DonHangJson"] as string;
+    var donHang = !string.IsNullOrEmpty(donHangJson) 
+        ? Newtonsoft.Json.JsonConvert.DeserializeObject<DonHang>(donHangJson) 
+        : null;
+
+    // Deserialize CartItems if needed
+    var cartItemsJson = TempData["CartItemsJson"] as string;
+    var cartItems = !string.IsNullOrEmpty(cartItemsJson)
+        ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<CartItem>>(cartItemsJson)
+        : (TempData["CartItems"] as List<CartItem>); // Fallback just in case
+
+    // Check if deposit is required
+    decimal.TryParse(TempData["SoTienDatCoc"]?.ToString(), out decimal soTienDatCoc);
+    var isDeposit = soTienDatCoc > 0;
+
+    decimal.TryParse(TempData["TongTien"]?.ToString(), out decimal tongTien);
+    if (tongTien == 0) tongTien = donHang?.TongTien ?? 0;
+    
+    var finalAmount = isDeposit ? soTienDatCoc : tongTien;
+    
+    var hoTen = TempData["HoTen"]?.ToString() ?? "";
+    var maHienThi = TempData["MaHienThi"]?.ToString() ?? donHang?.MaHienThi ?? donHang?.ID.ToString();
+
+    // VietQR format
+    var bankId = "VCB"; // Vietcombank
+    var accountNo = "0071000123456";
+    var accountName = "CTY MAY THIET BI KIM LONG";
+    
+    // Content: COC [CODE] for deposit, DH[ID] for full
+    var transferContent = isDeposit 
+        ? $"COC {maHienThi} {hoTen.Replace(" ", "")}" 
+        : $"DH{donHang?.ID ?? 0} {hoTen.Replace(" ", "")}";
+
+    var qrUrl = $"https://img.vietqr.io/image/{bankId}-{accountNo}-compact2.png?amount={(int)finalAmount}&addInfo={Uri.EscapeDataString(transferContent)}&accountName={Uri.EscapeDataString(accountName)}";
+
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán chuyển khoản - Quản lý vật tư</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-light: #dbeafe;
+            --success-green: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .payment-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Header */
+        .payment-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .payment-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        
+        .payment-icon {
+            font-size: 36px;
+            color: var(--primary-blue);
+        }
+        
+        .payment-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 8px 0;
+        }
+        
+        .payment-subtitle {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        /* Main Layout */
+        .payment-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        /* Card Styles */
+        .payment-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: var(--gray-50);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        /* QR Section */
+        .qr-section {
+            text-align: center;
+        }
+        
+        .qr-code-wrapper {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            display: inline-block;
+            border: 2px solid var(--gray-200);
+            margin-bottom: 16px;
+        }
+        
+        .qr-code {
+            width: 220px;
+            height: 220px;
+        }
+        
+        .qr-note {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        /* Bank Info */
+        .bank-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .bank-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+        
+        .bank-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        .bank-value {
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .bank-value.highlight {
+            color: var(--primary-blue);
+        }
+        
+        .bank-value.amount {
+            color: #ef4444;
+            font-size: 1.1rem;
+        }
+        
+        .copy-btn {
+            background: var(--primary-light);
+            border: none;
+            color: var(--primary-blue);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .copy-btn.copied {
+            background: var(--success-green);
+            color: white;
+        }
+        
+        /* Alert Box */
+        .alert-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .alert-box.info {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+        
+        .alert-box i {
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+        
+        .alert-box.warning i { color: #f59e0b; }
+        .alert-box.info i { color: #3b82f6; }
+        
+        .alert-box p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #78350f;
+        }
+        
+        .alert-box.info p { color: #1e40af; }
+        
+        /* Order Summary */
+        .order-summary-mini {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--gray-200);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.9rem;
+        }
+        
+        .summary-item.total {
+            border-top: 1px solid var(--gray-200);
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 700;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            justify-content: center;
+        }
+        
+        .btn-action {
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary-action {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+            color: white;
+        }
+        
+        .btn-secondary-action {
+            background: white;
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+        
+        .btn-secondary-action:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        /* Toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .payment-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <!-- Header -->
+        <div class="payment-header">
+            <div class="payment-icon-wrapper">
+                <i class="fas fa-qrcode payment-icon"></i>
+            </div>
+            <h1 class="payment-title">Thanh toán chuyển khoản</h1>
+            <p class="payment-subtitle">Quét mã QR hoặc chuyển khoản theo thông tin bên dưới</p>
+        </div>
+        
+        <!-- Main Layout -->
+        <div class="payment-layout">
+            <!-- QR Code Card -->
+            <div class="payment-card">
+                <div class="card-header">
+                    <i class="fas fa-qrcode"></i>
+                    Mã QR thanh toán
+                </div>
+                <div class="card-body">
+                    <div class="qr-section">
+                        <div class="qr-code-wrapper">
+                            <img src="@qrUrl" alt="QR Code" class="qr-code" id="qrImage">
+                        </div>
+                        <p class="qr-note">Mở app ngân hàng và quét mã QR để thanh toán</p>
+                    </div>
+                    
+                    <div class="alert-box @(isDeposit ? "warning" : "info")">
+                        <i class="fas @(isDeposit ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
+                        <p>
+                            @if(isDeposit) {
+                                <span>
+                                    <strong>Đơn hàng giá trị lớn:</strong> <br>
+                                    Quý khách cần thanh toán cọc <strong>10%</strong> giá trị đơn hàng.<br>
+                                    Số tiền còn lại: <strong>@((tongTien - finalAmount).ToString("N0"))₫</strong> sẽ thanh toán khi nhận hàng.
+                                </span>
+                            } else {
+                                <span>Mã QR đã bao gồm số tiền và nội dung chuyển khoản. Quý khách chỉ cần quét và xác nhận.</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bank Info Card -->
+            <div class="payment-card">
+                <div class="card-header">
+                    <i class="fas fa-building-columns"></i>
+                    Thông tin chuyển khoản
+                </div>
+                <div class="card-body">
+                    <div class="bank-info">
+                        <div class="bank-row">
+                            <span class="bank-label">Ngân hàng</span>
+                            <span class="bank-value">
+                                <img src="https://api.vietqr.io/img/VCB.png" alt="VCB" style="height: 24px;">
+                                Vietcombank
+                            </span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Số tài khoản</span>
+                            <span class="bank-value highlight" id="accountNo">@accountNo</span>
+                            <button class="copy-btn" onclick="copyText('accountNo', this)">
+                                <i class="far fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Chủ tài khoản</span>
+                            <span class="bank-value" id="accountName">@accountName</span>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Số tiền</span>
+                            <span class="bank-value amount" id="amount">@tongTien.ToString("N0")₫</span>
+                            <button class="copy-btn" onclick="copyText('amount', this, true)">
+                                <i class="far fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="bank-row">
+                            <span class="bank-label">Nội dung CK</span>
+                            <span class="bank-value highlight" id="transferContent">@transferContent</span>
+                            <button class="copy-btn" onclick="copyText('transferContent', this)">
+                                <i class="far fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-box warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p><strong>Quan trọng:</strong> Vui lòng nhập đúng nội dung chuyển khoản để hệ thống tự động xác nhận thanh toán.</p>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="order-summary-mini">
+                        <div class="summary-item">
+                            <span>Mã đơn hàng</span>
+                            <span>#@(donHang?.ID ?? 0)</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Số sản phẩm</span>
+                            <span>@(cartItems?.Count ?? 0) sản phẩm</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>@(isDeposit ? "Số tiền cần cọc (10%)" : "Tổng thanh toán")</span>
+                            <span style="color: #ef4444;">@finalAmount.ToString("N0")₫</span>
+                        </div>
+                        @if(isDeposit) {
+                            <div class="summary-item">
+                                <span>Tổng giá trị đơn</span>
+                                <span>@tongTien.ToString("N0")₫</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/Customer/Orders" class="btn-action btn-secondary-action">
+                <i class="fas fa-list-ul"></i>
+                Xem đơn hàng
+            </a>
+            <a href="/SanPham" class="btn-action btn-primary-action">
+                <i class="fas fa-shopping-cart"></i>
+                Tiếp tục mua sắm
+            </a>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast-msg" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Đã sao chép!</span>
+    </div>
+    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyText(elementId, btn, isAmount = false) {
+            const el = document.getElementById(elementId);
+            let text = el.innerText;
+            
+            // Remove currency symbol for amount
+            if (isAmount) {
+                text = text.replace(/[^\d]/g, '');
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Show toast
+                const toast = document.getElementById('toast');
+                document.getElementById('toastText').textContent = 'Đã sao chép: ' + text;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+                
+                // Change button state
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

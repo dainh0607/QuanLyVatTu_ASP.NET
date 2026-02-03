@@ -1,0 +1,243 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.DonHang
+@{
+    ViewData["Title"] = "Tra cứu đơn hàng";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Tra cứu đơn hàng</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="fas fa-search text-primary me-2"></i>
+                        Tra cứu đơn hàng
+                    </h4>
+                    
+                    <form method="get" class="row g-3">
+                        <div class="col-md-9">
+                            <input type="number" name="id" class="form-control form-control-lg" 
+                                   placeholder="Nhập mã đơn hàng..." 
+                                   value="@Context.Request.Query["id"]" required>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-search me-1"></i> Tra cứu
+                            </button>
+                        </div>
+                    </form>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger mt-4">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @ViewBag.Error
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (Model != null)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-box text-primary me-2"></i>
+                                Đơn hàng #@Model.ID
+                            </h5>
+                            <span class="badge @GetStatusBadgeClass(Model.TrangThai) fs-6">
+                                @Model.TrangThai
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Thông tin đơn hàng -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p class="mb-2">
+                                    <strong><i class="fas fa-calendar me-2"></i>Ngày đặt:</strong>
+                                    @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                                <p class="mb-2">
+                                    <strong><i class="fas fa-user me-2"></i>Khách hàng:</strong>
+                                    @Model.KhachHang?.HoTen
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2">
+                                    <strong><i class="fas fa-phone me-2"></i>SĐT:</strong>
+                                    @Model.KhachHang?.SoDienThoai
+                                </p>
+                                <p class="mb-2">
+                                    <strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                                    @Model.KhachHang?.DiaChi
+                                </p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.GhiChu))
+                        {
+                            <div class="alert alert-info">
+                                <strong>Ghi chú:</strong> @Model.GhiChu
+                            </div>
+                        }
+
+                        <!-- Chi tiết sản phẩm -->
+                        <h6 class="fw-bold mb-3"><i class="fas fa-list me-2"></i>Chi tiết đơn hàng</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Đơn giá</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ChiTietDonHangs != null)
+                                    {
+                                        foreach (var ct in Model.ChiTietDonHangs)
+                                        {
+                                            <tr>
+                                                <td>@ct.VatTu?.TenVatTu</td>
+                                                <td class="text-center">@ct.SoLuong</td>
+                                                <td class="text-end">@(ct.DonGia?.ToString("N0") ?? "0")đ</td>
+                                                <td class="text-end fw-bold">@ct.ThanhTien.ToString("N0")đ</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                                        <td class="text-end fw-bold text-danger fs-5">
+                                            @(Model.TongTien?.ToString("N0") ?? "0")đ
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Timeline trạng thái -->
+                        <h6 class="fw-bold mb-3 mt-4"><i class="fas fa-history me-2"></i>Lịch sử trạng thái</h6>
+                        <div class="timeline">
+                            <div class="timeline-item completed">
+                                <div class="timeline-icon bg-success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <strong>Đã đặt hàng</strong>
+                                    <small class="text-muted d-block">@Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</small>
+                                </div>
+                            </div>
+                            @if (Model.TrangThai != "Chờ xử lý")
+                            {
+                                <div class="timeline-item @(Model.TrangThai != "Hủy" ? "completed" : "")">
+                                    <div class="timeline-icon @(Model.TrangThai != "Hủy" ? "bg-success" : "bg-secondary")">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <strong>Đang xử lý</strong>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.TrangThai == "Đang giao" || Model.TrangThai == "Đã giao")
+                            {
+                                <div class="timeline-item @(Model.TrangThai == "Đã giao" ? "completed" : "")">
+                                    <div class="timeline-icon bg-primary">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <strong>Đang giao hàng</strong>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.TrangThai == "Đã giao")
+                            {
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon bg-success">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <strong>Đã giao hàng</strong>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.TrangThai == "Hủy")
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-icon bg-danger">
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <strong class="text-danger">Đã hủy</strong>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        border-left: 2px solid #e5e7eb;
+    }
+    .timeline-item:last-child {
+        border-left: 2px solid transparent;
+        padding-bottom: 0;
+    }
+    .timeline-item.completed {
+        border-left-color: #10b981;
+    }
+    .timeline-icon {
+        position: absolute;
+        left: -14px;
+        top: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+    }
+    .timeline-content {
+        padding-top: 2px;
+    }
+</style>
+
+@functions {
+    string GetStatusBadgeClass(string? status)
+    {
+        return status switch
+        {
+            "Chờ xử lý" => "bg-warning text-dark",
+            "Đang xử lý" => "bg-info",
+            "Đang giao" => "bg-primary",
+            "Đã giao" => "bg-success",
+            "Hủy" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

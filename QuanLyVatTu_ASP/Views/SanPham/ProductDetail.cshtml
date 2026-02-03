@@ -68,7 +68,7 @@
                         </div>
 
                         <div class="d-flex gap-2 w-100">
-                            <button class="btn btn-dark flex-grow-1 py-3 rounded-3 fw-bold text-uppercase" onclick="addToCart(@Model.ID)">
+                            <button class="btn btn-dark flex-grow-1 py-3 rounded-3 fw-bold text-uppercase" onclick="addToCart(@Model.ID, document.getElementById('qty').value)">
                                 Thêm vào giỏ hàng
                             </button>
                             <button class="btn btn-danger flex-grow-1 py-3 rounded-3 fw-bold text-uppercase" onclick="buyNow(@Model.ID)">
@@ -161,6 +161,139 @@
                 }
             </div>
         </div>
+
+        <!-- Product Reviews Section -->
+        <div class="product-reviews mt-5 pt-5 border-top" id="reviewsSection">
+            <div class="reviews-header">
+                <h3 class="reviews-title"><i class="fas fa-star"></i> Đánh giá sản phẩm</h3>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="reviews-overview" id="reviewsOverview">
+                <div class="rating-big">
+                    <div class="rating-score" id="avgScore">0</div>
+                    <span class="rating-max">/5.0</span>
+                    <div class="rating-stars-big" id="avgStars">
+                        <i class="fas fa-star empty"></i>
+                        <i class="fas fa-star empty"></i>
+                        <i class="fas fa-star empty"></i>
+                        <i class="fas fa-star empty"></i>
+                        <i class="fas fa-star empty"></i>
+                    </div>
+                    <div class="rating-count"><span id="totalReviews">0</span> đánh giá</div>
+                </div>
+                <div class="rating-breakdown">
+                    <div class="breakdown-row" data-star="5">
+                        <div class="breakdown-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <div class="breakdown-bar"><div class="breakdown-fill" id="bar5" style="width: 0%"></div></div>
+                        <span class="breakdown-percent" id="percent5">0%</span>
+                    </div>
+                    <div class="breakdown-row" data-star="4">
+                        <div class="breakdown-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star empty"></i>
+                        </div>
+                        <div class="breakdown-bar"><div class="breakdown-fill" id="bar4" style="width: 0%"></div></div>
+                        <span class="breakdown-percent" id="percent4">0%</span>
+                    </div>
+                    <div class="breakdown-row" data-star="3">
+                        <div class="breakdown-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i>
+                        </div>
+                        <div class="breakdown-bar"><div class="breakdown-fill" id="bar3" style="width: 0%"></div></div>
+                        <span class="breakdown-percent" id="percent3">0%</span>
+                    </div>
+                    <div class="breakdown-row" data-star="2">
+                        <div class="breakdown-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i>
+                        </div>
+                        <div class="breakdown-bar"><div class="breakdown-fill" id="bar2" style="width: 0%"></div></div>
+                        <span class="breakdown-percent" id="percent2">0%</span>
+                    </div>
+                    <div class="breakdown-row" data-star="1">
+                        <div class="breakdown-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i><i class="fas fa-star empty"></i>
+                        </div>
+                        <div class="breakdown-bar"><div class="breakdown-fill" id="bar1" style="width: 0%"></div></div>
+                        <span class="breakdown-percent" id="percent1">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Write Review Section -->
+            @if (Context.Session.GetInt32("KhachHangId") != null)
+            {
+                <div class="write-review-section" id="writeReviewForm">
+                    <div class="write-review-header">
+                        <i class="fas fa-edit"></i>
+                        <h4>Viết đánh giá của bạn</h4>
+                    </div>
+                    <form id="reviewForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="rating-group">
+                                    <label>Đánh giá sao <span class="text-danger">*</span></label>
+                                    <div class="star-rating-input">
+                                        <input type="radio" id="star5" name="rating" value="5"><label for="star5"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="star4" name="rating" value="4"><label for="star4"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="star3" name="rating" value="3"><label for="star3"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="star2" name="rating" value="2"><label for="star2"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="star1" name="rating" value="1"><label for="star1"><i class="fas fa-star"></i></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="rating-group">
+                                    <label>Chất lượng sản phẩm</label>
+                                    <div class="star-rating-input">
+                                        <input type="radio" id="quality5" name="quality" value="5"><label for="quality5"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="quality4" name="quality" value="4"><label for="quality4"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="quality3" name="quality" value="3"><label for="quality3"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="quality2" name="quality" value="2"><label for="quality2"><i class="fas fa-star"></i></label>
+                                        <input type="radio" id="quality1" name="quality" value="1"><label for="quality1"><i class="fas fa-star"></i></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rating-group">
+                            <label>Nhận xét của bạn</label>
+                            <textarea class="review-textarea" id="reviewComment" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-review-btn">
+                            <i class="fas fa-paper-plane"></i> Gửi đánh giá
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="login-prompt">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Vui lòng <a href="/Account/Login">đăng nhập</a> để viết đánh giá sản phẩm.</p>
+                </div>
+            }
+
+            <!-- Filter Buttons -->
+            <div class="review-filters">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="5">5 sao</button>
+                <button class="filter-btn" data-filter="4">4 sao</button>
+                <button class="filter-btn" data-filter="3">3 sao</button>
+                <button class="filter-btn" data-filter="2">2 sao</button>
+                <button class="filter-btn" data-filter="1">1 sao</button>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list" id="reviewsList">
+                <!-- Reviews will be loaded here via AJAX -->
+                <div class="reviews-empty">
+                    <i class="far fa-comment-dots"></i>
+                    <h4>Chưa có đánh giá nào</h4>
+                    <p>Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -187,6 +320,8 @@
 
 @section Scripts {
     <script>
+        var productId = @Model.ID;
+
         // Xử lý nút tăng giảm số lượng
         function updateQty(change) {
             var input = document.getElementById('qty');
@@ -201,11 +336,9 @@
         // Xử lý đổi ảnh khi click thumbnail
         function changeImage(element) {
             var mainImg = document.getElementById('currentImg');
-            mainImg.src = element.src.replace('100x100', '600x600'); // Logic giả định đổi size ảnh
+            mainImg.src = element.src.replace('100x100', '600x600');
             
-            // Xóa class active cũ
             document.querySelectorAll('.thumbnail-list img').forEach(img => img.classList.remove('active-thumb', 'border-primary'));
-            // Thêm class active mới
             element.classList.add('active-thumb', 'border', 'border-primary');
         }
 
@@ -234,10 +367,182 @@
                 }
             });
         }
+
+        // ============ REVIEWS FUNCTIONALITY ============
+        
+        // Load reviews on page load
+        $(document).ready(function() {
+            loadReviews();
+            
+            // Filter buttons
+            $('.filter-btn').on('click', function() {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+                var filter = $(this).data('filter');
+                loadReviews(filter === 'all' ? null : filter);
+            });
+            
+            // Breakdown row click
+            $('.breakdown-row').on('click', function() {
+                var star = $(this).data('star');
+                $('.filter-btn').removeClass('active');
+                $('.filter-btn[data-filter="' + star + '"]').addClass('active');
+                loadReviews(star);
+            });
+            
+            // Submit review form
+            $('#reviewForm').on('submit', function(e) {
+                e.preventDefault();
+                submitReview();
+            });
+        });
+
+        function loadReviews(starFilter) {
+            var url = '/DanhGia/GetReviews?maVatTu=' + productId;
+            if (starFilter) url += '&soSao=' + starFilter;
+            
+            $.get(url, function(res) {
+                if (res.success) {
+                    updateStats(res.stats);
+                    renderReviews(res.reviews);
+                }
+            });
+        }
+
+        function updateStats(stats) {
+            $('#avgScore').text(stats.diemTrungBinh);
+            $('#totalReviews').text(stats.tongSo);
+            
+            // Update stars
+            var fullStars = Math.floor(stats.diemTrungBinh);
+            var starsHtml = '';
+            for (var i = 0; i < 5; i++) {
+                starsHtml += '<i class="fas fa-star ' + (i < fullStars ? '' : 'empty') + '"></i>';
+            }
+            $('#avgStars').html(starsHtml);
+            
+            // Update breakdown bars
+            var total = stats.tongSo || 1;
+            for (var i = 1; i <= 5; i++) {
+                var count = stats['sao' + i];
+                var percent = Math.round((count / total) * 100);
+                $('#bar' + i).css('width', percent + '%');
+                $('#percent' + i).text(percent + '%');
+            }
+        }
+
+        function renderReviews(reviews) {
+            var container = $('#reviewsList');
+            
+            if (!reviews || reviews.length === 0) {
+                container.html(`
+                    <div class="reviews-empty">
+                        <i class="far fa-comment-dots"></i>
+                        <h4>Chưa có đánh giá nào</h4>
+                        <p>Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            var html = '';
+            reviews.forEach(function(r) {
+                var starsHtml = '';
+                for (var i = 0; i < 5; i++) {
+                    starsHtml += '<i class="fas fa-star ' + (i < r.soSao ? '' : 'empty') + '"></i>';
+                }
+                
+                var dateStr = new Date(r.ngayDanhGia).toLocaleDateString('vi-VN');
+                
+                html += `
+                    <div class="review-card" data-id="${r.id}">
+                        <div class="review-header">
+                            <img src="${r.avatarUrl}" alt="Avatar" class="review-avatar">
+                            <div class="review-info">
+                                <h5 class="review-author">${r.tenKhachHang}</h5>
+                                <div class="review-meta">
+                                    <div class="review-stars">${starsHtml}</div>
+                                    <span class="review-date">${dateStr}</span>
+                                    <span class="review-quality">Chất lượng: ${r.chatLuongSanPham}/5</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${r.binhLuan ? '<p class="review-content">' + r.binhLuan + '</p>' : ''}
+                        <div class="review-footer">
+                            <button class="review-like-btn" onclick="likeReview(${r.id}, this)">
+                                <i class="far fa-thumbs-up"></i> <span>${r.luotThich}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.html(html);
+        }
+
+        function submitReview() {
+            var rating = $('input[name="rating"]:checked').val();
+            var quality = $('input[name="quality"]:checked').val() || rating;
+            var comment = $('#reviewComment').val();
+            
+            if (!rating) {
+                alert('Vui lòng chọn số sao đánh giá');
+                return;
+            }
+            
+            $.ajax({
+                url: '/DanhGia/Create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    maVatTu: productId,
+                    soSao: parseInt(rating),
+                    chatLuongSanPham: parseInt(quality),
+                    binhLuan: comment
+                }),
+                success: function(res) {
+                    if (res.success) {
+                        alert('Đánh giá thành công!');
+                        $('#reviewForm')[0].reset();
+                        loadReviews();
+                        $('#writeReviewForm').hide();
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra, vui lòng thử lại');
+                }
+            });
+        }
+
+        function likeReview(reviewId, btn) {
+            $.ajax({
+                url: '/DanhGia/Like',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ maDanhGia: reviewId }),
+                success: function(res) {
+                    if (res.success) {
+                        $(btn).find('span').text(res.luotThich);
+                        if (res.liked) {
+                            $(btn).addClass('liked');
+                            $(btn).find('i').removeClass('far').addClass('fas');
+                        } else {
+                            $(btn).removeClass('liked');
+                            $(btn).find('i').removeClass('fas').addClass('far');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                }
+            });
+        }
     </script>
 }
 
 @section Styles {
+    <link rel="stylesheet" href="~/user/css/reviews.css" />
     <style>
         /* CSS Riêng cho trang chi tiết */
         .product-gallery .img-thumbnail {

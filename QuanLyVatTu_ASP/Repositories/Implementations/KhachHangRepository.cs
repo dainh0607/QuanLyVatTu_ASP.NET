@@ -42,7 +42,7 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 
             if (user == null) return null;
 
-            /* COMMENT BCrypt THEO YÊU CẦU
+            // BCrypt verification - sử dụng mật khẩu đã hash
             bool isPasswordValid = false;
             try
             {
@@ -57,7 +57,6 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             {
                 return user;
             }
-            */
 
             return null;
         }
@@ -69,15 +68,24 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 
         public async Task<KhachHang?> UpdateAsync(KhachHang khachHang)
         {
-            var existingUser = await _context.KhachHangs.FindAsync(khachHang.MaHienThi);
+            var existingUser = await _context.KhachHangs.FindAsync(khachHang.ID);
 
             if (existingUser != null)
             {
                 existingUser.HoTen = khachHang.HoTen;
                 existingUser.SoDienThoai = khachHang.SoDienThoai;
                 existingUser.DiaChi = khachHang.DiaChi;
+                
+                // Password update if provided/changed should be handled carefully, 
+                // but here we just map basic fields. 
+                // If the object passed has the new password, map it.
+                if(!string.IsNullOrEmpty(khachHang.MatKhau))
+                {
+                    existingUser.MatKhau = khachHang.MatKhau;
+                }
 
                 _context.KhachHangs.Update(existingUser);
+                await _context.SaveChangesAsync();
             }
             return existingUser;
         }

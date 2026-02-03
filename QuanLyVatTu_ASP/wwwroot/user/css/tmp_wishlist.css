@@ -1,0 +1,46 @@
+/* Floating Wishlist Button */
+.product-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-wishlist-floating {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(-5px);
+}
+
+.product-card:hover .btn-wishlist-floating {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.btn-wishlist-floating i {
+    color: #ef4444;
+    /* Red Heart */
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+.btn-wishlist-floating:hover {
+    background: #ef4444;
+    transform: scale(1.1);
+}
+
+.btn-wishlist-floating:hover i {
+    color: white;
+}

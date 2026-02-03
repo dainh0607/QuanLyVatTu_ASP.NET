@@ -480,6 +480,18 @@
             }, 3000);
         }
 
+        // Display Server-Side Messages
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["Error"] != null)
+            {
+                <text>showToast("@Html.Raw(TempData["Error"])");</text>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <text>showToast("@Html.Raw(TempData["Warning"])");</text>
+            }
+        });
+
         // Form validation feedback
         document.getElementById('checkoutForm').addEventListener('submit', function(e) {
             const inputs = this.querySelectorAll('input[required]');

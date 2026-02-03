@@ -153,42 +153,7 @@
                             <span class="summary-value" id="cart-subtotal">@subtotal.ToString("N0")₫</span>
                         </div>
 
-                        <!-- Discount Code Section -->
-                        <div class="discount-section">
-                            <button class="discount-toggle" onclick="toggleDiscountForm()">
-                                <div class="discount-toggle-content">
-                                    <i class="fa-solid fa-ticket"></i>
-                                    <span>Mã giảm giá</span>
-                                </div>
-                                <i class="fa-solid fa-chevron-down discount-arrow"></i>
-                            </button>
-                            <div class="discount-form" id="discountForm">
-                                <div class="discount-input-group">
-                                    <input type="text" 
-                                           class="discount-input" 
-                                           placeholder="Nhập mã giảm giá"
-                                           id="discountCode" />
-                                    <button class="btn-apply-discount" onclick="applyDiscount()">
-                                        Áp dụng
-                                    </button>
-                                </div>
-                                <div class="discount-applied" id="discountApplied" style="display: none;">
-                                    <div class="discount-badge">
-                                        <i class="fa-solid fa-circle-check"></i>
-                                        <span class="discount-code-text">FREESHIP</span>
-                                        <button class="btn-remove-discount" onclick="removeDiscount()">
-                                            <i class="fa-solid fa-xmark"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Discount Amount (if applied) -->
-                        <div class="summary-row discount-row" id="discountRow" style="display: none;">
-                            <span class="summary-label">Giảm giá</span>
-                            <span class="summary-value discount-value">-@discount.ToString("N0")₫</span>
-                        </div>
 
                         <!-- Total Weight Estimate -->
                         <div class="shipping-note weight-estimate">
@@ -318,68 +283,34 @@
         // Remove item confirmation
         function confirmRemoveItem(productId, productName) {
             showGlobalConfirm(`Bạn có chắc muốn xóa "${productName}" khỏi giỏ hàng?`, function() {
-                const row = document.querySelector(`[data-item-id="${productId}"]`);
-                row.style.opacity = '0';
-                row.style.transform = 'translateX(100px)';
-                
-                setTimeout(() => {
-                    row.remove();
-                    showGlobalMessage('Đã xóa sản phẩm khỏi giỏ hàng', 'Thành công', 'success'); 
-                    
-                    // Recalculate totals
-                    updateCartSummary();
+                // AJAX call to remove from cart
+                $.post('/GioHang/RemoveFromCart', { productId }, function(res) {
+                    if (res.success) {
+                        const row = document.querySelector(`[data-item-id="${productId}"]`);
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(100px)';
+                        
+                        setTimeout(() => {
+                            row.remove();
+                            showGlobalMessage('Đã xóa sản phẩm khỏi giỏ hàng', 'Thành công', 'success'); 
+                            
+                            // Update header cart count
+                            if (typeof updateCartCount === 'function') {
+                                updateCartCount(res.cartCount);
+                            }
+                            
+                            // Recalculate totals
+                            updateCartSummary();
 
-                    // Check if cart is empty
-                    checkEmptyCart();
-                }, 300);
-                
-                // AJAX call would go here
-                // $.post('/GioHang/RemoveItem', { productId });
+                            // Check if cart is empty
+                            checkEmptyCart();
+                        }, 300);
+                    }
+                });
             });
         }
 
-        // Toggle discount form
-        function toggleDiscountForm() {
-            const form = document.getElementById('discountForm');
-            const arrow = document.querySelector('.discount-arrow');
-            
-            if (form.style.display === 'none' || !form.style.display) {
-                form.style.display = 'block';
-                arrow.style.transform = 'rotate(180deg)';
-            } else {
-                form.style.display = 'none';
-                arrow.style.transform = 'rotate(0deg)';
-            }
-        }
 
-        // Apply discount
-        function applyDiscount() {
-            const code = document.getElementById('discountCode').value.trim();
-            
-            if (code === '') {
-                showGlobalMessage('Vui lòng nhập mã giảm giá', 'Lỗi', 'error');
-                return;
-            }
-            
-            // Simulate discount application
-            document.getElementById('discountApplied').style.display = 'flex';
-            document.querySelector('.discount-code-text').textContent = code.toUpperCase();
-            document.getElementById('discountRow').style.display = 'flex';
-            
-            showToast('Đã áp dụng mã giảm giá!');
-            
-            // AJAX call would go here
-            // $.post('/GioHang/ApplyDiscount', { code });
-        }
-
-        // Remove discount
-        function removeDiscount() {
-            document.getElementById('discountApplied').style.display = 'none';
-            document.getElementById('discountRow').style.display = 'none';
-            document.getElementById('discountCode').value = '';
-            
-            showToast('Đã hủy mã giảm giá');
-        }
 
         // Show toast notification
         function showToast(message) {

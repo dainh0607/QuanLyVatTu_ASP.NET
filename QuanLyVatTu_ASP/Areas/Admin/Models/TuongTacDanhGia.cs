@@ -19,7 +19,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         public DateTime NgayTuongTac { get; set; } = DateTime.Now;
 
-        public virtual DanhGia DanhGia { get; set; }
-        public virtual KhachHang KhachHang { get; set; }
+        public virtual DanhGia? DanhGia { get; set; }
+        public virtual KhachHang? KhachHang { get; set; }
     }
 }

@@ -1,7 +1,18 @@
 ﻿@using QuanLyVatTu_ASP.Repositories
+@using QuanLyVatTu_ASP.Extensions
+@using QuanLyVatTu_ASP.Models.ViewModels
 @inject IUnitOfWork _unitOfWork
 @{
     var _layoutCategories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
+    
+    // Lấy dữ liệu giỏ hàng từ session
+    var _cart = Context.Session.Get<List<CartItem>>("MY_CART") ?? new List<CartItem>();
+    var _cartCount = _cart.Sum(x => x.SoLuong);
+    var _cartTotal = _cart.Sum(x => x.ThanhTien);
+    
+    // Lấy dữ liệu wishlist
+    var _wishlist = Context.Session.Get<List<WishlistItem>>("WISHLIST") ?? new List<WishlistItem>();
+    var _wishlistCount = _wishlist.Count;
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -13,6 +24,7 @@
     <link rel="stylesheet" href="~/user/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/user/css/Layout_Customer.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/user/css/cart-dropdown.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/user/css/reviews.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
@@ -40,12 +52,12 @@
             <div class="header-actions">
                 <a href="/GioHang/Wishlist" class="icon-btn">
                     <i class="fa-regular fa-heart"></i>
-                    <span class="badge-count">0</span>
+                    <span class="badge-count">@(_wishlistCount)</span>
                 </a>
                 <div class="cart-dropdown-wrapper">
                             <a href="/GioHang/GioHang" class="icon-link cart-icon" title="Giỏ hàng">
                                 <i class="fa-solid fa-cart-shopping"></i>
-                                <span class="badge cart-count">5</span>
+                                <span class="badge cart-count" id="headerCartCount">@_cartCount</span>
                             </a>
                             <!-- Cart Quick Preview Dropdown (Hover) -->
                             <div class="cart-quick-preview" id="cartQuickPreview">
@@ -54,106 +66,49 @@
                                         <i class="fa-solid fa-shopping-bag"></i>
                                         <span>Giỏ hàng của bạn</span>
                                     </div>
-                                    <span class="cart-items-badge">5 sản phẩm</span>
+                                    <span class="cart-items-badge" id="dropdownCartBadge">@_cartCount sản phẩm</span>
                                 </div>
                                 
-                                <div class="cart-preview-items">
-                                    <!-- Cart Item 1 -->
-                                    <div class="cart-preview-item">
-                                        <div class="cart-item-thumb">
-                                            <img src="https://placehold.co/60x60/0d6efd/ffffff?text=Xi+Mang" alt="Xi măng">
-                                        </div>
-                                        <div class="cart-item-details">
-                                            <h6 class="cart-item-name">Xi măng Holcim PCB40</h6>
-                                            <div class="cart-item-meta">
-                                                <span class="cart-item-price">125.000₫</span>
-                                                <span class="cart-item-qty">x2</span>
+                                <div class="cart-preview-items" id="cartPreviewItems">
+                                    @if (_cart.Any())
+                                    {
+                                        @foreach (var item in _cart.Take(5))
+                                        {
+                                            <div class="cart-preview-item" data-product-id="@item.VatTuId">
+                                                <div class="cart-item-thumb">
+                                                    <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? $"https://placehold.co/60x60?text={Uri.EscapeDataString(item.TenVatTu?.Substring(0, Math.Min(item.TenVatTu?.Length ?? 0, 8)) ?? "SP")}" : item.HinhAnh)" alt="@item.TenVatTu">
+                                                </div>
+                                                <div class="cart-item-details">
+                                                    <h6 class="cart-item-name">@item.TenVatTu</h6>
+                                                    <div class="cart-item-meta">
+                                                        <span class="cart-item-price">@item.DonGia.ToString("N0")₫</span>
+                                                        <span class="cart-item-qty">x@item.SoLuong</span>
+                                                    </div>
+                                                </div>
+                                                <button class="btn-remove-cart-item" title="Xóa sản phẩm" onclick="removeFromDropdown(@item.VatTuId)">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                </button>
                                             </div>
-                                        </div>
-                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Cart Item 2 -->
-                                    <div class="cart-preview-item">
-                                        <div class="cart-item-thumb">
-                                            <img src="https://placehold.co/60x60/ff6b00/ffffff?text=Day+Dien" alt="Dây điện">
-                                        </div>
-                                        <div class="cart-item-details">
-                                            <h6 class="cart-item-name">Dây điện Cadivi 2.5mm</h6>
-                                            <div class="cart-item-meta">
-                                                <span class="cart-item-price">850.000₫</span>
-                                                <span class="cart-item-qty">x1</span>
+                                        }
+                                        @if (_cart.Count > 5)
+                                        {
+                                            <div class="cart-preview-more">
+                                                <span>+ @(_cart.Count - 5) sản phẩm khác...</span>
                                             </div>
-                                        </div>
-                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
+                                        }
+                                    }
                                     
-                                    <!-- Cart Item 3 -->
-                                    <div class="cart-preview-item">
-                                        <div class="cart-item-thumb">
-                                            <img src="https://placehold.co/60x60/28a745/ffffff?text=Bua" alt="Búa">
-                                        </div>
-                                        <div class="cart-item-details">
-                                            <h6 class="cart-item-name">Búa đinh Stanley 16oz</h6>
-                                            <div class="cart-item-meta">
-                                                <span class="cart-item-price">245.000₫</span>
-                                                <span class="cart-item-qty">x1</span>
-                                            </div>
-                                        </div>
-                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Cart Item 4 -->
-                                    <div class="cart-preview-item">
-                                        <div class="cart-item-thumb">
-                                            <img src="https://placehold.co/60x60/ffc107/ffffff?text=Son" alt="Sơn">
-                                        </div>
-                                        <div class="cart-item-details">
-                                            <h6 class="cart-item-name">Sơn Dulux nội thất 5L</h6>
-                                            <div class="cart-item-meta">
-                                                <span class="cart-item-price">1.250.000₫</span>
-                                                <span class="cart-item-qty">x2</span>
-                                            </div>
-                                        </div>
-                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Cart Item 5 -->
-                                    <div class="cart-preview-item">
-                                        <div class="cart-item-thumb">
-                                            <img src="https://placehold.co/60x60/17a2b8/ffffff?text=Den+LED" alt="Đèn LED">
-                                        </div>
-                                        <div class="cart-item-details">
-                                            <h6 class="cart-item-name">Đèn LED âm trần 12W</h6>
-                                            <div class="cart-item-meta">
-                                                <span class="cart-item-price">85.000₫</span>
-                                                <span class="cart-item-qty">x4</span>
-                                            </div>
-                                        </div>
-                                        <button class="btn-remove-cart-item" title="Xóa sản phẩm">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Empty State (hidden when has items) -->
-                                    <div class="cart-preview-empty" style="display: none;">
+                                    <!-- Empty State -->
+                                    <div class="cart-preview-empty" style="@(_cart.Any() ? "display: none;" : "display: flex;")">
                                         <i class="fa-solid fa-cart-shopping"></i>
                                         <p>Giỏ hàng đang trống</p>
                                     </div>
                                 </div>
                                 
-                                <div class="cart-preview-footer">
+                                <div class="cart-preview-footer" style="@(_cart.Any() ? "" : "display: none;")">
                                     <div class="cart-preview-total">
                                         <span>Tạm tính:</span>
-                                        <strong>2.895.000₫</strong>
+                                        <strong id="dropdownCartTotal">@_cartTotal.ToString("N0")₫</strong>
                                     </div>
                                     <div class="dropdown-actions">
                                         <a href="/GioHang/GioHang" class="btn-view-full-cart">
@@ -169,17 +124,31 @@
                             </div>
                         </div>
 
-                @if (User.Identity?.IsAuthenticated == true)
+                @if (Context.Session.GetString("Role") == "Customer")
                 {
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle fa-lg text-white"></i> <span class="text-white">@User.Identity.Name</span> </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/Customer/Profile">Tài khoản</a></li>
-                            <li><a class="dropdown-item" href="/Customer/Orders">Đơn hàng</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/Account/Logout">Đăng xuất</a></li>
-                        </ul>
+                    <div class="user-dropdown">
+                        <a href="#" class="user-info d-flex align-items-center gap-2 text-decoration-none">
+                            <div class="user-avatar-small">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <span class="user-name-text">@Context.Session.GetString("UserName")</span>
+                            <i class="fas fa-chevron-down" style="font-size: 0.7em;"></i>
+                        </a>
+                        <div class="user-menu">
+                            <a href="/Customer/Profile" class="menu-item">
+                                <i class="fas fa-user"></i>
+                                Tài khoản của tôi
+                            </a>
+                            <a href="/Customer/Orders" class="menu-item">
+                                <i class="fas fa-shopping-bag"></i>
+                                Đơn hàng của tôi
+                            </a>
+                            <div class="menu-divider"></div>
+                            <a href="/Account/Logout" class="menu-item logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
                     </div>
                 }
                 else
@@ -335,9 +304,10 @@
         </div>
     </div>
 
-    <script src="~/user/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/user/js/site.js" asp-append-version="true"></script>
+    <!-- Fix paths based on actual structure if needed or remove query string for now if it causes issues -->
+    <script src="/user/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/user/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     @await RenderSectionAsync("Styles", required: false)
     <script>
@@ -457,10 +427,163 @@
         };
 
         function updateCartCount(count) {
-            document.querySelectorAll('.cart-count, .badge').forEach(el => {
+            document.querySelectorAll('.cart-count').forEach(el => {
                 el.textContent = count;
             });
+            const badge = document.getElementById('dropdownCartBadge');
+            if (badge) badge.textContent = count + ' sản phẩm';
         }
+
+        function updateCartTotal(total) {
+            const el = document.getElementById('dropdownCartTotal');
+            if (el) el.textContent = total.toLocaleString('vi-VN') + '₫';
+        }
+
+        // Add to cart globally available function
+        window.addToCart = function(productId, quantity = 1) {
+            $.post('/GioHang/AddToCart', { productId, quantity }, function(res) {
+                if (res.success) {
+                    updateCartCount(res.cartCount);
+                    updateCartTotal(res.cartTotal);
+                    showCartToast(res.message);
+                    // Reload dropdown after adding
+                    refreshCartDropdown();
+                } else {
+                    showGlobalMessage(res.message, 'Lỗi', 'error');
+                }
+            }).fail(function() {
+                showGlobalMessage('Có lỗi xảy ra. Vui lòng thử lại.', 'Lỗi', 'error');
+            });
+        };
+
+        // Remove from dropdown
+        window.removeFromDropdown = function(productId) {
+            $.post('/GioHang/RemoveFromCart', { productId }, function(res) {
+                if (res.success) {
+                    updateCartCount(res.cartCount);
+                    updateCartTotal(res.cartTotal);
+                    // Remove item from DOM
+                    const item = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (item) item.remove();
+                    // Check if cart is now empty
+                    if (res.cartCount === 0) {
+                        document.querySelector('.cart-preview-empty').style.display = 'flex';
+                        document.querySelector('.cart-preview-footer').style.display = 'none';
+                    }
+                    showCartToast(res.message);
+                }
+            });
+        };
+
+        // Refresh cart dropdown via AJAX
+        window.refreshCartDropdown = function() {
+            $.get('/GioHang/GetCartData', function(res) {
+                if (res.success) {
+                    updateCartCount(res.cartCount);
+                    updateCartTotal(res.cartTotal);
+                    
+                    // Update dropdown items with full DOM rebuild
+                    const container = document.getElementById('cartPreviewItems');
+                    const footer = document.querySelector('.cart-preview-footer');
+                    const emptyState = document.querySelector('.cart-preview-empty');
+                    
+                    if (container && res.items && res.items.length > 0) {
+                        let html = '';
+                        const itemsToShow = res.items.slice(0, 5);
+                        
+                        itemsToShow.forEach(item => {
+                            const imgSrc = item.hinhAnh || `https://placehold.co/60x60?text=${encodeURIComponent(item.tenVatTu?.substring(0, 8) || 'SP')}`;
+                            html += `
+                            <div class="cart-preview-item" data-product-id="${item.vatTuId}">
+                                <div class="cart-item-thumb">
+                                    <img src="${imgSrc}" alt="${item.tenVatTu}">
+                                </div>
+                                <div class="cart-item-details">
+                                    <h6 class="cart-item-name">${item.tenVatTu}</h6>
+                                    <div class="cart-item-meta">
+                                        <span class="cart-item-price">${item.donGia.toLocaleString('vi-VN')}₫</span>
+                                        <span class="cart-item-qty">x${item.soLuong}</span>
+                                    </div>
+                                </div>
+                                <button class="btn-remove-cart-item" title="Xóa sản phẩm" onclick="removeFromDropdown(${item.vatTuId})">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>`;
+                        });
+                        
+                        // Add "more items" indicator if needed
+                        if (res.items.length > 5) {
+                            html += `<div class="cart-preview-more"><span>+ ${res.items.length - 5} sản phẩm khác...</span></div>`;
+                        }
+                        
+                        container.innerHTML = html;
+                        if (emptyState) emptyState.style.display = 'none';
+                        if (footer) footer.style.display = '';
+                    } else if (container) {
+                        container.innerHTML = '';
+                        if (emptyState) emptyState.style.display = 'flex';
+                        if (footer) footer.style.display = 'none';
+                    }
+                    
+                    // Update badge in header
+                    const badge = document.getElementById('headerCartCount');
+                    if (badge) badge.textContent = res.cartCount + ' sản phẩm';
+                }
+            });
+        };
+
+        // Cart toast notification
+        function showCartToast(message) {
+            // Create or update toast
+            let toast = document.getElementById('cartActionToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'cartActionToast';
+                toast.className = 'cart-action-toast';
+                toast.innerHTML = `<i class="fa-solid fa-check-circle"></i><span class="toast-text"></span>`;
+                document.body.appendChild(toast);
+                
+                // Add styles if not exists
+                if (!document.getElementById('cartToastStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'cartToastStyles';
+                    style.textContent = `
+                        .cart-action-toast {
+                            position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #28a745, #20c997);
+                            color: white; padding: 12px 24px; border-radius: 10px; display: flex; align-items: center; gap: 10px;
+                            box-shadow: 0 4px 20px rgba(40,167,69,0.4); z-index: 10000; transform: translateX(150%); transition: transform 0.3s ease;
+                        }
+                        .cart-action-toast.show { transform: translateX(0); }
+                        .cart-action-toast i { font-size: 1.2rem; }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            toast.querySelector('.toast-text').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+    <script>
+        // Global Wishlist Function
+        window.addToWishlist = function(productId) {
+            $.post('/GioHang/AddToWishlist', { productId }, function(res) {
+                 if (res.success) {
+                    // Update header wishlist badge if it exists
+                    const wishlistBadge = document.querySelector('.icon-btn .badge-count');
+                    if(wishlistBadge) {
+                        wishlistBadge.textContent = res.count;
+                        wishlistBadge.style.animation = 'none';
+                        setTimeout(() => { wishlistBadge.style.animation = 'pulse 0.5s ease'; }, 10);
+                    }
+                    showCartToast(res.message); // Reuse the toast
+                } else {
+                    showGlobalMessage(res.message, 'Thông báo', 'info');
+                }
+            }).fail(function() {
+                showGlobalMessage('Có lỗi xảy ra. Vui lòng thử lại.', 'Lỗi', 'error');
+            });
+        };
     </script>
 </body>
 </html>
