@@ -42,22 +42,11 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
 
             if (user == null) return null;
 
-            /* COMMENT BCrypt THEO YÊU CẦU
-            bool isPasswordValid = false;
-            try
-            {
-                isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.MatKhau);
-            }
-            catch
-            {
-                return null;
-            }
-
-            if (isPasswordValid)
+            // Check Plain Text Password (Since BCrypt is disabled)
+            if (user.MatKhau == password) 
             {
                 return user;
             }
-            */
 
             return null;
         }

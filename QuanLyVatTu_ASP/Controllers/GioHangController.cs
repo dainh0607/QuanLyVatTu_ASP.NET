@@ -147,10 +147,23 @@ namespace QuanLyVatTu_ASP.Controllers
             }
             return Json(new { success = true });
         }
-        public IActionResult Wishlist()
+        public async Task<IActionResult> Wishlist()
         {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email))
+            {
+                // Force login for Wishlist
+                return RedirectToAction("Login", "Account", new { area = "" });
+            }
 
-            return View();
+            var customer = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (customer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var wishlist = await _unitOfWork.YeuThichRepository.GetByKhachHangIdAsync(customer.ID);
+            return View(wishlist);
         }
 
         /// <summary>

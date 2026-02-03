@@ -14,7 +14,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -174,6 +174,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             modelBuilder.Entity<DanhGia>(entity =>
             {
                 entity.ToTable("DanhGia");
+                entity.Ignore(e => e.TenNguoiDanhGia); // Explicitly ignore column
                 entity.Property(e => e.NgayDanhGia).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.LuotThich).HasDefaultValue(0);
 

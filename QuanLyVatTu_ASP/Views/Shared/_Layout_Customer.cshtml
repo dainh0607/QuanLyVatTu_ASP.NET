@@ -169,16 +169,19 @@
                             </div>
                         </div>
 
-                @if (User.Identity?.IsAuthenticated == true)
+                @if (!string.IsNullOrEmpty(Context.Session.GetString("Email")))
                 {
                     <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle fa-lg text-white"></i> <span class="text-white">@User.Identity.Name</span> </a>
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg text-white"></i> 
+                            <span class="text-white fw-bold">@Context.Session.GetString("UserName")</span> 
+                        </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/Customer/Profile">Tài khoản</a></li>
-                            <li><a class="dropdown-item" href="/Customer/Orders">Đơn hàng</a></li>
+                            <li><h6 class="dropdown-header">Xin chào, @Context.Session.GetString("UserName")</h6></li>
+                            <li><a class="dropdown-item" href="/Customer/Profile"><i class="fas fa-user me-2"></i>Tài khoản</a></li>
+                            <li><a class="dropdown-item" href="/Customer/Orders"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/Account/Logout">Đăng xuất</a></li>
+                            <li><a class="dropdown-item text-danger" href="/Account/Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                         </ul>
                     </div>
                 }

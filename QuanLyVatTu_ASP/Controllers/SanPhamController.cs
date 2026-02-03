@@ -88,7 +88,49 @@ namespace QuanLyVatTu_ASP.Controllers
                 .ToList();
             ViewBag.RelatedProducts = relatedProducts;
 
+            ViewBag.RelatedProducts = relatedProducts;
+
+            // Get Reviews
+            ViewBag.Reviews = await _unitOfWork.DanhGiaRepository.GetByProductIdAsync(id);
+
             return View(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddReview(int productId, int rating, string comment)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Bạn cần đăng nhập để đánh giá." });
+            }
+
+            var customer = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (customer == null)
+            {
+                // Fallback for hardcoded users like 'client@gmail.com' if not in DB, 
+                // but usually Client should be in DB. If not, we can't save FK.
+                return Json(new { success = false, message = "Không tìm thấy thông tin khách hàng trong hệ thống." });
+            }
+
+            if (string.IsNullOrEmpty(comment) || rating < 1 || rating > 5)
+            {
+                return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
+            }
+
+            var review = new QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia
+            {
+                MaVatTu = productId,
+                SoSao = rating,
+                MaKhachHang = customer.ID,
+                BinhLuan = comment,
+                NgayDanhGia = DateTime.Now
+            };
+
+            await _unitOfWork.DanhGiaRepository.AddAsync(review);
+            _unitOfWork.Save();
+
+            return Json(new { success = true });
         }
     }
 }

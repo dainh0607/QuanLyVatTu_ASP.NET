@@ -76,9 +76,7 @@ namespace QuanLyVatTu_ASP.Controllers
             }
             */
 
-            // --- GÁN CỨNG TÀI KHOẢN THEO YÊU CẦU ---
-
-            // Admin: admin@gmail.com / 123456
+            // --- 1. ADMIN CHECK (HARDCODED) ---
             if (email == "admin@gmail.com" && password == "123456")
             {
                 HttpContext.Session.SetString("UserName", "Admin User");
@@ -87,16 +85,17 @@ namespace QuanLyVatTu_ASP.Controllers
                 return RedirectToRoute("AdminDonHang");
             }
 
-            // Client: client@gmail.com / 123456
-            if (email == "client@gmail.com" && password == "123456")
+            // --- 2. CUSTOMER CHECK (DATABASE) ---
+            var khachHang = _unitOfWork.KhachHangRepository.GetByLogin(email, password);
+            if (khachHang != null)
             {
-                HttpContext.Session.SetString("UserName", "Client User");
-                HttpContext.Session.SetString("Email", email);
+                HttpContext.Session.SetString("UserName", khachHang.HoTen ?? "Khách hàng");
+                HttpContext.Session.SetString("Email", khachHang.Email ?? "");
                 HttpContext.Session.SetString("Role", "Customer");
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác (Hardcoded Check)";
+            ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác.";
             return View();
         }
 
@@ -171,7 +170,18 @@ namespace QuanLyVatTu_ASP.Controllers
 
         public IActionResult Logout()
         {
+            // Xóa toàn bộ Session
             HttpContext.Session.Clear();
+            
+            // Xóa Cookie Session để ngăn chặn việc sử dụng lại Session ID cũ
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                if (cookie == ".AspNetCore.Session" || cookie == "AspNetCore.Antiforgery")
+                {
+                    Response.Cookies.Delete(cookie);
+                }
+            }
+            
             return RedirectToAction("Login");
         }
     }

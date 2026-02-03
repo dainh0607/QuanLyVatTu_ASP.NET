@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.YeuThich>
+@{
     ViewData["Title"] = "Danh sách yêu thích - QLVT";
     Layout = "~/Views/Shared/_Layout_Customer.cshtml";
 }
@@ -12,119 +13,69 @@
 
         <div class="wishlist-content">
             <div class="wishlist-items">
-                <div class="wishlist-item" data-id="1" data-price="1250000">
-                    <div class="item-image">
-                        <img src="https://via.placeholder.com/150x150" alt="Máy khoan Bosch">
-                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích" onclick="removeItem(this)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="item-info">
-                        <h3 class="item-name">Máy khoan Bosch GSB 13RE Professional</h3>
-                        <div class="item-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var product = item.VatTu;
+                        <div class="wishlist-item" data-id="@product.ID" data-price="@(product.GiaBan ?? 0)">
+                            <div class="item-image">
+                                <!-- Assuming image path convention -->
+                                <img src="/user/images/@($"{product.TenVatTu}.jpg")" alt="@product.TenVatTu" onerror="this.src='https://via.placeholder.com/150x150?text=No+Image'">
+                                <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích" onclick="removeItem(this, @item.ID)">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
-                            <span class="rating-count">(124 đánh giá)</span>
-                        </div>
-                        <div class="item-price">
-                            <span class="current-price">1.250.000đ</span>
-                            <span class="original-price">1.500.000đ</span>
-                        </div>
-                        <div class="item-stock">
-                            <span class="in-stock">Còn hàng</span>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-primary add-to-cart" onclick="addToCart(1)">
-                            <i class="fas fa-shopping-cart"></i>
-                            Thêm vào giỏ
-                        </button>
-                        <button class="btn-secondary view-details">
-                            Xem chi tiết
-                        </button>
-                    </div>
-                </div>
-
-                <div class="wishlist-item" data-id="2" data-price="350000">
-                    <div class="item-image">
-                        <img src="https://via.placeholder.com/150x150" alt="Bộ tua vít">
-                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích" onclick="removeItem(this)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="item-info">
-                        <h3 class="item-name">Bộ tua vít đa năng 32 chi tiết</h3>
-                        <div class="item-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
+                            <div class="item-info">
+                                <h3 class="item-name">@product.TenVatTu</h3>
+                                <div class="item-rating">
+                                    <div class="stars">
+                                        <!-- Placeholder stars or derived from product if available -->
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <span class="rating-count">(Đánh giá)</span>
+                                </div>
+                                <div class="item-price">
+                                    <span class="current-price">@(product.GiaBan?.ToString("N0") ?? "0")đ</span>
+                                    <!-- Only show original price if we had it, omitting for now -->
+                                </div>
+                                <div class="item-stock">
+                                    @if(product.SoLuongTon > 0)
+                                    {
+                                        <span class="in-stock text-success">Còn hàng (@product.SoLuongTon)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="out-of-stock text-danger">Hết hàng</span>
+                                    }
+                                </div>
                             </div>
-                            <span class="rating-count">(89 đánh giá)</span>
-                        </div>
-                        <div class="item-price">
-                            <span class="current-price">350.000đ</span>
-                            <span class="original-price">450.000đ</span>
-                        </div>
-                        <div class="item-stock">
-                            <span class="in-stock">Còn hàng</span>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-primary add-to-cart" onclick="addToCart(2)">
-                            <i class="fas fa-shopping-cart"></i>
-                            Thêm vào giỏ
-                        </button>
-                        <button class="btn-secondary view-details">
-                            Xem chi tiết
-                        </button>
-                    </div>
-                </div>
-
-                <div class="wishlist-item" data-id="6" data-price="1850000">
-                    <div class="item-image">
-                        <img src="https://via.placeholder.com/150x150" alt="Máy mài">
-                        <button class="remove-wishlist" title="Xóa khỏi danh sách yêu thích" onclick="removeItem(this)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="item-info">
-                        <h3 class="item-name">Máy mài góc Makita 9556HN</h3>
-                        <div class="item-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+                            <div class="item-actions">
+                                @if(product.SoLuongTon > 0)
+                                {
+                                    <button class="btn-primary add-to-cart" onclick="addToCart(@product.ID)">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Thêm vào giỏ
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn-primary add-to-cart" disabled>
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Hết hàng
+                                    </button>
+                                }
+                                <a href="/SanPham/ProductDetail/@product.ID" class="btn-secondary view-details text-decoration-none text-center pt-2">
+                                    Xem chi tiết
+                                </a>
                             </div>
-                            <span class="rating-count">(67 đánh giá)</span>
                         </div>
-                        <div class="item-price">
-                            <span class="current-price">1.850.000đ</span>
-                            <span class="original-price">2.200.000đ</span>
-                        </div>
-                        <div class="item-stock">
-                            <span class="out-of-stock">Hết hàng</span>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-primary add-to-cart" disabled>
-                            <i class="fas fa-shopping-cart"></i>
-                            Hết hàng
-                        </button>
-                        <button class="btn-secondary view-details">
-                            Xem chi tiết
-                        </button>
-                    </div>
-                </div>
+                    }
+                }
             </div>
 
             <div class="wishlist-sidebar">
