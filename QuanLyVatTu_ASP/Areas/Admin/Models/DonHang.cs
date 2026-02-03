@@ -14,7 +14,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column("MaNhanVien")]
         public int? NhanVienId { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn ngày đặt hàng")]
         [Column(TypeName = "datetime")]
         public DateTime NgayDat { get; set; } = DateTime.Now;
 

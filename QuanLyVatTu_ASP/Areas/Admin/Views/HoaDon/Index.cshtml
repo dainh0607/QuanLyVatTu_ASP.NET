@@ -5,86 +5,154 @@
 }
 
 <div class="container-fluid py-4">
-    <div class="card shadow-sm border-0 rounded-4">
+    <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8">
+                    <form asp-action="Index" asp-controller="HoaDon" method="get" class="d-flex gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <input type="text" class="form-control ps-5 rounded-3"
+                                   placeholder="Tìm mã đơn, tên khách hàng..."
+                                   name="keyword" value="@ViewBag.Keyword">
+                            <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted"></i>
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Tìm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
         <div class="card-header bg-white py-3">
             <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-receipt-cutoff me-2"></i>Quản lý xuất hóa đơn</h5>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Mã ĐH</th>
-                        <th>Khách hàng</th>
-                        <th>Ngày đặt</th>
-                        <th class="text-end">Tổng tiền</th>
-                        <th class="text-center">Đã cọc</th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Orders)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
                         <tr>
-                            <td class="ps-4 fw-bold">@item.MaDonHang</td>
-                            <td>@item.TenKhachHang</td>
-                            <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
-                            <td class="text-end fw-bold">@item.TongTien.ToString("N0")</td>
-                            <td class="text-center">
-                                @if (item.TyLeCoc >= 10)
-                                {
-                                    <span class="badge bg-success bg-opacity-10 text-success px-3 rounded-pill">
-                                        @item.TyLeCoc.ToString("N0")%
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 rounded-pill" title="Yêu cầu tối thiểu 10%">
-                                        @item.TyLeCoc.ToString("N0")%
-                                    </span>
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (item.HoaDonId != null)
-                                {
-                                    <span class="badge bg-primary px-3 rounded-pill">Đã xuất HĐ</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary px-3 rounded-pill">Chưa xuất</span>
-                                }
-                            </td>
-                            <td class="text-center py-3">
-                                @if (item.HoaDonId != null)
-                                {
-                                    <a asp-action="Details" asp-route-id="@item.HoaDonId" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                                        <i class="bi bi-eye"></i> Xem HĐ
-                                    </a>
-                                }
-                                else
-                                {
-                                    @if (item.DuDieuKienXuat)
-                                    {
-                                        <form asp-action="CreateInvoice" asp-route-id="@item.DonHangId" method="post"
-                                              onsubmit="return confirm('Xác nhận xuất hóa đơn cho đơn @item.MaDonHang?');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm">
-                                                <i class="bi bi-printer"></i> Xuất HĐ
-                                            </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled title="Khách chưa cọc đủ 10%">
-                                            <i class="bi bi-lock"></i> Khóa
-                                        </button>
-                                    }
-                                }
-                            </td>
+                            <th class="ps-4">Mã ĐH</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th class="text-end">Tổng tiền</th>
+                            <th class="text-center">Đã cọc</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @if (Model.Orders.Any())
+                        {
+                            @foreach (var item in Model.Orders)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@item.MaDonHang</td>
+                                    <td>@item.TenKhachHang</td>
+                                    <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-end fw-bold">@item.TongTien.ToString("N0")</td>
+                                    <td class="text-center">
+                                        @if (item.TyLeCoc >= 10)
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success px-3 rounded-pill">
+                                                @item.TyLeCoc.ToString("N0")%
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger px-3 rounded-pill" title="Yêu cầu tối thiểu 10%">
+                                                @item.TyLeCoc.ToString("N0")%
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.HoaDonId != null)
+                                        {
+                                            <span class="badge bg-primary px-3 rounded-pill">Đã xuất HĐ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary px-3 rounded-pill">Chưa xuất</span>
+                                        }
+                                    </td>
+                                    <td class="text-center py-3">
+                                        @if (item.HoaDonId != null)
+                                        {
+                                            <a asp-action="Details" asp-route-id="@item.HoaDonId" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                <i class="bi bi-eye"></i> Xem HĐ
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @if (item.DuDieuKienXuat)
+                                            {
+                                                <form asp-action="CreateInvoice" asp-route-id="@item.DonHangId" method="post"
+                                                      onsubmit="return confirm('Xác nhận xuất hóa đơn cho đơn @item.MaDonHang?');" class="d-inline-block">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm">
+                                                        <i class="bi bi-printer"></i> Xuất HĐ
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled title="Khách chưa cọc đủ 10%">
+                                                    <i class="bi bi-lock"></i> Khóa
+                                                </button>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                                    Không tìm thấy đơn hàng nào cần xuất hóa đơn
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
+                    <div class="text-muted small">
+                        Hiển thị @(Model.Orders.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
+                        đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
+                        trong tổng <strong>@Model.TotalRecords</strong> bản ghi
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="me-2 fw-bold text-dark">Trang:</span>
+                        
+                        <nav>
+                            <ul class="pagination pagination-modern mb-0">
+                                <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">
+                                        <i class="fa-solid fa-chevron-left"></i> </a>
+                                </li>
+
+                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">
+                                        <i class="fa-solid fa-chevron-right"></i> </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

@@ -14,5 +14,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<string?> UpdateAsync(int id, NhanVienCreateEditViewModel model);
 
         Task<string?> DeleteAsync(int id);
+
+        Task<UserProfileViewModel?> GetByEmailAsync(string email);
     }
 }

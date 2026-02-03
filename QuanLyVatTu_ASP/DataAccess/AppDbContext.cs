@@ -14,7 +14,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
+                optionsBuilder.UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -27,6 +27,8 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public DbSet<HoaDon> HoaDons { get; set; }
         public DbSet<ChiTietHoaDon> ChiTietHoaDons { get; set; }
+        public DbSet<DanhGia> DanhGias { get; set; }
+        public DbSet<TuongTacDanhGia> TuongTacDanhGias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -165,6 +167,45 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.ToTable("ChiTietHoaDon");
                 entity.Property(p => p.ThanhTien).HasComputedColumnSql("[SoLuong] * [DonGia]", stored: true);
                 entity.HasOne(d => d.VatTu).WithMany().HasForeignKey(d => d.MaVatTu).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- 10. DanhGia ---
+            modelBuilder.Entity<DanhGia>(entity =>
+            {
+                entity.ToTable("DanhGia");
+                entity.Property(e => e.NgayDanhGia).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.LuotThich).HasDefaultValue(0);
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.DanhGias)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict); 
+
+                entity.HasOne(d => d.VatTu)
+                    .WithMany(p => p.DanhGias)
+                    .HasForeignKey(d => d.MaVatTu)
+                    .OnDelete(DeleteBehavior.Cascade); // Xóa SP thì xóa luôn đánh giá
+            });
+
+            // --- 11. TuongTacDanhGia ---
+            modelBuilder.Entity<TuongTacDanhGia>(entity =>
+            {
+                entity.ToTable("TuongTacDanhGia");
+                entity.Property(e => e.NgayTuongTac).HasDefaultValueSql("GETDATE()");
+
+                // Composite key for uniqueness if needed, or just unique index
+                // Mỗi người chỉ được tương tác 1 lần với 1 đánh giá (Like/Dislike switch)
+                entity.HasIndex(e => new { e.MaDanhGia, e.MaKhachHang }).IsUnique();
+
+                entity.HasOne(d => d.DanhGia)
+                    .WithMany(p => p.TuongTacDanhGias)
+                    .HasForeignKey(d => d.MaDanhGia)
+                    .OnDelete(DeleteBehavior.Cascade); // Xóa đánh giá thì xóa tương tác
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.TuongTacDanhGias)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict); 
             });
         }
     }

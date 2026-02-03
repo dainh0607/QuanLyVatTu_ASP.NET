@@ -45,5 +45,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [ForeignKey("MaNhaCungCap")]
         public virtual NhaCungCap? NhaCungCap { get; set; }
+
+        public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
     }
 }

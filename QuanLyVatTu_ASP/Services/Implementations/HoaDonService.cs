@@ -15,11 +15,28 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             _context = context;
         }
 
-        public async Task<HoaDonViewModel> GetOrdersForIndexAsync()
+        public async Task<HoaDonViewModel> GetOrdersForIndexAsync(string keyword, int page, int pageSize)
         {
-            var orders = await _context.DonHang
+            if (page < 1) page = 1;
+            
+            var query = _context.DonHang
                 .Include(d => d.KhachHang)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                keyword = keyword.ToLower();
+                query = query.Where(d => 
+                    (d.MaHienThi != null && d.MaHienThi.ToLower().Contains(keyword)) ||
+                    (d.KhachHang != null && d.KhachHang.HoTen.ToLower().Contains(keyword)));
+            }
+            
+            var totalRecords = await query.CountAsync();
+
+            var orders = await query
                 .OrderByDescending(d => d.NgayTao)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(d => new HoaDonViewModel.OrderForItem
                 {
                     DonHangId = d.ID,
@@ -42,7 +59,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 if (item.HoaDonId == 0) item.HoaDonId = null;
             }
 
-            return new HoaDonViewModel { Orders = orders };
+            return new HoaDonViewModel 
+            { 
+                Orders = orders,
+                PageIndex = page,
+                PageSize = pageSize,
+                TotalRecords = totalRecords
+            };
         }
 
         public async Task<(string? Error, int NewInvoiceId)> CreateInvoiceFromOrderAsync(int donHangId)

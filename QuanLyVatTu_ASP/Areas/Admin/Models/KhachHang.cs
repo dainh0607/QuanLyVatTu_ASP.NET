@@ -26,6 +26,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(255)")]
         public string? DiaChi { get; set; }
 
+        [Column(TypeName = "varchar(255)")]
+        public string? AnhDaiDien { get; set; }
+
         [Required(ErrorMessage = "Vui lòng nhập tài khoản")]
         [Column(TypeName = "varchar(50)")]
         public string TaiKhoan { get; set; } = null!;
@@ -35,5 +38,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string MatKhau { get; set; } = null!;
 
         public bool DangNhapGoogle { get; set; } = false;
+
+        public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+        public virtual ICollection<TuongTacDanhGia> TuongTacDanhGias { get; set; } = new List<TuongTacDanhGia>();
     }
 }
