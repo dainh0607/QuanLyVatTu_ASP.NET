@@ -18,13 +18,24 @@
             <div class="col-lg-5 col-md-6">
                 <div class="product-gallery">
                     <div class="main-image mb-3 border rounded overflow-hidden position-relative">
-                        <img src="https://placehold.co/600x600?text=@Model.TenVatTu" id="currentImg" class="img-fluid w-100" alt="@Model.TenVatTu" style="object-fit: cover; aspect-ratio: 1/1;">
+                       <img src="/user/images/@($"{Model.TenVatTu}.jpg")"alt="@Model.TenVatTu"     class="img-fluid w-100"     style="object-fit: cover; aspect-ratio: 1/1;" /> 
                     </div>
                     <div class="d-flex gap-2 thumbnail-list">
-                        <img src="https://placehold.co/100x100?text=1" class="img-thumbnail active-thumb" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=2" class="img-thumbnail" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=3" class="img-thumbnail" onclick="changeImage(this)">
-                        <img src="https://placehold.co/100x100?text=4" class="img-thumbnail" onclick="changeImage(this)">
+                       <img src="/user/images/@($"{Model.TenVatTu}.jpg")" 
+                                class="img-thumbnail active-thumb" 
+                                onclick="changeImage(this)" 
+                                alt="@Model.TenVatTu">
+
+                            @if (ViewBag.SanPhamLienQuan != null)
+                            {
+                                foreach (var item in (IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>)ViewBag.SanPhamLienQuan)
+                                {
+                                    <img src="/user/images/@($"{item.TenVatTu}.jpg")" 
+                                        class="img-thumbnail" 
+                                        onclick="changeImage(this)" 
+                                        alt="@item.TenVatTu">
+                                }
+                            }
                     </div>
                 </div>
             </div>
@@ -134,20 +145,25 @@
                 }
                 @if (relatedProducts != null && relatedProducts.Any())
                 {
-                    @foreach(var item in relatedProducts)
+                   
+                    foreach (var item in (IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>)ViewBag.SanPhamLienQuan)
                     {
                         <div class="col">
                             <div class="card h-100 border-0 shadow-sm product-card-hover">
-                                <div class="position-relative overflow-hidden rounded-top">
-                                    <!-- Sử dụng placeholder vì chưa có trường ảnh trong DB -->
-                                    <img src="https://placehold.co/300x200?text=@System.Net.WebUtility.UrlEncode(item.TenVatTu)" class="card-img-top" alt="@item.TenVatTu" style="height: 200px; object-fit: cover;">
+                                <div class="position-relative overflow-hidden rounded-top bg-light" style="aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;">
+                                    <img src="/user/images/@($"{item.TenVatTu}.jpg")" 
+                                        class="w-100 h-100" 
+                                        alt="@item.TenVatTu" 
+                                        style="object-fit: contain; padding: 5px;">
                                 </div>
+                                
                                 <div class="card-body">
                                     <h6 class="card-title fw-bold text-truncate" title="@item.TenVatTu">@item.TenVatTu</h6>
                                     <p class="card-text text-warning fw-bold">@(item.GiaBan?.ToString("N0") ?? "0")đ</p>
                                 </div>
+                                
                                 <div class="card-footer bg-transparent border-0 pb-3">
-                                    <a href="/SanPham/ProductDetail/@item.ID" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
+                                    <a asp-action="ProductDetail" asp-route-id="@item.ID" class="btn btn-light w-100 fw-bold">Xem chi tiết</a>
                                 </div>
                             </div>
                         </div>

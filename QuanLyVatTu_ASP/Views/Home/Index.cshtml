@@ -54,12 +54,22 @@
         <div class="row g-3">
             @if(featureCategories != null && featureCategories.Any())
             {
+               
                 foreach(var cat in featureCategories)
                 {
-                    <div class="col-md-3 col-6">
-                        <a href="/SanPham?loaiId=@cat.ID" class="d-block text-center">
-                            <img src="https://placehold.co/400x200?text=@cat.TenLoaiVatTu" class="img-fluid rounded-3 mb-2" style="height: 200px; object-fit: cover; width:100%">
-                            <h6 class="fw-bold text-dark mt-2">@cat.TenLoaiVatTu</h6>
+                                    <div class="col-md-3 col-6 mb-4">
+                        <a href="/SanPham?loaiId=@cat.ID" class="d-block text-center text-decoration-none category-item">
+                    
+                            <div class="category-img-wrapper bg-light rounded-3 mb-2" 
+                                style="aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;">
+                                
+                                <img src="/user/images/@($"{cat.TenLoaiVatTu}.jpg")" 
+                                    class="img-fluid" 
+                                    alt="@cat.TenLoaiVatTu"
+                                    style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+
+                            <h6 class="fw-bold text-dark mt-2 mb-0">@cat.TenLoaiVatTu</h6>
                             <small class="text-muted">Xem ngay</small>
                         </a>
                     </div>
@@ -88,7 +98,10 @@
                             <span class="discount-badge">-15%</span>
                             
                             <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
-                                <img src="https://placehold.co/300x300?text=@product.TenVatTu" alt="@product.TenVatTu" loading="lazy" />
+                                 <img src="/user/images/@($"{product.TenVatTu}.jpg")" 
+                                    alt="@product.TenVatTu" 
+                                    style="max-width: 100%; max-height: 100%; object-fit: contain;" 
+                                    loading="lazy" />
                             </a>
                         </div>
 

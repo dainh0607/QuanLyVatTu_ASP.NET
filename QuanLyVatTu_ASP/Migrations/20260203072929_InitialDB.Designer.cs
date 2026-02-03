@@ -12,7 +12,7 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260202135441_InitialDB")]
+    [Migration("20260203072929_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
