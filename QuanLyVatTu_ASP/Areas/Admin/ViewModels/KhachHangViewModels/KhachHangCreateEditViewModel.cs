@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
 {
@@ -36,5 +37,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
 
         [Display(Name = "Mã khách hàng")]
         public string MaHienThi { get; set; } = "Tự động tạo";
+
+        // Upload ảnh đại diện
+        [Display(Name = "Ảnh đại diện")]
+        public IFormFile? AnhDaiDienFile { get; set; }
+
+        // Đường dẫn ảnh hiện tại (dùng khi Edit)
+        public string? AnhDaiDien { get; set; }
     }
 }

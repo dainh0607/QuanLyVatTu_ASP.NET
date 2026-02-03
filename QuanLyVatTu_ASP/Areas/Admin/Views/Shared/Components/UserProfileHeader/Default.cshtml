@@ -21,11 +21,25 @@
             <div class="small">@Model.VaiTro</div>
         </div>
         <div class="avatar-wrapper">
-            <img src="@Model.Avatar" alt="@Model.HoTen" 
-                 class="rounded-circle border" 
-                 width="40" height="40" 
-                 style="object-fit: cover;"
-                 onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.HoTen)&background=random'" />
+            @if (!string.IsNullOrEmpty(Model.Avatar))
+            {
+                <img src="@Model.Avatar" alt="@Model.HoTen" 
+                     class="rounded-circle border" 
+                     width="40" height="40" 
+                     style="object-fit: cover;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="rounded-circle border bg-secondary d-none align-items-center justify-content-center" 
+                     style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-user text-white"></i>
+                </div>
+            }
+            else
+            {
+                <div class="rounded-circle border bg-secondary d-flex align-items-center justify-content-center" 
+                     style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-user text-white"></i>
+                </div>
+            }
         </div>
     </div>
 }

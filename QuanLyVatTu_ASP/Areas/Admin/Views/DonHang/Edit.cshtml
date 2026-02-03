@@ -61,7 +61,12 @@
                                                 <option value="Đã xác nhận">Đã xác nhận</option>
                                             }
 
-                                            <option value="Đang xử lý">Đang xử lý</option>
+                                            @* Đang xử lý: chỉ hiển thị nếu chưa đến Đang giao *@
+                                            @if (Model.TrangThai != "Đang giao")
+                                            {
+                                                <option value="Đang xử lý">Đang xử lý</option>
+                                            }
+
                                             <option value="Đang giao">Đang giao</option>
                                             <option value="Đã giao">Đã giao</option>
 

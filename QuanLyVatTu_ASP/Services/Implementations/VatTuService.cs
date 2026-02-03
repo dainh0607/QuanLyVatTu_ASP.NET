@@ -83,6 +83,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 GiaNhap = vt.GiaNhap,
                 GiaBan = vt.GiaBan,
                 SoLuongTon = vt.SoLuongTon,
+                HinhAnh = vt.HinhAnh,
 
                 // Cập nhật lại tên biến theo đúng SQL
                 MaLoaiVatTu = vt.MaLoaiVatTu,
@@ -108,6 +109,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 GiaNhap = model.GiaNhap,
                 GiaBan = model.GiaBan,
                 SoLuongTon = model.SoLuongTon,
+                HinhAnh = model.HinhAnh,
 
                 MaLoaiVatTu = model.MaLoaiVatTu,
                 MaNhaCungCap = model.MaNhaCungCap,
@@ -136,6 +138,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             vt.GiaNhap = model.GiaNhap;
             vt.GiaBan = model.GiaBan;
             vt.SoLuongTon = model.SoLuongTon;
+
+            // Cập nhật hình ảnh nếu có
+            if (!string.IsNullOrEmpty(model.HinhAnh))
+            {
+                vt.HinhAnh = model.HinhAnh;
+            }
 
             vt.MaLoaiVatTu = model.MaLoaiVatTu;
             vt.MaNhaCungCap = model.MaNhaCungCap;

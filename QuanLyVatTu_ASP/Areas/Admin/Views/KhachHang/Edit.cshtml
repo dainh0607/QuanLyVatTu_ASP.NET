@@ -14,9 +14,10 @@
                     </h3>
                 </div>
                 <div class="card-body p-5">
-                    <form asp-action="Edit" asp-controller="KhachHang" asp-route-id="@Model.Id" method="post">
+                    <form asp-action="Edit" asp-controller="KhachHang" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="AnhDaiDien" />
 
                         <div class="row g-4">
                             <div class="col-lg-8">
@@ -45,6 +46,29 @@
                                     <label asp-for="SoDienThoai" class="form-label fw-semibold">Số điện thoại</label>
                                     <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" />
                                     <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>
+                                    <input asp-for="AnhDaiDienFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
+                                    <small class="text-muted">Chọn ảnh mới để thay thế (hoặc bỏ qua để giữ nguyên)</small>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Ảnh hiện tại</label>
+                                    <div class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
+                                        @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                                        {
+                                            <img src="@Model.AnhDaiDien" alt="Ảnh đại diện" class="img-fluid rounded" style="max-height: 100px;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Chưa có ảnh</span>
+                                        }
+                                    </div>
                                 </div>
                             </div>
 

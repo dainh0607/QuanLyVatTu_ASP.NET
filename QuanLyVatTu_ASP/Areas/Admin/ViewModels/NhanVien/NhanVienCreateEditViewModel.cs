@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien
 {
@@ -49,5 +50,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien
         // Hiển thị mã nhân viên (chỉ đọc)
         [Display(Name = "Mã nhân viên")]
         public string MaHienThi { get; set; } = "Tự động tạo";
+
+        // Upload ảnh đại diện
+        [Display(Name = "Ảnh đại diện")]
+        public IFormFile? AnhDaiDienFile { get; set; }
+
+        // Đường dẫn ảnh hiện tại (dùng khi Edit)
+        public string? AnhDaiDien { get; set; }
     }
 }

@@ -70,7 +70,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 Email = kh.Email,
                 SoDienThoai = kh.SoDienThoai,
                 DiaChi = kh.DiaChi,
-                TaiKhoan = kh.TaiKhoan
+                TaiKhoan = kh.TaiKhoan,
+                AnhDaiDien = kh.AnhDaiDien
             };
         }
 
@@ -95,6 +96,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 SoDienThoai = model.SoDienThoai ?? "",
                 DiaChi = model.DiaChi ?? "",
                 TaiKhoan = model.TaiKhoan,
+                AnhDaiDien = model.AnhDaiDien,
 
                 // MatKhau = BCryptNet.HashPassword(model.MatKhau),
                 MatKhau = model.MatKhau ?? "",
@@ -128,6 +130,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             kh.SoDienThoai = model.SoDienThoai ?? "";
             kh.DiaChi = model.DiaChi ?? "";
             kh.TaiKhoan = model.TaiKhoan;
+            
+            // Cập nhật ảnh nếu có
+            if (!string.IsNullOrEmpty(model.AnhDaiDien))
+            {
+                kh.AnhDaiDien = model.AnhDaiDien;
+            }
 
             if (!string.IsNullOrEmpty(model.MatKhau))
             {

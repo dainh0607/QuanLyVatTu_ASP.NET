@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu;
+using QuanLyVatTu_ASP.Helpers;
 using QuanLyVatTu_ASP.Services.Interfaces;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
@@ -11,10 +12,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     public class VatTuController : AdminBaseController
     {
         private readonly IVatTuService _vatTuService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public VatTuController(IVatTuService vatTuService)
+        public VatTuController(IVatTuService vatTuService, IWebHostEnvironment webHostEnvironment)
         {
             _vatTuService = vatTuService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // Hàm hỗ trợ load Dropdown
@@ -59,6 +62,13 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Xử lý upload ảnh
+                if (model.HinhAnhFile != null)
+                {
+                    model.HinhAnh = await FileUploadHelper.UploadFileAsync(
+                        model.HinhAnhFile, _webHostEnvironment.WebRootPath, "images/vattu");
+                }
+
                 var error = await _vatTuService.CreateAsync(model);
 
                 if (error != null)
@@ -96,6 +106,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                // Xử lý upload ảnh mới
+                if (model.HinhAnhFile != null)
+                {
+                    // Xóa ảnh cũ (nếu có)
+                    FileUploadHelper.DeleteFile(model.HinhAnh, _webHostEnvironment.WebRootPath);
+                    
+                    // Upload ảnh mới
+                    model.HinhAnh = await FileUploadHelper.UploadFileAsync(
+                        model.HinhAnhFile, _webHostEnvironment.WebRootPath, "images/vattu");
+                }
+
                 var error = await _vatTuService.UpdateAsync(id, model);
 
                 if (error != null)

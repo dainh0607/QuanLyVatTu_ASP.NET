@@ -75,7 +75,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 SoDienThoai = nv.SoDienThoai,
                 Email = nv.Email,
                 TaiKhoan = nv.TaiKhoan,
-                VaiTro = nv.VaiTro
+                VaiTro = nv.VaiTro,
+                AnhDaiDien = nv.AnhDaiDien
             };
         }
 
@@ -103,6 +104,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 Email = model.Email,
                 TaiKhoan = model.TaiKhoan,
                 VaiTro = model.VaiTro,
+                AnhDaiDien = model.AnhDaiDien,
                 NgayTao = DateTime.Now,
 
                 // MatKhau = BCryptNet.HashPassword(model.MatKhau)
@@ -139,6 +141,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             nhanVien.Email = model.Email;
             nhanVien.TaiKhoan = model.TaiKhoan;
             nhanVien.VaiTro = model.VaiTro;
+            
+            // Cập nhật ảnh nếu có
+            if (!string.IsNullOrEmpty(model.AnhDaiDien))
+            {
+                nhanVien.AnhDaiDien = model.AnhDaiDien;
+            }
 
             if (!string.IsNullOrEmpty(model.MatKhau))
             {
@@ -176,8 +184,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 Id = user.ID,
                 HoTen = user.HoTen,
                 VaiTro = user.VaiTro,
-                // Hardcode avatar or use placeholder
-                Avatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(user.HoTen)}&background=random&size=128"
+                // Lấy ảnh từ DB, nếu không có thì để trống
+                Avatar = user.AnhDaiDien ?? string.Empty
             };
         }
 
