@@ -110,23 +110,25 @@
                                 </td>
                                 <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                                 <td class="text-center py-3">
+                                    <div class="actions-wrapper">
                                         <a asp-controller="ChiTietDonHang" asp-action="Details" asp-route-id="@item.ID"
-                                           class="btn btn-outline-info btn-sm text-black me-1" title="Chi tiết">
+                                           class="action-btn action-btn-view" title="Chi tiết">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a asp-action="Edit" asp-route-id="@item.ID"
-                                           class="btn btn-outline-warning btn-sm text-black me-1" title="Sửa">
+                                           class="action-btn action-btn-edit" title="Sửa">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
                                         <form asp-action="Delete" asp-route-id="@item.ID" method="post" class="d-inline"
                                               onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-outline-danger btn-sm text-black" title="Xóa">
+                                            <button type="submit" class="action-btn action-btn-delete" title="Xóa">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+                                    </div>
                                 </td>
                             </tr>
                         }

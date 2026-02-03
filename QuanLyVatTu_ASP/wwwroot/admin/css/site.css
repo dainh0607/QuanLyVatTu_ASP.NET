@@ -143,3 +143,70 @@ body {
     color: #adb5bd;
     cursor: not-allowed;
 }
+
+/* --- Icon-Only Action Buttons (Minimalist SaaS Style) --- */
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Edit - Blue */
+.action-btn-edit {
+    color: #3b82f6;
+}
+
+.action-btn-edit:hover {
+    color: #2563eb;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* View - Gray */
+.action-btn-view {
+    color: #6b7280;
+}
+
+.action-btn-view:hover {
+    color: #4b5563;
+    background-color: rgba(107, 114, 128, 0.1);
+}
+
+/* Delete - Soft Red */
+.action-btn-delete {
+    color: #ef4444;
+}
+
+.action-btn-delete:hover {
+    color: #dc2626;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Actions Container */
+.actions-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.actions-wrapper form {
+    display: inline-flex;
+}
