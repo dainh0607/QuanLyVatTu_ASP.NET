@@ -15,7 +15,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             _context = context;
         }
 
-        public async Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize)
+        public async Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, string status, int page, int pageSize)
         {
             if (page < 1) page = 1;
 
@@ -32,6 +32,19 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     (x.MaHienThi != null && x.MaHienThi.ToLower().Contains(keyword)) ||
                     (x.GhiChu != null && x.GhiChu.ToLower().Contains(keyword)) ||
                     (x.KhachHang != null && x.KhachHang.HoTen.ToLower().Contains(keyword)));
+            }
+
+            if (!string.IsNullOrEmpty(status) && status != "Tất cả")
+            {
+                if (status == "Chưa thanh toán")
+                {
+                    // Lọc các đơn chưa có trạng thái "Đã thanh toán"
+                    query = query.Where(x => x.TrangThai != "Đã thanh toán");
+                }
+                else
+                {
+                    query = query.Where(x => x.TrangThai == status);
+                }
             }
 
             var total = await query.CountAsync();

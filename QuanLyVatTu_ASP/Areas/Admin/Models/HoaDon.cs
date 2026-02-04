@@ -48,14 +48,14 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string TrangThai { get; set; } = "Đã thanh toán";
 
         [ForeignKey("MaDonHang")]
-        public DonHang DonHang { get; set; } = null!;
+        public virtual DonHang DonHang { get; set; } = null!;
 
         [ForeignKey("MaNhanVien")]
-        public NhanVien NhanVien { get; set; } = null!;
+        public virtual NhanVien NhanVien { get; set; } = null!;
 
         [ForeignKey("MaKhachHang")]
-        public KhachHang KhachHang { get; set; } = null!;
+        public virtual KhachHang KhachHang { get; set; } = null!;
 
-        public ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; } = new List<ChiTietHoaDon>(); 
+        public virtual ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; } = new List<ChiTietHoaDon>(); 
     }
 }

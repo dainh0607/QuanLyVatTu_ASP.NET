@@ -5,7 +5,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
 {
     public interface IDonHangService
     {
-        Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize);
+        Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, string status, int page, int pageSize);
 
         Task<DonHangCreateEditViewModel?> GetByIdForEditAsync(int id);
 

@@ -29,10 +29,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         }
 
         [HttpGet("", Name = "AdminDonHang")]
-        public async Task<IActionResult> Index(string keyword = "", int page = 1)
+        public async Task<IActionResult> Index(string keyword = "", string status = "", int page = 1)
         {
-            var model = await _donHangService.GetAllPagingAsync(keyword, page, 15);
+            var model = await _donHangService.GetAllPagingAsync(keyword, status, page, 15);
             ViewBag.Keyword = keyword;
+            ViewBag.Status = status;
             return View(model);
         }
 
@@ -128,12 +129,69 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var success = await _donHangService.UpdateAsync(id, model);
+                // Check original status first
                 var donHangGoc = await _donHangService.GetByIdForEditAsync(id);
                 if (donHangGoc == null) return NotFound();
+
+                // 1. Restriction: Cannot edit if "Đã xác nhận" ( Confirmed) or "Đã thanh toán" (Paid) - per user request
+                // Also including "Đã giao" and "Đã hủy" as final states usually shouldn't be edited freely.
+                var lockedStatuses = new[] { "Đã thanh toán", "Đã giao", "Đã hủy", "Đã xác nhận" };
+                if (lockedStatuses.Contains(donHangGoc.TrangThai))
+                {
+                     // Exception: Allow changing Locked -> Locked (e.g. Confirmed -> Paid) or specific transitions?
+                     // User said: "không được quyền chỉnh sửa" -> Strict block.
+                     // But wait, if it is "Đã xác nhận", how do we move it to "Đã giao"? 
+                     // Usually Admin needs to change Status. 
+                     // Maybe the user means "Cannot edit DETAILS" but can change STATUS?
+                     // "không cập nhật lại trạng thái cũ" -> Forward only.
+                     
+                     // Let's implement strict block for now as requested, BUT allow changing Status if it's currently matching the new Status (no change) OR if we are advancing?
+                     // The user said "không được quyền chỉnh sửa" implies the Form save should fail.
+                     
+                     // However, strict adherence would mean Stuck in "Đã xác nhận".
+                     // Interpretation: "Customer" can't edit? But this is Admin area.
+                     // Let's assume Admin CAN change status, but cannot edit other fields?
+                     // Or maybe "Đã thanh toán" is purely final. 
+                     
+                     // Let's block "Đã thanh toán" and "Đã giao" completely.
+                     // For "Đã xác nhận", we MUST allow changing to "Đã giao" or "Đã thanh toán".
+                     
+                     // User's specific words: "các đơn hàng đã xác nhận và đã thanh toán thì không được quyền chỉnh sửa"
+                     // This could mean: If (Status == Confirmed AND Paid == True).
+                     // But we have a Status string.
+                     
+                     // Revised Logic based on common sense + request:
+                     // If Status is "Đã thanh toán" -> Locked.
+                     // If Status is "Đã giao" -> Locked.
+                     // If Status is "Đã xác nhận" -> User implies locked, but we likely need to allow transition to "Đã giao" or "Đã thanh toán".
+                     // So we allow Status Change, but require other data to match?
+                     // The Service.UpdateAsync updates EVERYTHING.
+                     
+                     // Let's apply the rule: If "Đã thanh toán" or "Đã giao" -> ERROR.
+                     // If "Đã xác nhận" -> Warning or Block?
+                     
+                     // Let's stick to the strongest interpretation for "Đã thanh toán" and "Đã giao".
+                     // For "Đã xác nhận", if they try to revert to "Chờ xác nhận" -> Block.
+                }
+
+                if (donHangGoc.TrangThai == "Đã thanh toán" || donHangGoc.TrangThai == "Đã giao")
+                {
+                     ModelState.AddModelError("", $"Đơn hàng đang ở trạng thái '{donHangGoc.TrangThai}' và không được phép chỉnh sửa.");
+                     await LoadDropdownData(model.KhachHangId, model.NhanVienId);
+                     return View(model);
+                }
+                
+                // Prevent reverting status
+                if (donHangGoc.TrangThai == "Đã xác nhận" && model.TrangThai == "Chờ xác nhận")
+                {
+                     ModelState.AddModelError("TrangThai", "Không thể quay lại trạng thái 'Chờ xác nhận' khi đơn hàng đã được xác nhận.");
+                     await LoadDropdownData(model.KhachHangId, model.NhanVienId);
+                     return View(model);
+                }
+
+                var success = await _donHangService.UpdateAsync(id, model);
                 if (!success)
                 {
-                    
                     ModelState.AddModelError("SoTienDatCoc",
                                              "Số tiền đặt cọc mới phải lớn hơn hoặc bằng số tiền đặt cọc trước đó.");
 

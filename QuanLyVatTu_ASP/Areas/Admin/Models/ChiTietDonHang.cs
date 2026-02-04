@@ -30,9 +30,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public decimal ThanhTien { get; set; }
 
         [ForeignKey("MaDonHang")]
-        public DonHang DonHang { get; set; } = null!;
+        public virtual DonHang DonHang { get; set; } = null!;
 
         [ForeignKey("MaVatTu")]
-        public VatTu VatTu { get; set; } = null!;
+        public virtual VatTu VatTu { get; set; } = null!;
     }
 }

@@ -25,6 +25,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(100)")]
         public string? Email { get; set; }
 
-        public ICollection<VatTu> VatTus { get; set; } = new List<VatTu>();
+        public virtual ICollection<VatTu> VatTus { get; set; } = new List<VatTu>();
     }
 }

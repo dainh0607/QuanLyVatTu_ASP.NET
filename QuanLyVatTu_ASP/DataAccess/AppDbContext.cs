@@ -15,7 +15,8 @@ namespace QuanLyVatTu_ASP.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseLazyLoadingProxies()
+                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 

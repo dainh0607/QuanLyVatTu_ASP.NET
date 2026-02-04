@@ -15,6 +15,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(255)")]
         public string? MoTa { get; set; }
 
-        public ICollection<VatTu> VatTus { get; set; } = new List<VatTu>();
+        public virtual ICollection<VatTu> VatTus { get; set; } = new List<VatTu>();
     }
 }

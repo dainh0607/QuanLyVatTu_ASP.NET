@@ -26,9 +26,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal ThanhTien { get; set; }
         [ForeignKey("MaHoaDon")]
-        public HoaDon HoaDon { get; set; } = null!;
+        public virtual HoaDon HoaDon { get; set; } = null!;
 
         [ForeignKey("MaVatTu")]
-        public VatTu VatTu { get; set; } = null!;
+        public virtual VatTu VatTu { get; set; } = null!;
     }
 }

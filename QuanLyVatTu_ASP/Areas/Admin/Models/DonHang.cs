@@ -38,11 +38,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public string? GhiChu { get; set; }
 
         [ForeignKey("KhachHangId")]
-        public KhachHang? KhachHang { get; set; }
+        public virtual KhachHang? KhachHang { get; set; }
 
         [ForeignKey("NhanVienId")]
-        public NhanVien? NhanVien { get; set; }
+        public virtual NhanVien? NhanVien { get; set; }
 
-        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
+        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
     }
 }
