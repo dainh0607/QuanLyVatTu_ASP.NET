@@ -58,21 +58,21 @@
                                     <td class="text-truncate" style="max-width: 150px;">@(item.DiaChi ?? "—")</td>
                                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                                     <td class="text-center">
-                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <div class="actions-wrapper">
                                             <a asp-action="Edit" asp-controller="KhachHang" asp-route-id="@item.ID"
-                                               class="btn btn-link p-0 text-decoration-none" title="Chỉnh sửa">
-                                                <i class="bi bi-pencil" style="color: #0d6efd; font-size: 1.1rem;"></i>
+                                               class="action-btn action-btn-edit" title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
                                             </a>
 
-                                            <a href="#" class="btn btn-link p-0 text-decoration-none" title="Xem chi tiết">
-                                                 <i class="bi bi-eye" style="color: #6c757d; font-size: 1.1rem;"></i>
+                                            <a href="#" class="action-btn action-btn-view" title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
                                             </a>
 
                                             <form asp-action="Delete" asp-controller="KhachHang" asp-route-id="@item.ID" method="post"
-                                                  onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng: @item.HoTen?');" style="display:inline;">
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng: @item.HoTen?');">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-link p-0 text-decoration-none border-0 bg-transparent" title="Xóa">
-                                                    <i class="bi bi-trash" style="color: #dc3545; font-size: 1.1rem;"></i>
+                                                <button type="submit" class="action-btn action-btn-delete" title="Xóa">
+                                                    <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
                                         </div>
