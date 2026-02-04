@@ -1,0 +1,263 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang
+@{
+    ViewData["Title"] = "Liên hệ";
+    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+}
+
+<style>
+    .contact-page {
+        padding: 50px 0;
+        background-color: #f8f9fa;
+    }
+    
+    .contact-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .contact-info-col {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        color: white;
+        padding: 40px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 30px;
+    }
+    
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .info-content h5 {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+    
+    .info-content p {
+        margin-bottom: 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+
+    .form-col {
+        padding: 40px;
+    }
+    
+    .form-title {
+        color: #111827;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #d1d5db;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    }
+    
+    .btn-submit {
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        width: 100%;
+    }
+
+    .social-links {
+        margin-top: auto;
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    
+    .social-btn:hover {
+        background: white;
+        color: #0d6efd;
+        transform: translateY(-3px);
+    }
+</style>
+
+<div class="contact-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Liên hệ</li>
+            </ol>
+        </nav>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4 rounded-3 shadow-sm border-0" role="alert">
+                <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row g-0 contact-card">
+            <!-- Left Column: Contact Info -->
+            <div class="col-lg-5">
+                <div class="contact-info-col">
+                    <div class="mb-5">
+                        <h2 class="fw-bold mb-3">Thông tin liên hệ</h2>
+                        <p class="opacity-75">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy liên hệ với chúng tôi qua các kênh dưới đây.</p>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Địa chỉ</h5>
+                            <p>123 Đường Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Điện thoại</h5>
+                            <p>0302 370 432</p>
+                            <p>1900 1234 (Hotline)</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Email</h5>
+                            <p>dienmaykimlong@gmail.com</p>
+                            <p>support@vattustore.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Giờ làm việc</h5>
+                            <p>Thứ 2 - Thứ 7: 8:00 - 17:30</p>
+                            <p>Chủ nhật: Nghỉ</p>
+                        </div>
+                    </div>
+
+                    <div class="social-links pt-4">
+                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Feedback Form -->
+            <div class="col-lg-7">
+                <div class="form-col h-100">
+                    <h3 class="form-title">Gửi phản hồi & Khiếu nại</h3>
+                    <p class="text-muted mb-4">Bạn có thắc mắc hoặc gặp vấn đề về sản phẩm? Hãy điền vào form bên dưới.</p>
+
+                    <form action="/Home/Contact" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="fullName" value="@Model?.HoTen" required placeholder="Nhập họ tên của bạn">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" name="phone" value="@Model?.SoDienThoai" required placeholder="Nhập số điện thoại">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="@Model?.Email" placeholder="example@email.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Chủ đề</label>
+                            <select class="form-select form-control" name="subject">
+                                <option value="tu-van">Tư vấn sản phẩm</option>
+                                <option value="khieu-nai">Khiếu nại dịch vụ</option>
+                                <option value="bao-hanh">Yêu cầu bảo hành</option>
+                                <option value="hop-tac">Hợp tác kinh doanh</option>
+                                <option value="khac">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Nội dung <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="content" rows="5" required placeholder="Nhập nội dung phản hồi của bạn..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i> Gửi phản hồi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Section (Optional) -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="rounded-4 overflow-hidden shadow-sm border">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.660858485203!2d106.66627047585863!3d10.760613259483863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f277ca9f041%3A0xe53be03006dd977a!2zMjc3IMSQLiBOZ3V54buFbiBUcsOjaSwgUGjGsOG7nW5nIDIsIFF14bqtbiA1LCBI4buTIENow60gTWluaCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1709660858485!5m2!1svi!2s" 
+                            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,7 @@ namespace QuanLyVatTu_ASP.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private const string CART_KEY = "MY_CART";
+        private const string DIRECT_CART_KEY = "DIRECT_CART";
 
         public ThanhToanController(IUnitOfWork unitOfWork)
         {
@@ -18,9 +19,15 @@ namespace QuanLyVatTu_ASP.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(bool isBuyNow = false)
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+            // Prevent caching of this sensitive page
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            var cartKey = isBuyNow ? DIRECT_CART_KEY : CART_KEY;
+            var cart = HttpContext.Session.Get<List<CartItem>>(cartKey) ?? new List<CartItem>();
             
             // Nếu giỏ hàng trống, redirect về trang sản phẩm
             if (!cart.Any())
@@ -46,6 +53,7 @@ namespace QuanLyVatTu_ASP.Controllers
             }
 
             ViewBag.Cart = cart;
+            ViewBag.IsBuyNow = isBuyNow;
             ViewBag.Total = cart.Sum(x => x.ThanhTien);
 
             return View(khachHang);
@@ -57,9 +65,11 @@ namespace QuanLyVatTu_ASP.Controllers
             string soDienThoai, 
             string ghiChu,
             string paymentMethod = "cod",
-            string shippingMethod = "delivery")
+            string shippingMethod = "delivery",
+            bool isBuyNow = false)
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY);
+            var cartKey = isBuyNow ? DIRECT_CART_KEY : CART_KEY;
+            var cart = HttpContext.Session.Get<List<CartItem>>(cartKey);
             if (cart == null || !cart.Any()) 
             {
                 TempData["Warning"] = "Giỏ hàng của bạn đang trống.";
@@ -163,7 +173,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 TempData["MaHienThi"] = donHang.MaHienThi;
                 TempData["SoTienDatCoc"] = donHang.SoTienDatCoc.ToString(); // Pass deposit amount as string
 
-                HttpContext.Session.Remove(CART_KEY);
+                HttpContext.Session.Remove(cartKey);
 
                 // Redirect logic
                 if (donHang.SoTienDatCoc > 0)

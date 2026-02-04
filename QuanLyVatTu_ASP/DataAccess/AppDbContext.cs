@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseLazyLoadingProxies()
-                              .UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -33,6 +33,8 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<TuongTacDanhGia> TuongTacDanhGias { get; set; }
         public DbSet<YeuThich> YeuThichs { get; set; }
         public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
+        public DbSet<GioHang> GioHangs { get; set; }
+        public DbSet<ChiTietGioHang> ChiTietGioHangs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

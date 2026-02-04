@@ -12,19 +12,43 @@ namespace QuanLyVatTu_ASP.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private const string CART_KEY = "MY_CART";
+        private const string DIRECT_CART_KEY = "DIRECT_CART";
 
         public GioHangController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult GioHang()
+        public async Task<IActionResult> GioHang()
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+            var cart = await GetCartItemsSecureAsync();
 
             // Tính tổng tiền để hiển thị
             ViewBag.Total = cart.Sum(item => item.ThanhTien);
             return View(cart);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BuyNow(int productId, int quantity = 1)
+        {
+            // Buy Now keeps using logic session for immediate checkout
+            var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
+            if (vatTu == null) return Json(new { success = false, message = "Sản phẩm không tồn tại" });
+
+            var directCart = new List<CartItem>
+            {
+                new CartItem
+                {
+                    VatTuId = vatTu.ID,
+                    TenVatTu = vatTu.TenVatTu,
+                    DonGia = vatTu.GiaBan ?? 0,
+                    SoLuong = quantity,
+                    DonViTinh = vatTu.DonViTinh,
+                    HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}"
+                }
+            };
+            HttpContext.Session.Set(DIRECT_CART_KEY, directCart);
+            return Json(new { success = true });
         }
 
         [HttpPost]
@@ -33,100 +57,181 @@ namespace QuanLyVatTu_ASP.Controllers
             var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
             if (vatTu == null) return Json(new { success = false, message = "Sản phẩm không tồn tại" });
 
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
-            var existingItem = cart.FirstOrDefault(x => x.VatTuId == productId);
-
-            if (existingItem != null)
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            
+            if (khachHangId != null)
             {
-                existingItem.SoLuong += quantity;
+                // LOGGED IN: Use Database
+                var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+                if (gioHang == null)
+                {
+                    gioHang = new GioHang { MaKhachHang = khachHangId.Value };
+                    await _unitOfWork.GioHangRepository.AddAsync(gioHang);
+                    _unitOfWork.Save(); // Save to generate ID
+                }
+
+                // Check existing item
+                var chiTiet = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == productId);
+                if (chiTiet != null)
+                {
+                    chiTiet.SoLuong += quantity;
+                    // Ensure tracking or generic update
+                    // Since we loaded via navigation, Context tracks it. saving changes is enough? 
+                    // EF Core usually tracks connected entities.
+                     _unitOfWork.ChiTietGioHangRepository.Update(chiTiet);
+                }
+                else
+                {
+                    var newChiTiet = new ChiTietGioHang
+                    {
+                        MaGioHang = gioHang.ID,
+                        MaVatTu = productId,
+                        SoLuong = quantity
+                    };
+                     await _unitOfWork.ChiTietGioHangRepository.AddAsync(newChiTiet);
+                }
+                _unitOfWork.Save();
             }
             else
             {
-                cart.Add(new CartItem
+                // GUEST: Use Session
+                var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+                var existingItem = cart.FirstOrDefault(x => x.VatTuId == productId);
+
+                if (existingItem != null)
                 {
-                    VatTuId = vatTu.ID,
-                    TenVatTu = vatTu.TenVatTu,
-                    DonGia = vatTu.GiaBan ?? 0,
-                    SoLuong = quantity,
-                    DonViTinh = vatTu.DonViTinh,
-                    HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}"
-                });
+                    existingItem.SoLuong += quantity;
+                }
+                else
+                {
+                    cart.Add(new CartItem
+                    {
+                        VatTuId = vatTu.ID,
+                        TenVatTu = vatTu.TenVatTu,
+                        DonGia = vatTu.GiaBan ?? 0,
+                        SoLuong = quantity,
+                        DonViTinh = vatTu.DonViTinh,
+                        HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}"
+                    });
+                }
+                HttpContext.Session.Set(CART_KEY, cart);
             }
 
-            HttpContext.Session.Set(CART_KEY, cart);
+            // Return updated counts
+            var updatedCart = await GetCartItemsSecureAsync();
 
             return Json(new { 
                 success = true, 
                 message = "Đã thêm vào giỏ hàng!", 
-                cartCount = cart.Sum(x => x.SoLuong),
-                cartTotal = cart.Sum(x => x.ThanhTien)
+                cartCount = updatedCart.Sum(x => x.SoLuong),
+                cartTotal = updatedCart.Sum(x => x.ThanhTien)
             });
         }
 
-        /// <summary>
-        /// Xóa sản phẩm khỏi giỏ hàng (AJAX)
-        /// </summary>
         [HttpPost]
-        public IActionResult RemoveFromCart(int productId)
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.VatTuId == productId);
-            if (item != null)
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId != null)
             {
-                cart.Remove(item);
-                HttpContext.Session.Set(CART_KEY, cart);
+                var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+                if (gioHang != null)
+                {
+                    var item = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == productId);
+                    if (item != null)
+                    {
+                        _unitOfWork.ChiTietGioHangRepository.Delete(item);
+                        _unitOfWork.Save();
+                    }
+                }
             }
+            else
+            {
+                var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+                var item = cart.FirstOrDefault(x => x.VatTuId == productId);
+                if (item != null)
+                {
+                    cart.Remove(item);
+                    HttpContext.Session.Set(CART_KEY, cart);
+                }
+            }
+
+            var updatedCart = await GetCartItemsSecureAsync();
             return Json(new { 
                 success = true, 
                 message = "Đã xóa sản phẩm khỏi giỏ hàng",
-                cartCount = cart.Sum(x => x.SoLuong),
-                cartTotal = cart.Sum(x => x.ThanhTien)
+                cartCount = updatedCart.Sum(x => x.SoLuong),
+                cartTotal = updatedCart.Sum(x => x.ThanhTien)
             });
         }
 
-        /// <summary>
-        /// Cập nhật số lượng sản phẩm trong giỏ hàng (AJAX)
-        /// </summary>
         [HttpPost]
-        public IActionResult UpdateCart(int productId, int quantity)
+        public async Task<IActionResult> UpdateCart(int productId, int quantity)
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.VatTuId == productId);
-            if (item != null && quantity > 0)
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            decimal lineTotal = 0;
+
+            if (khachHangId != null)
             {
-                item.SoLuong = quantity;
-                HttpContext.Session.Set(CART_KEY, cart);
+                var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+                if (gioHang != null)
+                {
+                    var item = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == productId);
+                    if (item != null)
+                    {
+                         if (quantity > 0)
+                         {
+                             item.SoLuong = quantity;
+                             _unitOfWork.ChiTietGioHangRepository.Update(item);
+                             lineTotal = (decimal)(item.SoLuong * (item.VatTu?.GiaBan ?? 0));
+                         }
+                         else
+                         {
+                             _unitOfWork.ChiTietGioHangRepository.Delete(item);
+                         }
+                         _unitOfWork.Save();
+                    }
+                }
             }
-            else if (item != null && quantity <= 0)
+            else
             {
-                // Nếu số lượng = 0, xóa sản phẩm
-                cart.Remove(item);
-                HttpContext.Session.Set(CART_KEY, cart);
+                var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+                var item = cart.FirstOrDefault(x => x.VatTuId == productId);
+                if (item != null)
+                {
+                    if (quantity > 0)
+                    {
+                        item.SoLuong = quantity;
+                        HttpContext.Session.Set(CART_KEY, cart);
+                        lineTotal = item.ThanhTien;
+                    }
+                    else
+                    {
+                        cart.Remove(item);
+                        HttpContext.Session.Set(CART_KEY, cart);
+                    }
+                }
             }
+
+            var updatedCart = await GetCartItemsSecureAsync();
             return Json(new { 
                 success = true,
-                cartCount = cart.Sum(x => x.SoLuong),
-                cartTotal = cart.Sum(x => x.ThanhTien),
-                lineTotal = item?.ThanhTien ?? 0
+                cartCount = updatedCart.Sum(x => x.SoLuong),
+                cartTotal = updatedCart.Sum(x => x.ThanhTien),
+                lineTotal = lineTotal
             });
         }
 
-        /// <summary>
-        /// Cập nhật số lượng từ nút +/- (AJAX) - endpoint compatible với frontend hiện tại
-        /// </summary>
         [HttpPost]
-        public IActionResult UpdateQuantity(int productId, int quantity)
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
         {
-            return UpdateCart(productId, quantity);
+            return await UpdateCart(productId, quantity);
         }
 
-        /// <summary>
-        /// Lấy dữ liệu giỏ hàng cho dropdown (AJAX)
-        /// </summary>
         [HttpGet]
-        public IActionResult GetCartData()
+        public async Task<IActionResult> GetCartData()
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+            var cart = await GetCartItemsSecureAsync();
             return Json(new {
                 success = true,
                 items = cart.Select(x => new {
@@ -140,6 +245,29 @@ namespace QuanLyVatTu_ASP.Controllers
                 cartCount = cart.Sum(x => x.SoLuong),
                 cartTotal = cart.Sum(x => x.ThanhTien)
             });
+        }
+
+        private async Task<List<CartItem>> GetCartItemsSecureAsync()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId != null)
+            {
+                var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+                if (gioHang == null || gioHang.ChiTietGioHangs == null) return new List<CartItem>();
+                
+                return gioHang.ChiTietGioHangs.Select(ct => new CartItem
+                {
+                    VatTuId = ct.MaVatTu,
+                    TenVatTu = ct.VatTu?.TenVatTu,
+                    DonGia = ct.VatTu?.GiaBan ?? 0,
+                    SoLuong = ct.SoLuong,
+                    DonViTinh = ct.VatTu?.DonViTinh,
+                    HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
+                }).ToList();
+            }
+            
+            // Fallback to session
+            return HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
         }
         public async Task<IActionResult> Wishlist()
         {

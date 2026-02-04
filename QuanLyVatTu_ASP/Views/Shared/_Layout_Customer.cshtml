@@ -199,7 +199,7 @@
                         }
                         
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item rounded-3 py-2 text-danger" href="/Account/Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                        <li><a class="dropdown-item rounded-3 py-2 text-danger" href="javascript:void(0);" onclick="location.replace('/Account/Logout')"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                     </ul>
                 </div>
             }
@@ -232,7 +232,7 @@
                      </div>
                 </div>
                 <a class="nav-link py-3 text-dark fw-medium" href="/Customer/About">Giới thiệu</a>
-                <a class="nav-link py-3 text-dark fw-medium" href="/Contact">Liên hệ</a>
+                <a class="nav-link py-3 text-dark fw-medium" asp-controller="Home" asp-action="Contact">Liên hệ</a>
             </nav>
         </div>
     </div>

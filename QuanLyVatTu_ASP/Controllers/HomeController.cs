@@ -20,5 +20,24 @@ namespace QuanLyVatTu_ASP.Controllers
             // var featuredProducts = new List<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>();
             return View(featuredProducts);
         }
+        public async Task<IActionResult> Contact()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId != null)
+            {
+                var khachHang = await _unitOfWork.KhachHangRepository.GetByIdAsync(khachHangId.Value);
+                return View(khachHang);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Contact(string fullName, string email, string phone, string content)
+        {
+            // Xử lý gửi mail hoặc lưu database ở đây
+            // Tạm thời hiển thị thông báo thành công
+            TempData["Success"] = "Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi sớm nhất!";
+            return RedirectToAction("Contact");
+        }
     }
 }
