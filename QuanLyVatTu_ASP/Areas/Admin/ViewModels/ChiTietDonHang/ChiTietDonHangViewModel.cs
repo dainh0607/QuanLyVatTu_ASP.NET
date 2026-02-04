@@ -12,6 +12,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public List<VatTuSelectItem> DanhSachVatTu { get; set; } = new();
         public List<ChiTietDonHangItem> ChiTietDonHang { get; set; } = new();
         public decimal TongTien => ChiTietDonHang.Sum(x => x.ThanhTien);
+        
+        // Extended for Invoice Logic
+        public int? HoaDonId { get; set; }
+        public decimal? SoTienDatCoc { get; set; }
+        public bool DuDieuKienXuat => (SoTienDatCoc ?? 0) >= (TongTien * 0.1M) && TongTien > 0;
     }
 
     public class VatTuSelectItem

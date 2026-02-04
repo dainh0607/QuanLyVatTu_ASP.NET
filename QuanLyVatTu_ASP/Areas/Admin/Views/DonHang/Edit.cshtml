@@ -51,29 +51,13 @@
                                     else
                                     {
                                         <select asp-for="TrangThai" class="form-select form-select-lg rounded-3">
-                                            @if (Model.TrangThai == "Chờ xác nhận")
-                                            {
-                                                <option value="Chờ xác nhận">Chờ xác nhận</option>
-                                            }
-                                            
-                                            @if (Model.TrangThai == "Chờ xác nhận" || Model.TrangThai == "Đã xác nhận")
-                                            {
-                                                <option value="Đã xác nhận">Đã xác nhận</option>
-                                            }
-
-                                            @* Đang xử lý: chỉ hiển thị nếu chưa đến Đang giao *@
-                                            @if (Model.TrangThai != "Đang giao")
-                                            {
-                                                <option value="Đang xử lý">Đang xử lý</option>
-                                            }
-
-                                            <option value="Đang giao">Đang giao</option>
+                                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                                            <option value="Đã xác nhận">Đã xác nhận</option>
+                                            <option value="Đang xử lý">Đang xử lý</option>
                                             <option value="Đã giao">Đã giao</option>
-
-                                            @if (Model.TrangThai != "Đang xử lý" && Model.TrangThai != "Đang giao" && Model.TrangThai != "Đã giao")
-                                            {
-                                                <option value="Đã hủy">Đã hủy</option>
-                                            }
+                                            <option value="chưa thanh toán">chưa thanh toán</option>
+                                            <option value="Đã thanh toán">Đã thanh toán</option>
+                                            <option value="Đã hủy">Đã hủy</option>
                                         </select>
                                     }
                                 </div>

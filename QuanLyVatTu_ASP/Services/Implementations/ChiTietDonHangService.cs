@@ -58,6 +58,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var donHang = await _context.DonHang
                  .Include(d => d.KhachHang)
                  .FirstOrDefaultAsync(d => d.ID == maDonHang);
+
+            var hoaDonId = await _context.HoaDons
+                 .Where(h => h.MaDonHang == maDonHang)
+                 .Select(h => (int?)h.ID)
+                 .FirstOrDefaultAsync();
+
             return new ChiTietDonHangViewModel
             {
                 MaDonHang = maDonHang,
@@ -65,7 +71,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 NgayTao = donHang?.NgayTao,
                 DanhSachVatTu = dsVatTu,
                 ChiTietDonHang = chiTiet,
-                SearchTerm = search
+                SearchTerm = search,
+                HoaDonId = hoaDonId,
+                SoTienDatCoc = donHang?.SoTienDatCoc
             };
         }
 

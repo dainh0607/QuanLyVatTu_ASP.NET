@@ -52,6 +52,23 @@
                 <input type="text" name="q" placeholder="Tìm kiếm sản phẩm, danh mục..." class="search-input" />
             </form>
         </div>
+        
+        <!-- Admin Shortcut for authenticated employees/admins -->
+        <!-- Admin Shortcut for authenticated employees/admins -->
+        @if (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Employee" || Context.Session.GetString("UserName")?.Contains("Admin") == true)
+        {
+            <div class="ms-3 d-none d-md-block">
+                <a href="/Admin/DonHang" class="btn btn-outline-primary rounded-pill btn-sm fw-bold">
+                    <i class="fas fa-user-shield me-1"></i> Trang Quản Trị
+                </a>
+            </div>
+            <!-- Mobile Icon -->
+            <div class="d-md-none ms-2">
+                <a href="/Admin/DonHang" class="text-primary fs-4">
+                    <i class="fas fa-user-shield"></i>
+                </a>
+            </div>
+        }
 
         <!-- Action Icons -->
         <div class="header-actions d-flex align-items-center gap-3">
@@ -167,8 +184,20 @@
                             </div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item rounded-3 py-2" href="/Customer/Profile"><i class="fas fa-user-circle me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
-                        <li><a class="dropdown-item rounded-3 py-2" href="/Customer/Orders"><i class="fas fa-box-open me-2 text-primary"></i>Đơn hàng của tôi</a></li>
+                        
+                        @* Admin Link Logic: Check Role or Session/Claims *@
+                        @if (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Employee" || Context.Session.GetString("UserName")?.Contains("Admin") == true)
+                        {
+                            <li><a class="dropdown-item rounded-3 py-2 text-primary fw-bold" href="/Admin/DonHang"><i class="fas fa-user-shield me-2"></i>Trang Quản Trị</a></li>
+                        }
+                        
+                        @* Only show Customer Profile links if Role is Customer or Not Set (Legacy) AND it's not explicitly an Admin role *@
+                        @if (Context.Session.GetString("Role") != "Admin" && Context.Session.GetString("Role") != "Employee")
+                        {
+                            <li><a class="dropdown-item rounded-3 py-2" href="/Customer/Profile"><i class="fas fa-user-circle me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2" href="/Customer/Orders"><i class="fas fa-box-open me-2 text-primary"></i>Đơn hàng của tôi</a></li>
+                        }
+                        
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item rounded-3 py-2 text-danger" href="/Account/Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                     </ul>

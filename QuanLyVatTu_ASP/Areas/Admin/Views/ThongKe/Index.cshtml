@@ -206,9 +206,33 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px;
+            border: 0;
+            background-color: #f8f9fa; /* Matches bg-light */
+            border-radius: 0.5rem; /* Matches rounded-3 */
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px;
+            padding-left: 12px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+    </style>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Select2 for Customer Dropdown
+            $('select[name="khachHangId"]').select2({
+                placeholder: "Chọn khách hàng",
+                allowClear: true,
+                width: '100%'
+            });
+
             // Lấy dữ liệu từ ViewModel
             const chartLabels = @Html.Raw(Json.Serialize(Model.ChartLabels));
             const chartData = @Html.Raw(Json.Serialize(Model.ChartData));
