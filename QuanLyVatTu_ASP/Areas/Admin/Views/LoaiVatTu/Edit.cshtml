@@ -17,6 +17,7 @@
                     <form asp-action="Edit" asp-controller="LoaiVatTu" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
                             <div class="col-lg-8">

@@ -16,10 +16,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.VatTu
         public string DonViTinh { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập giá nhập")]
+        [Range(0, double.MaxValue, ErrorMessage = "Giá nhập phải lớn hơn hoặc bằng 0")]
         [Display(Name = "Giá nhập")]
         public decimal? GiaNhap { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập giá bán")]
+        [Range(0, double.MaxValue, ErrorMessage = "Giá bán phải lớn hơn hoặc bằng 0")]
         [Display(Name = "Giá bán")]
         public decimal? GiaBan { get; set; }
 

@@ -12,6 +12,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.LoaiVatTu
         public string TenLoaiVatTu { get; set; } = null!;
 
         [Display(Name = "Mô tả")]
+        [StringLength(255, ErrorMessage = "Mô tả không được vượt quá 255 ký tự")]
         public string? MoTa { get; set; }
 
         [Display(Name = "Mã loại")]

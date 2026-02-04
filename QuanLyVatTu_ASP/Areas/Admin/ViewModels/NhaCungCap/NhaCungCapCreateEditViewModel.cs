@@ -16,6 +16,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhaCungCap
         public string? Email { get; set; }
 
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải có 10 số và bắt đầu bằng 0")]
         [Display(Name = "Số điện thoại")]
         public string? SoDienThoai { get; set; }
 
