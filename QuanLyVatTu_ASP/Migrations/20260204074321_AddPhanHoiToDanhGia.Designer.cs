@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260204074321_AddPhanHoiToDanhGia")]
+    partial class AddPhanHoiToDanhGia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,32 +63,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.HasIndex("MaVatTu");
 
                     b.ToTable("ChiTietDonHang", (string)null);
-                });
-
-            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietGioHang", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("MaGioHang")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaVatTu")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SoLuong")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("MaGioHang");
-
-                    b.HasIndex("MaVatTu");
-
-                    b.ToTable("ChiTietGioHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietHoaDon", b =>
@@ -229,24 +206,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.HasIndex("NhanVienId");
 
                     b.ToTable("DonHang", (string)null);
-                });
-
-            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.GioHang", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("MaKhachHang")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("MaKhachHang");
-
-                    b.ToTable("GioHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDon", b =>
@@ -707,25 +666,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("VatTu");
                 });
 
-            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietGioHang", b =>
-                {
-                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.GioHang", "GioHang")
-                        .WithMany("ChiTietGioHangs")
-                        .HasForeignKey("MaGioHang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.VatTu", "VatTu")
-                        .WithMany()
-                        .HasForeignKey("MaVatTu")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GioHang");
-
-                    b.Navigation("VatTu");
-                });
-
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietHoaDon", b =>
                 {
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDon", "HoaDon")
@@ -780,17 +720,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("KhachHang");
 
                     b.Navigation("NhanVien");
-                });
-
-            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.GioHang", b =>
-                {
-                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
-                        .WithMany()
-                        .HasForeignKey("MaKhachHang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("KhachHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDon", b =>
@@ -896,11 +825,6 @@ namespace QuanLyVatTu_ASP.Migrations
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.DonHang", b =>
                 {
                     b.Navigation("ChiTietDonHangs");
-                });
-
-            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.GioHang", b =>
-                {
-                    b.Navigation("ChiTietGioHangs");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDon", b =>

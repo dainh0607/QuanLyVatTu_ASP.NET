@@ -37,6 +37,8 @@ namespace QuanLyVatTu_ASP.Controllers
                     d.SoSao,
                     // d.ChatLuongSanPham,
                     d.BinhLuan,
+                    d.PhanHoi,
+                    d.NgayPhanHoi,
                     d.LuotThich,
                     d.NgayDanhGia,
                     TenKhachHang = d.KhachHang!.HoTen ?? "Khách hàng",
@@ -175,6 +177,34 @@ namespace QuanLyVatTu_ASP.Controllers
 
             return Json(new { liked });
         }
+        // POST: DanhGia/Reply
+        [HttpPost]
+        public async Task<IActionResult> Reply([FromBody] ReplyRequest request)
+        {
+            // Check if user is Admin or Employee
+            var role = HttpContext.Session.GetString("Role");
+            var userName = HttpContext.Session.GetString("UserName");
+            
+            bool isAdmin = role == "Admin" || role == "Employee" || (userName?.Contains("Admin") ?? false);
+            
+            if (!isAdmin)
+            {
+                return Json(new { success = false, message = "Bạn không có quyền trả lời đánh giá" });
+            }
+
+            var danhGia = await _context.DanhGias.FindAsync(request.MaDanhGia);
+            if (danhGia == null)
+            {
+                return Json(new { success = false, message = "Đánh giá không tồn tại" });
+            }
+
+            danhGia.PhanHoi = request.NoiDung;
+            danhGia.NgayPhanHoi = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Đã gửi phản hồi!", ngayPhanHoi = danhGia.NgayPhanHoi });
+        }
     }
 
     // Request DTOs
@@ -189,5 +219,11 @@ namespace QuanLyVatTu_ASP.Controllers
     public class LikeRequest
     {
         public int MaDanhGia { get; set; }
+    }
+
+    public class ReplyRequest
+    {
+        public int MaDanhGia { get; set; }
+        public string NoiDung { get; set; }
     }
 }
