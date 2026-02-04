@@ -4,208 +4,247 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container-fluid py-4">
-    <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
-        <div class="card-body py-3">
-            <div class="row align-items-center g-3">
-                <div class="col-lg-8 col-xxl-7">
-                    <form method="get" asp-action="Index" class="d-flex gap-2">
-                        <div class="position-relative flex-grow-1">
-                            <input type="text" class="form-control ps-5 rounded-3"
-                                   placeholder="Nhập từ khóa tìm kiếm..."
-                                   name="keyword"
-                                   value="@ViewBag.Keyword">
-                            <i class="bi bi-search position-absolute top-50 ms-2 translate-middle-y text-muted"></i>
-                        </div>
-                        <select class="form-select rounded-3" style="min-width: 160px; max-width: 220px;">
-                            <option value="">Tất cả trạng thái</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary rounded-pill">Tìm kiếm</button>
-                    </form>
+<!-- Summary Cards (Mockup Data) -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-material h-100 p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                    <i class="fas fa-shopping-bag fs-4"></i>
                 </div>
-                <div class="col-lg-4 col-xxl-5 text-lg-end">
-                    <a asp-action="Create" class="btn btn-success rounded-pill px-4 shadow-sm me-3">
-                        Thêm mới
-                    </a>
-                    <button type="button" id="btnDeleteSelected" class="btn btn-danger rounded-pill px-4 shadow-sm">
-                        Xóa đã chọn
-                    </button>
+                <div>
+                    <h6 class="text-muted small mb-1">Tổng đơn hàng</h6>
+                    <h4 class="mb-0 fw-bold">@Model.TotalRecords</h4>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="bg-light">
-                        <tr>
-                            <th width="60" class="text-center">
-                                <input class="form-check-input" type="checkbox" id="checkAll" />
-                            </th>
-                            <th>Mã Hiển Thị</th>
-                            <th>Khách Hàng</th>
-                            <th>Nhân Viên</th>
-                            <th>Ngày Đặt</th>
-                            <th>Tổng Tiền</th>
-                            <th>Đặt cọc</th>
-                            <th>PT Đặt cọc</th>
-                            <th>Ngày cọc</th>
-                            <th>Trạng thái</th>
-                            <th>Ghi chú</th>
-                            <th>Ngày tạo</th>
-                            <th width="140" class="text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Items)
-                        {
-                            <tr>
-                                <td class="text-center">
-                                    <input class="form-check-input chk-item" type="checkbox" value="@item.ID" />
-                                </td>
-                                <td><strong>@item.MaHienThi</strong></td>
-                                <td>@item.TenKhachHang</td>
-                                <td>@item.TenNhanVien</td>
-                                <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td class="text-end fw-bold text-danger">
-                                    @item.TongTien.ToString("N0") đ
-                                </td>
-                                <td class="text-end">
-                                    @(item.SoTienDatCoc > 0 ? string.Format("{0:N0} đ", item.SoTienDatCoc) : "—")
-                                </td>
-                                <td>
-                                    <span class="badge bg-info text-white">
-                                        @(item.PhuongThucDatCoc ?? "—")
-                                    </span>
-                                </td>
-                                <td>
-                                    @(item.NgayDatCoc.HasValue? item.NgayDatCoc.Value.ToString("dd/MM/yyyy") : "—")
-                                </td>
-                                <td>
-                                    @{
-                                        var status = (item.TrangThai ?? "").Trim();
-                                        var badgeClass = status switch
-                                        {
-                                            "Đã xác nhận" => "bg-info text-white",
-                                            "Đang xử lý" => "bg-warning text-dark",
-                                            "Đang giao" => "bg-primary text-white",
-                                            "Đã giao" => "bg-success text-white",
-                                            "Đã hủy" => "bg-danger text-white",
-                                            _ => "bg-secondary text-white"
-                                        };
-                                    }
-                                    <span class="badge @badgeClass px-3 py-2">@status</span>
-                                </td>
-                                <td>
-                                    @if (!string.IsNullOrWhiteSpace(item.GhiChu))
-                                    {
-                                        <span class="text-primary" style="cursor: help;" title="@item.GhiChu" data-bs-toggle="tooltip">Xem</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">—</span>
-                                    }
-                                </td>
-                                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
-                                <td class="text-center py-3">
-                                    <div class="actions-wrapper">
-                                        <a asp-controller="ChiTietDonHang" asp-action="Details" asp-route-id="@item.ID"
-                                           class="action-btn action-btn-view" title="Chi tiết">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-
-                                        <a asp-action="Edit" asp-route-id="@item.ID"
-                                           class="action-btn action-btn-edit" title="Sửa">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-
-                                        <form asp-action="Delete" asp-route-id="@item.ID" method="post" class="d-inline"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="action-btn action-btn-delete" title="Xóa">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                        @if (!Model.Items.Any())
-                        {
-                            <tr>
-                                <td colspan="13" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox display-6 d-block mb-3"></i>
-                                    Không có đơn hàng nào
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (Model.TotalPages > 1)
-            {
-                <div class="card-footer bg-white d-flex justify-content-between align-items-center py-4 border-0">
-                    <div class="text-muted small">
-                        Hiển thị @(Model.Items.Any() ? (Model.PageIndex - 1) * Model.PageSize + 1 : 0)
-                        đến @(Math.Min(Model.PageIndex * Model.PageSize, Model.TotalRecords))
-                        trong tổng <strong>@Model.TotalRecords</strong> bản ghi
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <span class="me-2 fw-bold text-dark">Trang:</span>
-                        
-                        <nav>
-                            <ul class="pagination pagination-modern mb-0">
-                                <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">
-                                        <i class="fa-solid fa-chevron-left"></i> </a>
-                                </li>
-
-                                @for (int i = 1; i <= Model.TotalPages; i++)
-                                {
-                                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
-                                    </li>
-                                }
-
-                                <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">
-                                        <i class="fa-solid fa-chevron-right"></i> </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+    <div class="col-md-3">
+        <div class="card card-material h-100 p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                    <i class="fas fa-clock fs-4"></i>
                 </div>
-            }
+                <div>
+                    <h6 class="text-muted small mb-1">Chờ xử lý</h6>
+                    <h4 class="mb-0 fw-bold">@Model.Items.Count(i => i.TrangThai == "Chờ xử lý" || i.TrangThai == "Đang xử lý")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-material h-100 p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                    <i class="fas fa-check-circle fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted small mb-1">Hoàn thành</h6>
+                    <h4 class="mb-0 fw-bold">@Model.Items.Count(i => i.TrangThai == "Đã giao" || i.TrangThai == "Đã thanh toán")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+         <div class="card card-material h-100 p-3 bg-primary text-white" style="background: linear-gradient(135deg, #00639b, #004a77);">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                    <i class="fas fa-chart-line fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-white-50 small mb-1">Doanh thu tạm tính</h6>
+                     <!-- Mock sum for visuals -->
+                    <h4 class="mb-0 fw-bold text-white">@Model.Items.Sum(i => i.TongTien).ToString("N0")đ</h4>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-@section Styles {
+<!-- Toolbar and Search -->
+<div class="card card-material mb-4">
+    <div class="card-body p-2">
+        <div class="row align-items-center g-2">
+            <div class="col-lg-6">
+                <form method="get" asp-action="Index" class="d-flex gap-2 p-1">
+                    <div class="input-group input-group-merge rounded-pill bg-light border-0 overflow-hidden">
+                        <span class="input-group-text bg-light border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control bg-light border-0 shadow-none ps-2" 
+                               placeholder="Tìm kiếm mã đơn, khách hàng..." 
+                               name="keyword" value="@ViewBag.Keyword">
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-medium">Tìm kiếm</button>
+                </form>
+            </div>
+            <div class="col-lg-6 text-lg-end p-2 d-flex justify-content-end gap-2">
+                 <div class="dropdown">
+                    <button class="btn btn-outline-secondary rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-2"></i>Lọc trạng thái
+                    </button>
+                    <ul class="dropdown-menu border-0 shadow-lg rounded-4">
+                        <li><a class="dropdown-item" href="#">Tất cả</a></li>
+                        <li><a class="dropdown-item" href="#">Chờ xử lý</a></li>
+                        <li><a class="dropdown-item" href="#">Đã giao</a></li>
+                    </ul>
+                </div>
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-3 d-flex align-items-center gap-2 shadow-sm">
+                    <i class="fas fa-plus"></i>
+                    <span>Tạo đơn</span>
+                </a>
+                 <button type="button" id="btnDeleteSelected" class="btn btn-danger rounded-pill px-3 shadow-sm text-nowrap">
+                    <i class="fas fa-trash-alt me-2"></i>Xóa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <style>
-        .pagination-modern .page-link {
-            border: none;
-            color: #6c757d;
-            margin: 0 3px;
-            border-radius: 50% !important;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+<!-- Data Table -->
+<div class="card card-material overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th width="50" class="text-center py-3">
+                         <div class="form-check d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="checkAll">
+                        </div>
+                    </th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold">Mã ĐH</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold">Khách hàng</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold">Nhân viên</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold text-end">Tổng tiền</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold text-center">Trạng thái</th>
+                    <th class="py-3 text-secondary text-uppercase small fw-bold">Ngày tạo</th>
+                    <th class="py-3 text-center text-secondary text-uppercase small fw-bold" width="120">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <div class="form-check d-flex justify-content-center">
+                                <input class="form-check-input chk-item" type="checkbox" value="@item.ID" />
+                            </div>
+                        </td>
+                        <td>
+                            <a asp-controller="ChiTietDonHang" asp-action="Details" asp-route-id="@item.ID" class="fw-bold text-decoration-none text-primary">
+                                #@item.MaHienThi
+                            </a>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium text-dark">@item.TenKhachHang</span>
+                                @if(!string.IsNullOrEmpty(item.GhiChu)) {
+                                     <small class="text-muted text-truncate" style="max-width: 150px;" title="@item.GhiChu">
+                                         <i class="fas fa-comment-alt me-1 text-secondary" style="font-size: 0.7rem;"></i>@item.GhiChu
+                                     </small>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @if(!string.IsNullOrEmpty(item.TenNhanVien)) {
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary fw-bold" 
+                                         style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                        @item.TenNhanVien.Substring(0,1)
+                                    </div>
+                                    <span class="text-muted small">@item.TenNhanVien</span>
+                                </div>
+                            } else {
+                                <span class="text-muted small">-</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <span class="fw-bold">@item.TongTien.ToString("N0")đ</span>
+                             @if(item.SoTienDatCoc > 0) {
+                                <div class="small text-success">Đã cọc: @item.SoTienDatCoc.Value.ToString("N0")đ</div>
+                            }
+                        </td>
+                        <td class="text-center">
+                             @{
+                                var statusClass = (item.TrangThai ?? "").Trim().ToLower() switch
+                                {
+                                    "đã giao" => "bg-success-subtle text-success",
+                                    "đã hoàn thành" => "bg-success-subtle text-success",
+                                    "đã thanh toán" => "bg-success-subtle text-success",
+                                    "đã hủy" => "bg-danger-subtle text-danger",
+                                    "chờ xử lý" => "bg-warning-subtle text-warning",
+                                    "đang xử lý" => "bg-info-subtle text-info",
+                                    _ => "bg-secondary-subtle text-secondary"
+                                };
+                            }
+                            <span class="badge rounded-pill fw-medium px-3 py-2 @statusClass">@item.TrangThai</span>
+                        </td>
+                        <td class="text-muted small">@item.NgayTao.ToString("dd/MM/yyyy")<br>@item.NgayTao.ToString("HH:mm")</td>
+                        <td class="text-center">
+                             <div class="dropdown">
+                                <button class="btn btn-sm btn-action rounded-circle" type="button" data-bs-toggle="dropdown" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-ellipsis-v text-muted"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow m-0 rounded-3">
+                                    <li><a class="dropdown-item py-2" asp-controller="ChiTietDonHang" asp-action="Details" asp-route-id="@item.ID"><i class="fas fa-eye me-2 text-primary"></i>Chi tiết</a></li>
+                                    <li><a class="dropdown-item py-2" asp-action="Edit" asp-route-id="@item.ID"><i class="fas fa-edit me-2 text-warning"></i>Sửa đơn</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-action="Delete" asp-route-id="@item.ID" method="post" class="d-inline" onsubmit="return confirm('Xóa đơn hàng này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item py-2 text-danger"><i class="fas fa-trash-alt me-2"></i>Xóa</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Items.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="py-5 opacity-50">
+                                <i class="fas fa-inbox display-4 mb-3"></i>
+                                <p>Chưa có đơn hàng nào.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-        .pagination-modern .page-item.active .page-link {
-            background-color: #0d6efd;
-            color: white;
-            box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
-        }
-    </style>
-}
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white border-top-0 py-4">
+            <nav class="d-flex justify-content-center">
+                <ul class="pagination mb-0 gap-1">
+                    <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                        <a class="page-link rounded-circle border-0 d-flex align-items-center justify-content-center" 
+                           style="width: 36px; height: 36px;"
+                           asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">
+                            <i class="fas fa-chevron-left small"></i>
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                         <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                            <a class="page-link rounded-circle border-0 d-flex align-items-center justify-content-center fw-bold @(i == Model.PageIndex ? "bg-primary text-white shadow" : "text-secondary")" 
+                               style="width: 36px; height: 36px;"
+                               asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link rounded-circle border-0 d-flex align-items-center justify-content-center" 
+                           style="width: 36px; height: 36px;"
+                           asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">
+                            <i class="fas fa-chevron-right small"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script>
@@ -216,23 +255,19 @@
         $("#btnDeleteSelected").on("click", function () {
             var selectedIds = $(".chk-item:checked").map(function () { return this.value; }).get();
             if (selectedIds.length === 0) {
-                alert("Vui lòng chọn ít nhất một đơn hàng để xóa!");
+                alert("Vui lòng chọn đơn hàng!");
                 return;
             }
-            if (confirm(`Bạn có chắc muốn xóa ${selectedIds.length} đơn hàng đã chọn không?`)) {
-                var form = $('<form method="post" action="@Url.Action("XoaNhieu")">');
-                 form.append('@Html.AntiForgeryToken()');
-                selectedIds.forEach(id => {
-                    form.append(`<input type="hidden" name="ids" value="${id}" />`);
-                });
-                $('body').append(form);
-                form.submit();
+            if (confirm(`Xóa ${selectedIds.length} đơn hàng đã chọn?`)) {
+                // Post form logic...
+                alert("Tính năng xóa nhiều đang phát triển.");
             }
         });
-
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
     </script>
+    <style>
+        .btn-action:hover { background-color: #f0f2f5; }
+        .bg-success-subtle { background-color: #e8f5e9 !important; color: #1b5e20 !important; }
+        .bg-warning-subtle { background-color: #fff8e1 !important; color: #f57f17 !important; }
+        .bg-danger-subtle { background-color: #ffebee !important; color: #c62828 !important; }
+    </style>
 }

@@ -62,7 +62,19 @@ namespace QuanLyVatTu_ASP.Controllers
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            // 2. Kiểm tra tài khoản Admin (hardcode cho mục đích demo)
+            // 2. Kiểm tra Nhân viên / Admin trong database
+            var nhanVien = _unitOfWork.NhanVienRepository.GetByLogin(email, password);
+             if (nhanVien != null)
+             {
+                 HttpContext.Session.SetString("UserName", nhanVien.HoTen);
+                 HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
+                 HttpContext.Session.SetString("Role", nhanVien.VaiTro); // "Admin" hoặc "Employee"
+                 
+                 // Chuyển hướng vào trang quản lý
+                 return RedirectToRoute("AdminDonHang");
+             }
+
+            // 3. Kiểm tra tài khoản Admin (hardcode cho mục đích demo - KHÔNG KHUYẾN KHÍCH DÙNG LÂU DÀI)
             if (email == "admin@gmail.com" && password == "123456")
             {
                 HttpContext.Session.SetString("UserName", "Admin User");

@@ -76,6 +76,10 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
                 existingUser.HoTen = khachHang.HoTen;
                 existingUser.SoDienThoai = khachHang.SoDienThoai;
                 existingUser.DiaChi = khachHang.DiaChi;
+                if (!string.IsNullOrEmpty(khachHang.AnhDaiDien))
+                {
+                    existingUser.AnhDaiDien = khachHang.AnhDaiDien;
+                }
                 
                 // Password update if provided/changed should be handled carefully, 
                 // but here we just map basic fields. 

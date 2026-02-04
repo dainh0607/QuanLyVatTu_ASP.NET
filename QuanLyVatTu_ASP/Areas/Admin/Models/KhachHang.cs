@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using QuanLyVatTu_ASP.Models;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
@@ -47,5 +48,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
         public virtual ICollection<TuongTacDanhGia> TuongTacDanhGias { get; set; } = new List<TuongTacDanhGia>();
         public virtual ICollection<YeuThich> YeuThichs { get; set; } = new List<YeuThich>();
+        public virtual ICollection<DiaChiNhanHang> DiaChiNhanHangs { get; set; } = new List<DiaChiNhanHang>();
     }
 }

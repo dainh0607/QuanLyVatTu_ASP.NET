@@ -33,7 +33,7 @@
                 <!-- User Card -->
                 <div class="sidebar-user-card">
                     <div class="user-avatar-wrapper">
-                        <img src="https://i.pravatar.cc/150?img=12" alt="Avatar" class="user-avatar" id="userAvatar">
+                        <img src="@(string.IsNullOrEmpty(Model.KhachHang.AnhDaiDien) ? "https://i.pravatar.cc/150?img=12" : Model.KhachHang.AnhDaiDien)" alt="Avatar" class="user-avatar" id="userAvatar">
                         <label for="avatarUpload" class="avatar-edit-btn">
                             <i class="fas fa-camera"></i>
                         </label>
@@ -209,18 +209,14 @@
                                     </button>
                                 </div>
 
-                                <!-- Avatar Upload Section -->
+                                <!-- Avatar Upload Section (Unified with Sidebar) -->
                                 <div class="avatar-upload-section">
-                                    <img src="https://i.pravatar.cc/150?img=12" alt="Avatar" class="avatar-preview" id="avatarPreview">
-                                    <label for="avatarInput" class="upload-btn">
-                                        <i class="fas fa-upload"></i>
-                                        Chọn ảnh
+                                    <p class="text-muted" style="margin-bottom: 10px;">Ảnh đại diện hiển thị ở cột bên trái</p>
+                                    <label for="avatarUpload" class="upload-btn">
+                                        <i class="fas fa-camera"></i>
+                                        Thay đổi ảnh đại diện
                                     </label>
-                                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-                                    <div class="upload-hint">
-                                        Dung lượng tối đa 1MB<br>
-                                        Định dạng: .JPG, .PNG
-                                    </div>
+                                    <!-- Removed duplicate input id="avatarInput" -->
                                 </div>
                             </div>
                         </div>
@@ -241,70 +237,15 @@
                             </button>
                         </div>
                         <div class="card-body">
-                            <div class="address-list">
-                                <!-- Address 1 - Default -->
-                                <div class="address-card default">
-                                    <div class="address-icon">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <div class="address-info">
-                                        <div class="address-header">
-                                            <span class="address-name">Nguyễn Văn An</span>
-                                            <span class="address-phone">| 0987654321</span>
-                                            <span class="address-default-badge">Mặc định</span>
-                                            <span class="address-type-badge">Công ty</span>
-                                        </div>
-                                        <p class="address-text">
-                                            123 Đường Lê Văn Việt, Phường Tăng Nhơn Phú A, Quận 9, Thành phố Hồ Chí Minh
-                                        </p>
-                                        <div class="address-actions">
-                                            <a class="address-action" onclick="editAddress(1)">
-                                                <i class="fas fa-edit"></i> Sửa
-                                            </a>
-                                            <a class="address-action" onclick="viewOnMap(10.8507, 106.7789)">
-                                                <i class="fas fa-map-marker-alt"></i> Xem trên bản đồ
-                                            </a>
-                                        </div>
+                            <div id="addressListContainer" class="address-list">
+                                <!-- Addresses will be loaded here via AJAX -->
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
                                     </div>
                                 </div>
-
-                                <!-- Address 2 -->
-                                <div class="address-card">
-                                    <div class="address-icon">
-                                        <i class="fas fa-warehouse"></i>
-                                    </div>
-                                    <div class="address-info">
-                                        <div class="address-header">
-                                            <span class="address-name">Trần Văn B</span>
-                                            <span class="address-phone">| 0912345678</span>
-                                            <span class="address-type-badge">Kho hàng</span>
-                                        </div>
-                                        <p class="address-text">
-                                            456 Xa lộ Hà Nội, Phường Hiệp Phú, Quận 9, Thành phố Hồ Chí Minh
-                                        </p>
-                                        <div class="address-actions">
-                                            <a class="address-action" onclick="editAddress(2)">
-                                                <i class="fas fa-edit"></i> Sửa
-                                            </a>
-                                            <a class="address-action" onclick="setDefaultAddress(2)">
-                                                <i class="fas fa-check"></i> Đặt mặc định
-                                            </a>
-                                            <a class="address-action" onclick="viewOnMap(10.8412, 106.7856)">
-                                                <i class="fas fa-map-marker-alt"></i> Xem trên bản đồ
-                                            </a>
-                                            <a class="address-action delete" onclick="deleteAddress(2)">
-                                                <i class="fas fa-trash"></i> Xóa
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Add New Address Button -->
-                                <button class="add-address-btn" onclick="openAddressModal()">
-                                    <i class="fas fa-plus-circle"></i>
-                                    Thêm địa chỉ mới
-                                </button>
                             </div>
+
                         </div>
                     </div>
 
@@ -404,18 +345,35 @@
                         </div>
                         <div class="card-body">
                             <form id="changePassForm" style="max-width: 500px;">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="Id" value="@Model.KhachHang.ID" />
                                 <div class="form-group" style="margin-bottom: 20px;">
                                     <label class="form-label">Mật khẩu hiện tại <span class="required">*</span></label>
-                                    <input type="password" class="form-input" name="MatKhauCu" required placeholder="Nhập mật khẩu hiện tại">
+                                    <div class="input-with-badge">
+                                        <input type="password" class="form-input" name="MatKhauCu" required placeholder="Nhập mật khẩu hiện tại" id="currentPass">
+                                        <div class="input-badge clickable" onclick="togglePassword('currentPass', this)" style="cursor: pointer;">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 20px;">
                                     <label class="form-label">Mật khẩu mới <span class="required">*</span></label>
-                                    <input type="password" class="form-input" name="MatKhauMoi" required placeholder="Nhập mật khẩu mới">
+                                    <div class="input-with-badge">
+                                        <input type="password" class="form-input" name="MatKhauMoi" required placeholder="Nhập mật khẩu mới" id="newPass" minlength="6">
+                                        <div class="input-badge clickable" onclick="togglePassword('newPass', this)" style="cursor: pointer;">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" style="display: block; margin-top: 5px;">Tối thiểu 6 ký tự</small>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 24px;">
                                     <label class="form-label">Xác nhận mật khẩu mới <span class="required">*</span></label>
-                                    <input type="password" class="form-input" name="XacNhanMatKhau" required placeholder="Nhập lại mật khẩu mới">
+                                    <div class="input-with-badge">
+                                        <input type="password" class="form-input" name="XacNhanMatKhau" required placeholder="Nhập lại mật khẩu mới" id="confirmPass">
+                                        <div class="input-badge clickable" onclick="togglePassword('confirmPass', this)" style="cursor: pointer;">
+                                            <i class="fas fa-eye"></i>
+                                        </div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn-primary">
                                     <i class="fas fa-lock"></i>
@@ -672,6 +630,8 @@
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     // Tab Navigation
@@ -709,26 +669,19 @@
         });
     });
 
-    // Avatar Upload Preview
-    document.getElementById('avatarInput')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('avatarPreview').src = e.target.result;
-                document.getElementById('userAvatar').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
+    // Unified Avatar Change Handler
     document.getElementById('avatarUpload')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('avatarPreview').src = e.target.result;
-                document.getElementById('userAvatar').src = e.target.result;
+                // Update all avatar previews
+                const userAvatar = document.getElementById('userAvatar');
+                if(userAvatar) userAvatar.src = e.target.result;
+                
+                // If there's a preview in the main content (optional)
+                const avatarPreview = document.getElementById('avatarPreview');
+                if(avatarPreview) avatarPreview.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -766,7 +719,8 @@
         setTimeout(() => map.invalidateSize(), 100);
     }
 
-    function setMarker(lat, lng) {
+    // Need to rewrite setMarker to handle skipReverseGeocode
+    function setMarker(lat, lng, skipReverseGeocode = false) {
         selectedLat = lat;
         selectedLng = lng;
         
@@ -781,14 +735,13 @@
             selectedLat = pos.lat;
             selectedLng = pos.lng;
             updateLocationDisplay(pos.lat, pos.lng);
+            fetchAddressFromCoords(pos.lat, pos.lng); // Always reverse geocode on drag
         });
 
         updateLocationDisplay(lat, lng);
-    }
-
-    function updateLocationDisplay(lat, lng) {
-        document.getElementById('selectedLocation').innerHTML = 
-            `<i class="fas fa-map-pin"></i><span>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</span>`;
+        if (!skipReverseGeocode) {
+            fetchAddressFromCoords(lat, lng);
+        }
     }
 
     function viewOnMap(lat, lng) {
@@ -796,7 +749,8 @@
         setTimeout(() => {
             if (map) {
                 map.setView([lat, lng], 16);
-                setMarker(lat, lng);
+                setMarker(lat, lng, true); // Skip reverse geocoding when viewing existing address to keep input clean/or just show logic
+                // Actually showing existing address name might be better?
             }
         }, 300);
     }
@@ -829,31 +783,43 @@
 
     // Save functions
     function saveProfile() {
-        const data = {
-            id: @Model.KhachHang.ID,
-            hoTen: document.getElementById('hoTen')?.value,
-            soDienThoai: document.getElementById('soDienThoai')?.value,
-            diaChi: document.getElementById('diaChi')?.value || ''
-        };
+        // Sử dụng FormData để gửi file
+        const formData = new FormData();
+        formData.append('id', @Model.KhachHang.ID);
+        formData.append('hoTen', document.getElementById('hoTen')?.value || '');
+        formData.append('soDienThoai', document.getElementById('soDienThoai')?.value || '');
+        formData.append('diaChi', document.getElementById('diaChi')?.value || '');
+
+        // Lấy file ảnh nếu có (input file có id="avatarInput")
+        // Lấy file ảnh từ input duy nhất (avatarUpload)
+        const fileInput = document.getElementById('avatarUpload');
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append('anhDaiDienFile', fileInput.files[0]);
+        }
+        
+        // Remove old logic checking 2 inputs
+        // ...
 
         fetch('/Customer/UpdateProfile', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            // Lưu ý: Không set Content-Type header khi dùng FormData, browser sẽ tự set multipart/form-data
+            body: formData
         })
         .then(res => res.json())
         .then(result => {
             if (result.success) {
                 showToast(result.message, 'success');
                 // Cập nhật tên hiển thị trên sidebar
-                document.querySelector('.user-name').textContent = data.hoTen;
+                const nameDisplay = document.querySelector('.user-name');
+                if (nameDisplay) {
+                     nameDisplay.textContent = document.getElementById('hoTen')?.value;
+                }
             } else {
                 showToast(result.message || 'Có lỗi xảy ra!', 'error');
             }
         })
-        .catch(() => {
+        .catch(err => {
+            console.error(err);
             showToast('Không thể kết nối đến server!', 'error');
         });
     }
@@ -862,19 +828,271 @@
         showToast('Đã lưu tùy chọn thành công!', 'success');
     }
 
-    function editAddress(id) {
-        showToast('Chức năng sửa địa chỉ đang được phát triển', 'success');
+    // --- Address Functions ---
+
+    function loadAddresses() {
+        $.get('/Customer/GetAddresses', function(response) {
+            if (response.success) {
+                renderAddresses(response.data);
+            }
+        });
+    }
+
+    function renderAddresses(addresses) {
+        const container = document.getElementById('addressListContainer');
+        if (!container) return;
+        
+        if (!addresses || addresses.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+                    <p>Bạn chưa lưu địa chỉ nào.</p>
+                    <button class="add-address-btn mt-3" onclick="openAddressModal()">
+                        <i class="fas fa-plus-circle"></i> Thêm địa chỉ mới
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        addresses.forEach(addr => {
+            const isDefault = addr.macDinh;
+            const badge = isDefault ? '<span class="address-default-badge">Mặc định</span>' : '';
+            const defaultAction = !isDefault ? `
+                <a class="address-action" onclick="setDefaultAddress(${addr.id})">
+                    <i class="fas fa-check"></i> Đặt mặc định
+                </a>
+            ` : '';
+
+            html += `
+                <div class="address-card ${isDefault ? 'default' : ''}">
+                    <div class="address-icon">
+                        <i class="fas ${addr.loaiDiaChi === 'Văn phòng' ? 'fa-building' : 'fa-home'}"></i>
+                    </div>
+                    <div class="address-info">
+                        <div class="address-header">
+                            <span class="address-name">${addr.hoTen}</span>
+                            <span class="address-phone">| ${addr.soDienThoai}</span>
+                            ${badge}
+                            <span class="address-type-badge">${addr.loaiDiaChi}</span>
+                        </div>
+                        <p class="address-text">${addr.diaChi}</p>
+                        <div class="address-actions">
+                            ${defaultAction}
+                            <a class="address-action" onclick="viewOnMap(${addr.kinhDo || 10.8231}, ${addr.viDo || 106.6297})">
+                                <i class="fas fa-map-marker-alt"></i> Xem bản đồ
+                            </a>
+                            <a class="address-action delete" onclick="deleteAddress(${addr.id})">
+                                <i class="fas fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Append Add Button
+        html += `
+            <button class="add-address-btn" onclick="openAddressModal()">
+                <i class="fas fa-plus-circle"></i> Thêm địa chỉ mới
+            </button>
+        `;
+
+        container.innerHTML = html;
     }
 
     function setDefaultAddress(id) {
-        showToast('Đã đặt địa chỉ mặc định!', 'success');
+        $.post('/Customer/SetDefaultAddress', { id: id }, function(res) {
+            if (res.success) {
+                // Update profile textbox
+                const diaChiInput = document.getElementById('diaChi');
+                if(diaChiInput) diaChiInput.value = res.newAddress;
+                
+                // Reload list
+                loadAddresses();
+                showToast('Đã đổi địa chỉ mặc định', 'success');
+            } else {
+                showToast(res.message, 'error');
+            }
+        });
     }
 
     function deleteAddress(id) {
-        if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-            showToast('Đã xóa địa chỉ!', 'success');
-        }
+        if(!confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
+        
+        $.post('/Customer/DeleteAddress', { id: id }, function(res) {
+            if (res.success) {
+                loadAddresses();
+                showToast('Đã xóa địa chỉ', 'success');
+            } else {
+                showToast(res.message, 'error');
+            }
+        });
     }
+
+    // Confirm location from Map Modal -> Save Address
+    function confirmLocation() {
+        if (!selectedLat || !selectedLng) {
+            showToast('Vui lòng chọn vị trí trên bản đồ', 'error');
+            return;
+        }
+
+        const addressInput = document.getElementById('mapSearchInput'); 
+        // Force reading value again to ensure it's fresh
+        const addressStr = addressInput ? addressInput.value : '';
+        
+        // Auto-fill address details from Map result
+        // If user wants to edit, they can do it in the prompt or we can skip prompt if addressStr is good enough
+        // "khi tới sân vận động rồi khách hàng chọn nhà riêng hay văn phòng thì trên ô text box sẽ thêm các chữ cho địa chỉ chi tiết thật đúng"
+        // Interpretation: The `addressStr` from Nominatim is usually full. Maybe just ask for specific building/floor?
+        
+        const refinedAddress = prompt("Xác nhận địa chỉ chi tiết:", addressStr);
+        if (refinedAddress === null) return; 
+
+        // Get Name/Phone from hidden inputs or current user info
+        const currentName = document.getElementById('hoTen')?.value || '';
+        const currentPhone = document.getElementById('soDienThoai')?.value || '';
+
+        const name = prompt("Tên người nhận:", currentName);
+        if (name === null) return;
+        
+        const phone = prompt("Số điện thoại:", currentPhone);
+        if (phone === null) return;
+
+        const type = confirm("Đây là địa chỉ Văn phòng? (OK = Văn phòng, Cancel = Nhà riêng)") ? "Văn phòng" : "Nhà riêng";
+
+        // Prepend Type to Address if desired? The user said "thêm các chữ cho địa chỉ chi tiết". 
+        // Or maybe just saving the refined address is enough.
+        
+        const data = {
+            diaChi: refinedAddress,
+            hoTen: name,
+            soDienThoai: phone,
+            kinhDo: selectedLat,
+            viDo: selectedLng,
+            loaiDiaChi: type,
+            macDinh: false 
+        };
+        
+        if(confirm("Đặt làm địa chỉ mặc định?")) {
+            data.macDinh = true;
+        }
+
+        fetch('/Customer/AddAddress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                closeMapModal();
+                loadAddresses();
+                if(data.macDinh) {
+                     const diaChiInput = document.getElementById('diaChi');
+                     if(diaChiInput) diaChiInput.value = refinedAddress;
+                }
+                showToast('Thêm địa chỉ thành công', 'success');
+            } else {
+                showToast(res.message, 'error');
+            }
+        });
+    }
+
+    // --- Forward Geocoding (Search Box -> Map) ---
+    let searchTimeout;
+    let fetchTimeout; // Declared for fetchAddressFromCoords
+    const searchInput = document.getElementById('mapSearchInput');
+    if(searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value;
+            if (query.length < 5) return;
+            function fetchAddressFromCoords(lat, lng) {
+                if (fetchTimeout) clearTimeout(fetchTimeout);
+                
+                fetchTimeout = setTimeout(() => {
+                    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+                    
+                    fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.address) {
+                            // Construct a detailed address string "Google Maps style"
+                            // House Number, Road, Suburb/Neighborhood, City/State
+                            const addr = data.address;
+                            const parts = [];
+                            
+                            if (addr.house_number) parts.push(addr.house_number);
+                            if (addr.road) parts.push(addr.road);
+                            if (addr.hamlet) parts.push(addr.hamlet);
+                            if (addr.village) parts.push(addr.village);
+                            if (addr.suburb) parts.push(addr.suburb);
+                            if (addr.neighbourhood) parts.push(addr.neighbourhood);
+                            if (addr.quarter) parts.push(addr.quarter);
+                            if (addr.city_district) parts.push(addr.city_district);
+                            if (addr.city) parts.push(addr.city);
+                            else if (addr.province) parts.push(addr.province);
+                            
+                            // Filter duplicates and join
+                            const fullAddress = [...new Set(parts)].join(", ");
+                            
+                            // Fallback to display_name if construction failed basically
+                            const finalAddress = fullAddress.length > 5 ? fullAddress : data.display_name;
+
+                            const input = document.getElementById('mapSearchInput');
+                            if (input) {
+                                input.value = finalAddress;
+                            }
+                        } else if (data && data.display_name) {
+                             const input = document.getElementById('mapSearchInput');
+                             if (input) input.value = data.display_name;
+                        }
+                    })
+                    .catch(err => console.error('Geocoding error:', err));
+                }, 500); // Shorter debounce
+            }
+
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                
+                fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        
+                        if (map) {
+                            map.flyTo([lat, lon], 16);
+                            setMarker(lat, lon); // Update marker and selected location
+                            // Note: setMarker calls fetchAddressFromCoords which might overwrite input? 
+                            // We should probably pass a flag to setMarker to skip reverse geocode if triggered by search
+                        }
+                    }
+                })
+                .catch(err => console.error('Geocoding error:', err));
+            }, 1000);
+        });
+    }
+
+    // Updated setMarker to accept skipReverseGeocode flag
+    const originalSetMarker = setMarker; // Store old if needed, but easier to rewrite
+
+
+    // Load addresses on switch to tab
+    document.querySelectorAll('.nav-item[data-tab="address"]').forEach(item => {
+        item.addEventListener('click', function() {
+            loadAddresses();
+        });
+    });
+
+    // Check if initial tab is address (if url has hash)
+    if(window.location.hash === '#address') {
+        loadAddresses();
+    }
+
 
     // Change Password Form
     document.getElementById('changePassForm')?.addEventListener('submit', function(e) {
@@ -889,6 +1107,12 @@
         }
 
         // AJAX call
+        // AJAX call
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        btn.disabled = true;
+
         fetch('@Url.Action("ChangePassword", "Customer")', {
             method: 'POST',
             headers: {
@@ -900,16 +1124,48 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                showToast('Đổi mật khẩu thành công!', 'success');
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Optional: Logout or redirect
+                     window.location.reload();
+                });
                 form.reset();
             } else {
-                showToast(data.message || 'Có lỗi xảy ra!', 'error');
+                Swal.fire({
+                    title: 'Lỗi!',
+                    html: data.message || 'Có lỗi xảy ra!',
+                    icon: 'error'
+                });
             }
         })
         .catch(() => {
             showToast('Không thể kết nối đến server!', 'error');
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         });
     });
+
+    // Toggle Password Visibility
+    function togglePassword(inputId, iconContainer) {
+        const input = document.getElementById(inputId);
+        const icon = iconContainer.querySelector('i');
+        
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
 </script>
 
 @functions {

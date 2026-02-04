@@ -4,41 +4,73 @@
     Layout = "~/Views/Shared/_Layout_Customer.cshtml";
 }
 
-<div class="container">
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">Phòng ngủ tối giản</h1>
-            <p class="hero-desc">Tạo không gian nghỉ ngơi hoàn hảo với bộ sưu tập mới nhất.</p>
-            <a href="/SanPham" class="btn-primary-hero">Khám phá ngay</a>
+<div class="container-fluid px-4 px-lg-5 py-4">
+    <!-- Hero Section (Material 3 Large Surface) -->
+    <!-- Hero Section (Modern Material) -->
+    <section class="hero-section mb-5 position-relative overflow-hidden shadow-lg" 
+             style="border-radius: 28px; min-height: 500px; display: flex; align-items: center; background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center; background-size: cover;">
+        
+        <!-- Dark Overlay -->
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%);"></div>
+
+        <div class="row w-100 align-items-center position-relative z-2 ps-4 ps-md-5">
+            <div class="col-lg-7 text-white">
+                <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold shadow-sm">
+                    <i class="fas fa-hard-hat me-2"></i>Vật tư Xây dựng & Công trình
+                </span>
+                <h1 class="display-3 fw-bold mb-3" style="font-family: 'Google Sans', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                    Xây dựng vững chắc <br> <span class="text-primary-subtle">Kiến tạo tương lai</span>
+                </h1>
+                <p class="lead mb-4 fw-light" style="max-width: 600px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+                    Đối tác tin cậy cung cấp vật liệu xây dựng, thiết bị thi công và nội thất công trình chất lượng cao.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/SanPham" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold border-0" style="background-color: var(--md-sys-color-primary);">
+                        Khám phá ngay <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                    <a href="/Contact" class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg" style="color: var(--md-sys-color-primary);">
+                        Liên hệ tư vấn
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="features-grid">
-        <div class="feature-box">
-            <div class="feature-icon bg-blue">
-                <i class="fas fa-truck"></i>
+    <!-- Features Section (Grid) -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 h-100 bg-white shadow-sm d-flex align-items-center gap-3 border border-light">
+                    <div class="icon-box bg-blue-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #E8F0FE;">
+                        <i class="fas fa-truck-fast fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Vận chuyển miễn phí</h6>
+                        <small class="text-muted">Cho đơn hàng từ 5 triệu</small>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h6 class="mb-1 fw-bold">Vận chuyển toàn quốc</h6>
-                <small class="text-muted">Giao hàng nhanh chóng</small>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 h-100 bg-white shadow-sm d-flex align-items-center gap-3 border border-light">
+                    <div class="icon-box bg-green-light text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #E6F4EA;">
+                        <i class="fas fa-shield-alt fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Bảo hành 2 năm</h6>
+                        <small class="text-muted">Cam kết chất lượng chính hãng</small>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="feature-box">
-            <div class="feature-icon bg-green">
-                <i class="fas fa-shield-alt"></i>
-            </div>
-            <div>
-                <h6 class="mb-1 fw-bold">Thanh toán an toàn</h6>
-                <small class="text-muted">Nhiều phương thức bảo mật</small>
-            </div>
-        </div>
-        <div class="feature-box">
-            <div class="feature-icon bg-purple">
-                <i class="fas fa-credit-card"></i>
-            </div>
-            <div>
-                <h6 class="mb-1 fw-bold">Đặt cọc</h6>
-                <small class="text-muted">10% giá trị đơn hàng</small>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 h-100 bg-white shadow-sm d-flex align-items-center gap-3 border border-light">
+                    <div class="icon-box bg-orange-light text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #FEF7E0;">
+                        <i class="fas fa-credit-card fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Trả góp 0%</h6>
+                        <small class="text-muted">Thủ tục đơn giản, nhanh chóng</small>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -49,92 +81,97 @@
     var categories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
     var featureCategories = categories.Take(4).ToList();
 }
+    <!-- Categories Section -->
     <section class="mb-5">
-        <h3 class="fw-bold mb-4">Danh mục</h3>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h3 class="fw-bold m-0 text-dark" style="font-family: 'Google Sans', sans-serif;">Danh mục nổi bật</h3>
+             <a href="/SanPham" class="text-decoration-none fw-bold small text-primary">Xem tất cả <i class="fas fa-arrow-right small"></i></a>
+        </div>
+        
         <div class="row g-3">
             @if(featureCategories != null && featureCategories.Any())
             {
-               
                 foreach(var cat in featureCategories)
                 {
-                                    <div class="col-md-3 col-6 mb-4">
-                        <a href="/SanPham?loaiId=@cat.ID" class="d-block text-center text-decoration-none category-item">
-                    
-                            <div class="category-img-wrapper bg-light rounded-3 mb-2" 
-                                style="aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;">
-                                
+                    <div class="col-md-3 col-6">
+                        <a href="/SanPham?loaiId=@cat.ID" class="card h-100 border-0 shadow-none text-decoration-none category-card" style="background: transparent;">
+                            <div class="card-img-wrapper rounded-circle bg-white shadow-sm mb-3 mx-auto position-relative overflow-hidden d-flex align-items-center justify-content-center" 
+                                 style="width: 140px; height: 140px; transition: transform 0.3s;">
                                 <img src="/user/images/@($"{cat.TenLoaiVatTu}.jpg")" 
-                                    class="img-fluid" 
-                                    alt="@cat.TenLoaiVatTu"
-                                    style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                     onerror="this.src='https://placehold.co/200?text=@(cat.TenLoaiVatTu.Substring(0,1))'"
+                                     class="img-fluid p-3" alt="@cat.TenLoaiVatTu">
                             </div>
-
-                            <h6 class="fw-bold text-dark mt-2 mb-0">@cat.TenLoaiVatTu</h6>
-                            <small class="text-muted">Xem ngay</small>
+                            <div class="text-center">
+                                <h6 class="fw-bold text-dark mb-0">@cat.TenLoaiVatTu</h6>
+                            </div>
                         </a>
                     </div>
                 }
             }
             else
             {
-                <p>Chưa có danh mục nào.</p>
+                 <div class="col-12 text-center text-muted">Đang cập nhật danh mục...</div>
             }
         </div>
     </section>
 
+    <!-- Featured Products -->
     <section class="mb-5">
-        <div class="section-header">
-            <h3 class="section-title">Sản phẩm bán chạy</h3>
-            <a href="/SanPham" class="btn-view-all">Xem tất cả</a>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+             <h3 class="fw-bold m-0 text-dark" style="font-family: 'Google Sans', sans-serif;">Sản phẩm mới</h3>
+             <a href="/SanPham" class="btn btn-outline-primary rounded-pill px-4 btn-sm fw-bold">Xem kho hàng</a>
         </div>
 
-        <div class="products-grid">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             @if (Model != null && Model.Any())
             {
                 foreach (var product in Model)
                 {
-                    <div class="product-card">
-                        <div class="product-img-wrapper">
-                            <span class="discount-badge">-15%</span>
+                    <div class="col">
+                        <div class="card md-card h-100 border-0 position-relative group-hover-trigger">
+                            <!-- Badge -->
+                             <span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill">-15%</span>
                             
-                            <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
-                                 <img src="/user/images/@($"{product.TenVatTu}.jpg")" 
-                                    alt="@product.TenVatTu" 
-                                    style="max-width: 100%; max-height: 100%; object-fit: contain;" 
-                                    loading="lazy" />
-                            </a>
-                        </div>
-
-                        <div class="product-info">
-                            <h3 class="product-name">
-                                <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">@product.TenVatTu</a>
-                            </h3>
-                            
-                            <div class="rating">
-                                <i class="fas fa-star"></i> 4.5 <span class="text-muted">(50)</span>
+                            <!-- Image -->
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center p-4 overflow-hidden" style="height: 240px; border-radius: 12px 12px 0 0;">
+                                <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
+                                    <img src="@(string.IsNullOrEmpty(product.HinhAnh) ? $"/user/images/{product.TenVatTu}.jpg" : product.HinhAnh)" 
+                                         alt="@product.TenVatTu" 
+                                         class="img-fluid" style="max-height: 180px; transition: transform 0.3s ease;">
+                                </a>
                             </div>
 
-                            <div class="price-box">
-                                <span class="current-price">@(product.GiaBan?.ToString("N0") ?? "0") đ</span>
+                            <!-- Body -->
+                            <div class="card-body d-flex flex-column p-3">
+                                <h6 class="card-title fw-bold mb-1 text-truncate">
+                                    <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })" class="text-decoration-none text-dark">
+                                        @product.TenVatTu
+                                    </a>
+                                </h6>
+                                <div class="mb-2">
+                                     <i class="fas fa-star text-warning small"></i>
+                                     <span class="small text-muted">4.8</span>
+                                </div>
+                                
+                                <div class="mt-auto d-flex align-items-center justify-content-between">
+                                    <span class="fs-5 fw-bold text-primary">@(product.GiaBan?.ToString("N0") ?? "0")đ</span>
+                                    
+                                    <button class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                            style="width: 40px; height: 40px; padding: 0;"
+                                            onclick="addToCartIndex(@product.ID)" title="Thêm vào giỏ">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </div>
-
-                            @if (product.SoLuongTon > 0)
-                            {
-                                <button class="btn-add-cart" onclick="addToCartIndex(@product.ID)">
-                                    Thêm vào giỏ
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="btn-add-cart" disabled>Hết hàng</button>
-                            }
                         </div>
                     </div>
                 }
             }
             else
             {
-                <p class="text-center w-100">Chưa có sản phẩm nào.</p>
+                <div class="col-12 py-5 text-center text-muted">
+                    <p>Chưa có sản phẩm nào.</p>
+                </div>
             }
         </div>
     </section>
@@ -147,6 +184,8 @@
                 showGlobalMessage("Đã thêm vào giỏ hàng!", "Thành công", "success");
                 // Cập nhật số lượng trên icon giỏ hàng nếu cần
                 if(res.count) $('.cart-count').text(res.count);
+                // Also trigger custom event or shared function if available
+                if(typeof refreshCartDropdown === 'function') refreshCartDropdown();
             }
         });
     }

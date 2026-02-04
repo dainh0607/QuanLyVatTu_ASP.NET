@@ -21,62 +21,62 @@
     };
 }
 
-<div class="categories-page py-5 bg-light">
+<div class="categories-page py-5" style="background-color: var(--md-sys-color-surface);">
     <div class="container">
-        <div class="row">
+        <div class="row g-4">
             <!-- Sidebar Filters -->
             <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-sm rounded-3">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h5 class="card-title fw-bold mb-0 text-dark">
-                            <i class="fas fa-filter me-2 text-primary"></i>Bộ lọc tìm kiếm
+                <div class="card md-card border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+                        <h5 class="card-title fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                            <i class="fas fa-filter text-primary"></i> Bộ lọc
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form action="/SanPham" method="get" id="filterForm">
                             <input type="hidden" name="page" id="pageInput" value="1" />
 
                             <!-- Category Filter -->
                             <div class="mb-4">
-                                <h6 class="fw-bold mb-2 small text-uppercase text-muted">Danh mục</h6>
-                                <div class="filter-group" style="max-height: 200px; overflow-y: auto;">
+                                <h6 class="fw-bold mb-3 small text-uppercase text-muted" style="letter-spacing: 0.5px;">Danh mục</h6>
+                                <div class="filter-group d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
                                     @foreach (var cat in categories)
                                     {
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="loaiIds" value="@cat.ID" id="cat_@cat.ID" @(activeLoaiIds.Contains(cat.ID) ? "checked" : "") onchange="submitFilter()">
-                                            <label class="form-check-label" for="cat_@cat.ID">@cat.TenLoaiVatTu</label>
+                                        <div class="form-check custom-checkbox">
+                                            <input class="form-check-input" type="checkbox" name="loaiIds" value="@cat.ID" id="cat_@cat.ID" @(activeLoaiIds.Contains(cat.ID) ? "checked" : "") onchange="submitFilter()" style="border-radius: 4px;">
+                                            <label class="form-check-label text-dark" for="cat_@cat.ID">@cat.TenLoaiVatTu</label>
                                         </div>
                                     }
                                 </div>
                             </div>
 
-                            <hr class="text-muted opacity-25">
+                            <hr class="text-muted opacity-10 my-4">
 
                             <!-- Supplier Filter -->
                             <div class="mb-4">
-                                <h6 class="fw-bold mb-2 small text-uppercase text-muted">Nhà cung cấp</h6>
-                                <div class="filter-group" style="max-height: 200px; overflow-y: auto;">
+                                <h6 class="fw-bold mb-3 small text-uppercase text-muted" style="letter-spacing: 0.5px;">Nhà cung cấp</h6>
+                                <div class="filter-group d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
                                     @foreach (var sup in suppliers)
                                     {
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="nhaCungCapIds" value="@sup.ID" id="sup_@sup.ID" @(activeSupIds.Contains(sup.ID) ? "checked" : "") onchange="submitFilter()">
-                                            <label class="form-check-label" for="sup_@sup.ID">@sup.TenNhaCungCap</label>
+                                        <div class="form-check custom-checkbox">
+                                            <input class="form-check-input" type="checkbox" name="nhaCungCapIds" value="@sup.ID" id="sup_@sup.ID" @(activeSupIds.Contains(sup.ID) ? "checked" : "") onchange="submitFilter()" style="border-radius: 4px;">
+                                            <label class="form-check-label text-dark" for="sup_@sup.ID">@sup.TenNhaCungCap</label>
                                         </div>
                                     }
                                 </div>
                             </div>
 
-                            <hr class="text-muted opacity-25">
+                            <hr class="text-muted opacity-10 my-4">
 
                             <!-- Price Filter -->
                             <div class="mb-3">
-                                <h6 class="fw-bold mb-3 small text-uppercase text-muted">Khoảng giá</h6>
-                                <div class="filter-group">
+                                <h6 class="fw-bold mb-3 small text-uppercase text-muted" style="letter-spacing: 0.5px;">Khoảng giá</h6>
+                                <div class="filter-group d-flex flex-column gap-2">
                                     @foreach (var range in priceRangeDisplay)
                                     {
-                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="priceRanges" value="@range.Key" id="price_@range.Key" @(activePriceRanges.Contains(range.Key) ? "checked" : "") onchange="submitFilter()">
-                                            <label class="form-check-label" for="price_@range.Key">@range.Value</label>
+                                         <div class="form-check custom-checkbox">
+                                            <input class="form-check-input" type="checkbox" name="priceRanges" value="@range.Key" id="price_@range.Key" @(activePriceRanges.Contains(range.Key) ? "checked" : "") onchange="submitFilter()" style="border-radius: 4px;">
+                                            <label class="form-check-label text-dark" for="price_@range.Key">@range.Value</label>
                                         </div>
                                     }
                                 </div>
@@ -90,96 +90,99 @@
             <div class="col-lg-9">
                 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-                    <h2 class="fw-bold mb-0 text-dark">Sản phẩm</h2>
-                    <span class="text-muted">Hiển thị @(Model?.Count() ?? 0) trên tổng số @(ViewBag.TotalItems ?? 0) kết quả</span>
+                    <h2 class="fw-bold mb-0 text-dark" style="font-family: 'Google Sans', sans-serif;">Sản phẩm</h2>
+                    <span class="text-muted">@(Model?.Count() ?? 0) kết quả</span>
                 </div>
 
                 <!-- Active Filters Chips -->
                 @if (activeLoaiIds.Any() || activeSupIds.Any() || activePriceRanges.Any())
                 {
                     <div class="active-filters mb-4 d-flex flex-wrap gap-2 align-items-center">
-                        <span class="small fw-bold text-muted me-2">Đang lọc:</span>
-                        
                         @foreach(var id in activeLoaiIds)
                         {
                             var name = categories.FirstOrDefault(c => c.ID == id)?.TenLoaiVatTu;
-                            <span class="badge bg-white text-dark border shadow-sm text-decoration-none px-3 py-2 rounded-pill d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill d-flex align-items-center gap-2">
                                 <span>@name</span>
-                                <i class="fas fa-times text-danger cursor-pointer" onclick="uncheckAndSubmit('cat_@id')"></i>
+                                <i class="fas fa-times cursor-pointer" onclick="uncheckAndSubmit('cat_@id')"></i>
                             </span>
                         }
 
                         @foreach(var id in activeSupIds)
                         {
                             var name = suppliers.FirstOrDefault(s => s.ID == id)?.TenNhaCungCap;
-                            <span class="badge bg-white text-dark border shadow-sm text-decoration-none px-3 py-2 rounded-pill d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill d-flex align-items-center gap-2">
                                 <span>@name</span>
-                                <i class="fas fa-times text-danger cursor-pointer" onclick="uncheckAndSubmit('sup_@id')"></i>
+                                <i class="fas fa-times cursor-pointer" onclick="uncheckAndSubmit('sup_@id')"></i>
                             </span>
                         }
 
                         @foreach(var range in activePriceRanges)
                         {
-                            <span class="badge bg-white text-dark border shadow-sm text-decoration-none px-3 py-2 rounded-pill d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill d-flex align-items-center gap-2">
                                 <span>@priceRangeDisplay[range]</span>
-                                <i class="fas fa-times text-danger cursor-pointer" onclick="uncheckAndSubmit('price_@range')"></i>
+                                <i class="fas fa-times cursor-pointer" onclick="uncheckAndSubmit('price_@range')"></i>
                             </span>
                         }
 
-                        <a href="/SanPham" class="btn btn-link btn-sm text-danger text-decoration-none fw-bold">Xóa tất cả</a>
+                        <a href="/SanPham" class="btn btn-link btn-sm text-danger text-decoration-none fw-bold ms-2">Xóa bộ lọc</a>
                     </div>
                 }
 
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                     @if (Model != null && Model.Any())
                     {
                         foreach (var product in Model)
                         {
                             <div class="col">
-                                <div class="card h-100 border-0 shadow-sm product-card-hover rounded-3 overflow-hidden">
-                                     <div class="position-relative">
-                                        <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
-                                            <img src="/user/images/@($"{product.TenVatTu}.jpg")" class="card-img-top" alt="@product.TenVatTu" style="height: 250px; object-fit: cover;">
+                                <div class="card md-card h-100 border-0 position-relative" style="transition: transform 0.2s, box-shadow 0.2s;">
+                                     <div class="position-relative overflow-hidden bg-light rounded-top" style="height: 220px; border-radius: 12px 12px 0 0;">
+                                        <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })" class="d-flex align-items-center justify-content-center h-100 w-100">
+                                            <img src="@(string.IsNullOrEmpty(product.HinhAnh) ? $"/user/images/{product.TenVatTu}.jpg" : product.HinhAnh)" 
+                                                 class="img-fluid p-4" 
+                                                 alt="@product.TenVatTu" 
+                                                 style="max-height: 100%; object-fit: contain; transition: transform 0.3s;">
                                         </a>
-                                        <button class="btn-wishlist-floating" onclick="addToWishlist(@product.ID)" title="Thêm vào yêu thích">
+                                        <!-- Wishlist Icon -->
+                                        <button class="btn btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center" 
+                                                onclick="addToWishlist(@product.ID)" 
+                                                style="width: 36px; height: 36px; color: #aaa;"
+                                                title="Thêm vào yêu thích">
                                             <i class="far fa-heart"></i>
                                         </button>
                                     </div>
 
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title text-truncate mb-2">
-                                            <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })" class="text-decoration-none text-dark fw-bold" title="@product.TenVatTu">
+                                    <div class="card-body d-flex flex-column p-3">
+                                        <h6 class="card-title fw-bold mb-2 text-truncate">
+                                            <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })" class="text-decoration-none text-dark" title="@product.TenVatTu">
                                                 @product.TenVatTu
                                             </a>
-                                        </h5>
+                                        </h6>
                                         
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <div class="text-warning small me-2">
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
-                                                <i class="fas fa-star-half-alt"></i>
+                                                <i class="fas fa-star"></i>
                                             </div>
-                                            <span class="text-muted small">(5.0)</span>
+                                            <span class="text-muted small" style="font-size: 0.8rem;">(4.9)</span>
                                         </div>
 
                                         <div class="mt-auto">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="fs-5 fw-bold text-primary">@(product.GiaBan?.ToString("N0") ?? "0")đ</span>
+                                                <span class="fs-5 fw-bold" style="color: var(--md-sys-color-primary);">@(product.GiaBan?.ToString("N0") ?? "0")đ</span>
                                             </div>
 
                                             @if (product.SoLuongTon > 0)
                                             {
-                                            <div class="d-flex gap-2 mt-auto">
-                                                <button class="btn btn-outline-primary w-100 fw-bold rounded-3" onclick="quickAdd(@product.ID)">
-                                                    <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                                                <button class="btn btn-primary w-100 rounded-pill fw-bold" onclick="quickAdd(@product.ID)">
+                                                    Thêm vào giỏ
                                                 </button>
-                                            </div>
                                             }
                                             else
                                             {
-                                                <button class="btn btn-secondary w-100 rounded-3" disabled>Tạm hết hàng</button>
+                                                <button class="btn btn-secondary w-100 rounded-pill" disabled>Tạm hết hàng</button>
                                             }
                                         </div>
                                     </div>
@@ -191,11 +194,11 @@
                     {
                         <div class="col-12 py-5 text-center">
                             <div class="text-muted mb-3">
-                                <i class="fas fa-search fa-3x"></i>
+                                <i class="fas fa-search fa-3x text-light-emphasis"></i>
                             </div>
-                            <h4>Không tìm thấy sản phẩm nào.</h4>
-                            <p class="text-muted">Thử thay đổi hoặc xóa bộ lọc tìm kiếm.</p>
-                            <a href="/SanPham" class="btn btn-primary mt-2">Xem tất cả sản phẩm</a>
+                            <h4 class="fw-bold text-secondary">Không tìm thấy sản phẩm</h4>
+                            <p class="text-muted">Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</p>
+                            <a href="/SanPham" class="btn btn-outline-primary rounded-pill mt-2 px-4">Xóa bộ lọc</a>
                         </div>
                     }
                 </div>
@@ -205,10 +208,10 @@
                 {
                     <div class="d-flex justify-content-center mt-5">
                         <nav aria-label="Page navigation">
-                            <ul class="pagination pagination-sm custom-pagination">
+                            <ul class="pagination pagination-sm custom-pagination gap-1">
                                 <!-- Previous -->
                                 <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" onclick="goToPage(@(ViewBag.CurrentPage - 1))" aria-label="Previous">
+                                    <a class="page-link rounded-circle border-0 shadow-sm" href="javascript:void(0)" onclick="goToPage(@(ViewBag.CurrentPage - 1))" aria-label="Previous">
                                         <i class="fas fa-chevron-left"></i>
                                     </a>
                                 </li>
@@ -216,7 +219,7 @@
                                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                                 {
                                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                        <a class="page-link" href="javascript:void(0)" onclick="goToPage(@i)">
+                                        <a class="page-link rounded-circle border-0 shadow-sm" href="javascript:void(0)" onclick="goToPage(@i)">
                                             @i
                                         </a>
                                     </li>
@@ -224,7 +227,7 @@
 
                                 <!-- Next -->
                                 <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" href="javascript:void(0)" onclick="goToPage(@(ViewBag.CurrentPage + 1))" aria-label="Next">
+                                    <a class="page-link rounded-circle border-0 shadow-sm" href="javascript:void(0)" onclick="goToPage(@(ViewBag.CurrentPage + 1))" aria-label="Next">
                                         <i class="fas fa-chevron-right"></i>
                                     </a>
                                 </li>

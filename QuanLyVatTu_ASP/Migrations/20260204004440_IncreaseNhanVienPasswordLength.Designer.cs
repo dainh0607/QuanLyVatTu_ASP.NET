@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260204004440_IncreaseNhanVienPasswordLength")]
+    partial class IncreaseNhanVienPasswordLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -589,52 +592,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.ToTable("YeuThich", (string)null);
                 });
 
-            modelBuilder.Entity("QuanLyVatTu_ASP.Models.DiaChiNhanHang", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("DiaChi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("HoTen")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("KhachHangId")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("KinhDo")
-                        .HasColumnType("float");
-
-                    b.Property<string>("LoaiDiaChi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("MacDinh")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("NgayTao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SoDienThoai")
-                        .IsRequired()
-                        .HasColumnType("varchar(15)");
-
-                    b.Property<double?>("ViDo")
-                        .HasColumnType("float");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("KhachHangId");
-
-                    b.ToTable("DiaChiNhanHang");
-                });
-
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietDonHang", b =>
                 {
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.DonHang", "DonHang")
@@ -794,17 +751,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("VatTu");
                 });
 
-            modelBuilder.Entity("QuanLyVatTu_ASP.Models.DiaChiNhanHang", b =>
-                {
-                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
-                        .WithMany("DiaChiNhanHangs")
-                        .HasForeignKey("KhachHangId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("KhachHang");
-                });
-
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia", b =>
                 {
                     b.Navigation("TuongTacDanhGias");
@@ -823,8 +769,6 @@ namespace QuanLyVatTu_ASP.Migrations
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", b =>
                 {
                     b.Navigation("DanhGias");
-
-                    b.Navigation("DiaChiNhanHangs");
 
                     b.Navigation("TuongTacDanhGias");
 

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace QuanLyVatTu_ASP.Models.ViewModels
 {
     /// <summary>
@@ -9,5 +11,6 @@ namespace QuanLyVatTu_ASP.Models.ViewModels
         public string? HoTen { get; set; }
         public string? SoDienThoai { get; set; }
         public string? DiaChi { get; set; }
+        public IFormFile? AnhDaiDienFile { get; set; }
     }
 }

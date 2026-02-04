@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
+using QuanLyVatTu_ASP.Models;
 
 namespace QuanLyVatTu_ASP.DataAccess
 {
@@ -14,7 +15,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -30,6 +31,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<DanhGia> DanhGias { get; set; }
         public DbSet<TuongTacDanhGia> TuongTacDanhGias { get; set; }
         public DbSet<YeuThich> YeuThichs { get; set; }
+        public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -10,216 +10,176 @@
     decimal subtotal = cartItems.Sum(x => x.ThanhTien);
     decimal discount = 0;
     decimal total = subtotal - discount;
-    // Tính tổng trọng lượng ước tính
-    decimal totalWeight = cartItems.Sum(x => x.TongTrongLuong);
 }
 
-<!-- Modern Shopping Cart Page -->
-<div class="modern-cart-page">
-    <div class="container-fluid">
+<div class="cart-page py-5" style="background-color: var(--md-sys-color-surface);">
+    <div class="container-fluid px-4 px-lg-5">
         
         @if (cartItems == null || cartItems.Count == 0)
         {
             <!-- Empty Cart State -->
-            <div class="empty-cart-state">
-                <div class="empty-cart-icon">
-                    <i class="fa-solid fa-cart-shopping"></i>
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Empty Cart" style="width: 150px; opacity: 0.5;">
                 </div>
-                <h2>Giỏ hàng trống</h2>
-                <p>Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                <a href="/SanPham/Index" class="btn-explore-products">
-                    <i class="fa-solid fa-compass"></i>
-                    Khám phá sản phẩm
+                <h2 class="fw-bold text-secondary mb-3">Giỏ hàng đang trống</h2>
+                <p class="text-muted mb-4">Bạn chưa thêm sản phẩm nào vào giỏ hàng.</p>
+                <a href="/SanPham" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-sm">
+                    <i class="fas fa-search me-2"></i>Khám phá sản phẩm
                 </a>
             </div>
         }
         else
         {
-            <!-- Cart Header -->
-            <div class="cart-header">
-                <div class="breadcrumb-nav">
-                    <a href="/" class="breadcrumb-item">
-                        <i class="fa-solid fa-house"></i>
-                        Trang chủ
-                    </a>
-                    <i class="fa-solid fa-chevron-right"></i>
-                    <span class="breadcrumb-item active">Giỏ hàng</span>
-                </div>
-                <div class="cart-title-section">
-                    <h1 class="cart-main-title">
-                        <i class="fa-solid fa-shopping-bag"></i>
-                        Giỏ hàng của bạn
-                    </h1>
-                    <span class="cart-item-count">@cartItems.Count sản phẩm</span>
-                </div>
-            </div>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted small">Trang chủ</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold small" aria-current="page">Giỏ hàng</li>
+                </ol>
+            </nav>
 
-            <!-- Main Cart Content -->
-            <div class="cart-content-grid">
-                
-                <!-- Cart Items Table -->
-                <div class="cart-items-section">
-                    <div class="cart-table-wrapper">
-                        
-                        <!-- Table Header -->
-                        <div class="cart-table-header">
-                            <div class="col-product">Sản phẩm</div>
-                            <div class="col-price">Đơn giá</div>
-                            <div class="col-quantity">Số lượng</div>
-                            <div class="col-total">Tổng cộng</div>
-                            <div class="col-action"></div>
+            <div class="row g-4">
+                <!-- Cart Items List -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="mb-0 fw-bold" style="font-family: 'Google Sans', sans-serif;">Giỏ hàng (@cartItems.Count sản phẩm)</h5>
                         </div>
-
-                        <!-- Cart Items -->
-                        <div class="cart-items-list">
-                            @foreach (var item in cartItems)
-                            {
-                                <div class="cart-item-row" data-item-id="@item.VatTuId">
-                                    <!-- Product Info -->
-                                    <div class="cart-item-product">
-                                        <div class="product-image">
-                                            <img src="@item.HinhAnh" alt="@item.TenVatTu" />
-                                        </div>
-                                        <div class="product-details">
-                                            <a href="/SanPham/Details/@item.VatTuId" class="product-name">
-                                                @item.TenVatTu
-                                            </a>
-                                            <p class="product-variant">Còn hàng - Giao hàng nhanh</p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Price -->
-                                    <div class="cart-item-price">
-                                        <span class="price-amount">@item.DonGia.ToString("N0")₫</span>
-                                    </div>
-
-                                    <!-- Quantity -->
-                                    <div class="cart-item-quantity">
-                                        <div class="quantity-control">
-                                            <button class="qty-btn qty-decrease" onclick="updateQuantity(@item.VatTuId, -1)">
-                                                <i class="fa-solid fa-minus"></i>
-                                            </button>
-                                            <input type="number" 
-                                                   class="qty-input" 
-                                                   value="@item.SoLuong" 
-                                                   min="1"
-                                                   max="99"
-                                                   readonly 
-                                                   data-item-id="@item.VatTuId"
-                                                   data-price="@item.DonGia" />
-                                            <button class="qty-btn qty-increase" onclick="updateQuantity(@item.VatTuId, 1)">
-                                                <i class="fa-solid fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Total -->
-                                    <div class="cart-item-total">
-                                        <span class="total-amount">@item.ThanhTien.ToString("N0")₫</span>
-                                    </div>
-
-                                    <!-- Remove -->
-                                    <div class="cart-item-action">
-                                        <button class="btn-remove-item" onclick="confirmRemoveItem(@item.VatTuId, '@item.TenVatTu')">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            }
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light text-muted small text-uppercase">
+                                        <tr>
+                                            <th scope="col" class="ps-4 py-3" style="width: 45%;">Sản phẩm</th>
+                                            <th scope="col" class="py-3 text-center" style="width: 15%;">Đơn giá</th>
+                                            <th scope="col" class="py-3 text-center" style="width: 15%;">Số lượng</th>
+                                            <th scope="col" class="py-3 text-end pe-4" style="width: 20%;">Thành tiền</th>
+                                            <th scope="col" style="width: 5%;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in cartItems)
+                                        {
+                                            <tr class="cart-item-row" data-item-id="@item.VatTuId">
+                                                <td class="ps-4 py-3">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <a href="/SanPham/ProductDetail/@item.VatTuId" class="d-block flex-shrink-0">
+                                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width: 80px; height: 80px;">
+                                                                <img src="@(string.IsNullOrEmpty(item.HinhAnh) ? $"/user/images/{item.TenVatTu}.jpg" : item.HinhAnh)" 
+                                                                     alt="@item.TenVatTu" 
+                                                                     class="img-fluid p-2" 
+                                                                     style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                            </div>
+                                                        </a>
+                                                        <div>
+                                                            <h6 class="mb-1 fw-bold">
+                                                                <a href="/SanPham/ProductDetail/@item.VatTuId" class="text-decoration-none text-dark">@item.TenVatTu</a>
+                                                            </h6>
+                                                            <small class="text-muted">Mã: @item.VatTuId</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center text-muted fw-medium">
+                                                    @item.DonGia.ToString("N0")đ
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="input-group input-group-sm d-inline-flex flex-nowrap" style="width: 100px;">
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.VatTuId, -1)">-</button>
+                                                        <input type="number" class="form-control text-center qty-input border-secondary" 
+                                                               value="@item.SoLuong" min="1" max="99" readonly 
+                                                               data-item-id="@item.VatTuId" data-price="@item.DonGia">
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.VatTuId, 1)">+</button>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end pe-4 fw-bold text-primary total-amount">
+                                                    @item.ThanhTien.ToString("N0")đ
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    <button class="btn btn-link text-danger p-0 opacity-50 hover-opacity-100" 
+                                                            onclick="confirmRemoveItem(@item.VatTuId, '@item.TenVatTu')" 
+                                                            title="Xóa sản phẩm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="continue-shopping-section">
-                        <a href="/SanPham/Index" class="btn-continue-shopping">
-                            <i class="fa-solid fa-arrow-left"></i>
-                            Tiếp tục mua sắm
-                        </a>
-                        <a href="/GioHang/BaoGia" class="btn-export-quote" target="_blank">
-                            <i class="fa-solid fa-file-pdf"></i>
-                            Tải báo giá
-                        </a>
+                        <div class="card-footer bg-white p-3 border-top-0 d-flex justify-content-between align-items-center">
+                            <a href="/SanPham" class="text-decoration-none fw-bold text-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Order Summary Sidebar -->
-                <div class="order-summary-sidebar">
-                    <div class="summary-card">
-                        <h3 class="summary-title">Tóm tắt đơn hàng</h3>
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4" style="font-family: 'Google Sans', sans-serif;">Tóm tắt đơn hàng</h5>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Tạm tính</span>
+                                <span class="fw-bold" id="cart-subtotal">@subtotal.ToString("N0")đ</span>
+                            </div>
+                             <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Giảm giá</span>
+                                <span class="fw-bold text-success">-0đ</span>
+                            </div>
+                            
+                            <hr class="my-3 border-light opacity-50">
+                            
+                            <div class="d-flex justify-content-between mb-4 align-items-center">
+                                <span class="fw-bold fs-5">Tổng tiền</span>
+                                <span class="fw-bold fs-4 text-primary" id="cart-total">@total.ToString("N0")đ</span>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="/ThanhToan/Checkout" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                                    Tiến hành thanh toán
+                                </a>
+                                <a href="/GioHang/BaoGia" class="btn btn-outline-primary rounded-pill py-3 fw-bold">
+                                    <i class="fas fa-file-invoice me-2"></i>Xuất báo giá
+                                </a>
+                            </div>
 
-                        <!-- Subtotal -->
-                        <div class="summary-row">
-                            <span class="summary-label">Tạm tính</span>
-                            <span class="summary-value" id="cart-subtotal">@subtotal.ToString("N0")₫</span>
-                        </div>
-
-
-
-                        <!-- Total Weight Estimate -->
-                        <div class="shipping-note weight-estimate">
-                            <i class="fa-solid fa-weight-hanging"></i>
-                            <span>Trọng lượng ước tính: <strong>@totalWeight.ToString("N1") kg</strong></span>
-                        </div>
-
-                        <!-- Shipping Note -->
-                        <div class="shipping-note">
-                            <i class="fa-solid fa-truck"></i>
-                            <span>Phí vận chuyển sẽ được tính ở bước thanh toán</span>
-                        </div>
-
-                        <!-- Divider -->
-                        <div class="summary-divider"></div>
-
-                        <!-- Total -->
-                        <div class="summary-total-row">
-                            <span class="total-label">Tổng cộng</span>
-                            <span class="total-value" id="cart-total">@total.ToString("N0")₫</span>
-                        </div>
-
-                        <!-- Checkout Button -->
-                        <a href="/ThanhToan/Checkout" class="btn-checkout">
-                            <span>Tiến hành thanh toán</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-
-                        <!-- Security Badge -->
-                        <div class="security-badge">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <span>Giao dịch bảo mật & an toàn</span>
-                        </div>
-                    </div>
-
-                    <!-- Progress to Free Shipping -->
-                    <div class="freeship-progress-card">
-                        <div class="freeship-header">
-                            <i class="fa-solid fa-truck-fast"></i>
-                            <span>Miễn phí vận chuyển</span>
-                        </div>
-                        <p class="freeship-text">
-                            Mua thêm <strong>500.000₫</strong> để được miễn phí vận chuyển
-                        </p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 70%"></div>
+                            <div class="mt-4 pt-4 border-top">
+                                <div class="d-flex align-items-center gap-3 mb-2 text-muted small">
+                                    <i class="fas fa-shield-alt text-success fs-5"></i>
+                                    <span>Bảo mật thanh toán 100%</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 text-muted small">
+                                    <i class="fas fa-truck text-primary fs-5"></i>
+                                    <span>Giao hàng toàn quốc</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         }
     </div>
 </div>
 
 <!-- Toast Notification -->
-<div class="toast-notification" id="cartToast">
-    <div class="toast-content">
-        <i class="fa-solid fa-circle-check"></i>
-        <span class="toast-message">Đã cập nhật giỏ hàng</span>
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body fw-bold">
+                <i class="fas fa-check-circle me-2"></i><span class="toast-message">Cập nhật thành công</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Quantity update
+        // Quantity update logic
         function updateQuantity(productId, change) {
             const input = document.querySelector(`input[data-item-id="${productId}"]`);
             let currentQty = parseInt(input.value);
@@ -230,119 +190,75 @@
             
             input.value = newQty;
             
-            // Calculate new line total locally
+            // Local calculation for immediate feedback
             const price = parseFloat(input.dataset.price);
             const lineTotal = price * newQty;
             
-            // Update line total display
-            const row = document.querySelector(`[data-item-id="${productId}"]`);
+            // Update line total
+            const row = document.querySelector(`tr[data-item-id="${productId}"]`);
             const totalEl = row.querySelector('.total-amount');
             if(totalEl) {
-                totalEl.textContent = lineTotal.toLocaleString('vi-VN') + '₫';
+                totalEl.textContent = lineTotal.toLocaleString('vi-VN') + 'đ';
             }
 
             // Update cart summary
             updateCartSummary();
 
-            // Animate the row
-            row.style.transform = 'scale(0.98)';
-            setTimeout(() => row.style.transform = 'scale(1)', 200);
-            
-            // Show toast
-            // showToast('Đã cập nhật số lượng'); // Optional: hide toast to avoid spam
-            
-            // AJAX call to update backend (silent)
-             $.post('/GioHang/UpdateQuantity', { productId, quantity: newQty });
+            // AJAX call
+             $.post('/GioHang/UpdateQuantity', { productId, quantity: newQty }, function() {
+                 // Optional: Show toast on success
+             });
         }
 
         // Calculate and update cart totals
         function updateCartSummary() {
             let subtotal = 0;
-            const rows = document.querySelectorAll('.cart-item-row');
-            
-            rows.forEach(row => {
-                const input = row.querySelector('.qty-input');
-                if (input) {
-                    const qty = parseInt(input.value) || 0;
-                    const price = parseFloat(input.dataset.price) || 0;
-                    subtotal += qty * price;
-                }
+            document.querySelectorAll('.qty-input').forEach(input => {
+                const qty = parseInt(input.value) || 0;
+                const price = parseFloat(input.dataset.price) || 0;
+                subtotal += qty * price;
             });
             
-            const discount = 0; // Get discount if applied
-            const total = subtotal - discount;
+            const total = subtotal; // - discount
             
-            // Update DOM
-            const subtotalEl = document.getElementById('cart-subtotal');
-            const totalEl = document.getElementById('cart-total');
-            
-            if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString('vi-VN') + '₫';
-            if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN') + '₫';
+            document.getElementById('cart-subtotal').textContent = subtotal.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('cart-total').textContent = total.toLocaleString('vi-VN') + 'đ';
         }
 
-        // Remove item confirmation
+        // Remove item logic
         function confirmRemoveItem(productId, productName) {
-            showGlobalConfirm(`Bạn có chắc muốn xóa "${productName}" khỏi giỏ hàng?`, function() {
-                // AJAX call to remove from cart
-                $.post('/GioHang/RemoveFromCart', { productId }, function(res) {
+            if(confirm(`Bạn có chắc muốn xóa "${productName}" khỏi giỏ hàng?`)) {
+                 $.post('/GioHang/RemoveFromCart', { productId }, function(res) {
                     if (res.success) {
-                        const row = document.querySelector(`[data-item-id="${productId}"]`);
-                        row.style.opacity = '0';
-                        row.style.transform = 'translateX(100px)';
+                        const row = document.querySelector(`tr[data-item-id="${productId}"]`);
+                        row.remove();
+                        updateCartSummary();
                         
-                        setTimeout(() => {
-                            row.remove();
-                            showGlobalMessage('Đã xóa sản phẩm khỏi giỏ hàng', 'Thành công', 'success'); 
-                            
-                            // Update header cart count
-                            if (typeof updateCartCount === 'function') {
-                                updateCartCount(res.cartCount);
-                            }
-                            
-                            // Recalculate totals
-                            updateCartSummary();
-
-                            // Check if cart is empty
-                            checkEmptyCart();
-                        }, 300);
+                        // Show toast
+                        var toastEl = document.getElementById('cartToast');
+                        var toast = new bootstrap.Toast(toastEl);
+                        toastEl.querySelector('.toast-message').textContent = 'Đã xóa sản phẩm khỏi giỏ hàng';
+                        toast.show();
+                        
+                        // Reload if empty
+                        if(document.querySelectorAll('.cart-item-row').length === 0) {
+                            location.reload();
+                        }
                     }
                 });
-            });
-        }
-
-
-
-        // Show toast notification
-        function showToast(message) {
-            const toast = document.getElementById('cartToast');
-            const messageEl = toast.querySelector('.toast-message');
-            
-            messageEl.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Check if cart is empty
-        function checkEmptyCart() {
-            const items = document.querySelectorAll('.cart-item-row');
-            if (items.length === 0) {
-                window.location.reload();
             }
         }
-
-        // Page load animation
-        window.addEventListener('load', () => {
-            document.querySelectorAll('.cart-item-row').forEach((row, index) => {
-                setTimeout(() => {
-                    row.style.opacity = '1';
-                    row.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
     </script>
+    <style>
+        .hover-opacity-100:hover { opacity: 1 !important; }
+        .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Override specific table styles */
+        .table > :not(caption) > * > * {
+            box-shadow: none;
+            border-bottom-color: #f1f3f5;
+        }
+    </style>
 }
-
-<link rel="stylesheet" href="~/user/css/modern-cart.css" asp-append-version="true" />

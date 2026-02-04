@@ -17,7 +17,6 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
                 .FirstOrDefault(x => x.Email == email || x.TaiKhoan == email);
 
             if (nhanVien == null) return null;
-            /* COMMENT BCrypt THEO YÊU CẦU
             try
             {
                 if (BCrypt.Net.BCrypt.Verify(password, nhanVien.MatKhau))
@@ -29,7 +28,6 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             {
                 return null;
             }
-            */
 
             return null;
         }

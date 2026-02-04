@@ -49,7 +49,7 @@ namespace QuanLyVatTu_ASP.Controllers
                     DonGia = vatTu.GiaBan ?? 0,
                     SoLuong = quantity,
                     DonViTinh = vatTu.DonViTinh,
-                    HinhAnh = $"https://placehold.co/120x120?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}"
+                    HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}"
                 });
             }
 
@@ -166,7 +166,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 VatTuId = vatTu.ID,
                 TenVatTu = vatTu.TenVatTu,
                 DonGia = vatTu.GiaBan ?? 0,
-                HinhAnh = $"https://placehold.co/100x100?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}",
+                HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/100x100?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}",
                 NgayThem = DateTime.Now
             });
 
