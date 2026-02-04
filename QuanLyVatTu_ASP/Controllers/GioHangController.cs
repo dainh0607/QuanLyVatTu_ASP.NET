@@ -143,55 +143,85 @@ namespace QuanLyVatTu_ASP.Controllers
         }
         public async Task<IActionResult> Wishlist()
         {
-            var wishlist = HttpContext.Session.Get<List<WishlistItem>>("WISHLIST") ?? new List<WishlistItem>();
-            ViewBag.Total = wishlist.Count;
-            return View(wishlist);
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId == null)
+            {
+                // Chưa đăng nhập -> Trả về danh sách rỗng và cờ RequireLogin để hiện Modal ở View
+                ViewBag.RequireLogin = true;
+                return View(new List<WishlistItem>());
+            }
+
+            var wishlistEntities = await _unitOfWork.YeuThichRepository.GetByKhachHangIdAsync(khachHangId.Value);
+            var wishlistViewModels = wishlistEntities.Select(x => new WishlistItem
+            {
+                VatTuId = x.MaVatTu,
+                TenVatTu = x.VatTu?.TenVatTu,
+                DonGia = x.VatTu?.GiaBan ?? 0,
+                HinhAnh = !string.IsNullOrEmpty(x.VatTu?.HinhAnh) ? x.VatTu.HinhAnh : $"https://placehold.co/100x100?text={Uri.EscapeDataString(x.VatTu?.TenVatTu ?? "SP")}",
+                NgayThem = x.NgayThem
+            }).ToList();
+
+            ViewBag.Total = wishlistViewModels.Count;
+            return View(wishlistViewModels);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddToWishlist(int productId)
         {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId == null)
+            {
+                return Json(new { success = false, requireLogin = true, message = "Vui lòng đăng nhập để thêm vào yêu thích!" });
+            }
+
             var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
             if (vatTu == null) return Json(new { success = false, message = "Sản phẩm không tồn tại" });
 
-            var wishlist = HttpContext.Session.Get<List<WishlistItem>>("WISHLIST") ?? new List<WishlistItem>();
-
-            if (wishlist.Any(x => x.VatTuId == productId))
+            var existingItem = await _unitOfWork.YeuThichRepository.GetByKhachHangAndVatTuAsync(khachHangId.Value, productId);
+            if (existingItem != null)
             {
                 return Json(new { success = false, message = "Sản phẩm đã có trong danh sách yêu thích" });
             }
 
-            wishlist.Add(new WishlistItem
+            var newItem = new QuanLyVatTu_ASP.Areas.Admin.Models.YeuThich
             {
-                VatTuId = vatTu.ID,
-                TenVatTu = vatTu.TenVatTu,
-                DonGia = vatTu.GiaBan ?? 0,
-                HinhAnh = !string.IsNullOrEmpty(vatTu.HinhAnh) ? vatTu.HinhAnh : $"https://placehold.co/100x100?text={Uri.EscapeDataString(vatTu.TenVatTu ?? "SP")}",
+                MaKhachHang = khachHangId.Value,
+                MaVatTu = productId,
                 NgayThem = DateTime.Now
-            });
+            };
 
-            HttpContext.Session.Set("WISHLIST", wishlist);
+            await _unitOfWork.YeuThichRepository.AddAsync(newItem);
+            _unitOfWork.Save();
 
-            return Json(new { success = true, message = "Đã thêm vào yêu thích", count = wishlist.Count });
+            // Lấy lại số lượng để cập nhật badge
+            var currentList = await _unitOfWork.YeuThichRepository.GetByKhachHangIdAsync(khachHangId.Value);
+
+            return Json(new { success = true, message = "Đã thêm vào yêu thích", count = currentList.Count() });
         }
 
         [HttpPost]
-        public IActionResult RemoveFromWishlist(int productId)
+        public async Task<IActionResult> RemoveFromWishlist(int productId)
         {
-            var wishlist = HttpContext.Session.Get<List<WishlistItem>>("WISHLIST") ?? new List<WishlistItem>();
-            var item = wishlist.FirstOrDefault(x => x.VatTuId == productId);
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId == null)
+            {
+                return Json(new { success = false, requireLogin = true, message = "Vui lòng đăng nhập!" });
+            }
+
+            var item = await _unitOfWork.YeuThichRepository.GetByKhachHangAndVatTuAsync(khachHangId.Value, productId);
             
             if (item != null)
             {
-                wishlist.Remove(item);
-                HttpContext.Session.Set("WISHLIST", wishlist);
+                _unitOfWork.YeuThichRepository.Delete(item);
+                _unitOfWork.Save();
             }
 
-            return Json(new { success = true, count = wishlist.Count });
+            var currentList = await _unitOfWork.YeuThichRepository.GetByKhachHangIdAsync(khachHangId.Value);
+
+            return Json(new { success = true, count = currentList.Count() });
         }
 
         /// <summary>
-        /// Xuất báo giá từ giỏ hàng - trang print-friendly
         /// </summary>
         public IActionResult BaoGia()
         {

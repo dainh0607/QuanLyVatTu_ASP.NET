@@ -17,8 +17,7 @@ namespace QuanLyVatTu_ASP.Repositories
         public IChiTietDonHangRepository ChiTietDonHangRepository { get; private set; }
         public IHoaDonRepository HoaDonRepository { get; private set; }
         public IChiTietHoaDonRepository ChiTietHoaDonRepository { get; private set; }
-        // public IDanhGiaRepository DanhGiaRepository { get; private set; }
-        // public IYeuThichRepository YeuThichRepository { get; private set; }
+        public IYeuThichRepository YeuThichRepository { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -34,7 +33,7 @@ namespace QuanLyVatTu_ASP.Repositories
             HoaDonRepository = new HoaDonRepository(_context);
             ChiTietHoaDonRepository = new ChiTietHoaDonRepository(_context);
             // DanhGiaRepository = new DanhGiaRepository(_context);
-            // YeuThichRepository = new YeuThichRepository(_context);
+            YeuThichRepository = new YeuThichRepository(_context);
         }
 
         public int Save()

@@ -131,17 +131,47 @@
                 if (document.querySelectorAll('.wishlist-card').length === 0) {
                     location.reload();
                 }
+            } else if (data.requireLogin) {
+                 if (typeof showGlobalLogin === 'function') {
+                    showGlobalLogin(data.message);
+                 } else {
+                    alert(data.message);
+                    window.location.href = '/Account/Login';
+                 }
             }
         });
     }
 
     function addToCart(productId) {
-        fetch('/GioHang/AddToCart?productId=' + productId)
+        // Use global function if available or local impl
+        if (typeof window.addToCart === 'function') {
+            window.addToCart(productId);
+        } else {
+            // Fallback (old impl)
+             fetch('/GioHang/AddToCart?productId=' + productId)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     alert('Đã thêm vào giỏ hàng!');
                 }
             });
+        }
+    }
+
+    @if (ViewBag.RequireLogin == true)
+    {
+        <text>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof showGlobalLogin === 'function') {
+                showGlobalLogin('Vui lòng đăng nhập để xem danh sách yêu thích của bạn.');
+            } else {
+                // Fallback attempt to open modal directly
+                var el = document.getElementById('globalLoginModal');
+                if(el && typeof bootstrap !== 'undefined') {
+                    new bootstrap.Modal(el).show();
+                }
+            }
+        });
+        </text>
     }
 </script>
