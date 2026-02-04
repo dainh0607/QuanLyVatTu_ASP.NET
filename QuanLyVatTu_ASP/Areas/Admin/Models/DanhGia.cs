@@ -32,6 +32,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         public string? BinhLuan { get; set; }
 
+        public string? PhanHoi { get; set; } // Phản hồi từ cửa hàng
+        public DateTime? NgayPhanHoi { get; set; }
+
         public int LuotThich { get; set; } = 0;
 
         public DateTime NgayDanhGia { get; set; } = DateTime.Now;
