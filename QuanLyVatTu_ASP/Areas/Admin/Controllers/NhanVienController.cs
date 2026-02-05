@@ -34,6 +34,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             return View(new NhanVienCreateEditViewModel { NgaySinh = DateTime.Now.AddYears(-22), MaHienThi = nextMa });
         }
 
+        // GET: /admin/nhan-vien/chi-tiet/5
+        [HttpGet("chi-tiet/{id:int}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = await _nhanVienService.GetByIdAsync(id);
+            if (model == null) return NotFound();
+            return View(model);
+        }
+
         // API: /admin/nhan-vien/get-next-ma
         [HttpGet("get-next-ma")]
         public async Task<IActionResult> GetNextMaHienThi()

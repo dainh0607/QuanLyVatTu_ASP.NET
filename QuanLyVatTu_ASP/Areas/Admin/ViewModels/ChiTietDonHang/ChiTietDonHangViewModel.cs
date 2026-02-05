@@ -13,6 +13,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public List<ChiTietDonHangItem> ChiTietDonHang { get; set; } = new();
         public decimal TongTien => ChiTietDonHang.Sum(x => x.ThanhTien);
         
+        // Added for View Logic
+        public string TrangThai { get; set; } = "";
+
         // Extended for Invoice Logic
         public int? HoaDonId { get; set; }
         public decimal? SoTienDatCoc { get; set; }

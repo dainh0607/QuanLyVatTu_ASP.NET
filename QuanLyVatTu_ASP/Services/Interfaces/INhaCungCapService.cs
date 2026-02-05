@@ -18,5 +18,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<List<NhaCungCap>> GetLookupAsync();
 
         Task<string> GetNextMaHienThiAsync();
+
+        Task<NhaCungCap?> GetByIdAsync(int id);
     }
 }

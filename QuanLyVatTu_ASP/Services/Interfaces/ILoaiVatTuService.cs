@@ -18,5 +18,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<List<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>> GetLookupAsync();
 
         Task<string> GetNextMaHienThiAsync();
+
+        Task<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu?> GetByIdAsync(int id);
     }
 }

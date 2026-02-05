@@ -49,7 +49,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var total = await query.CountAsync();
             var items = await query
-                .OrderByDescending(x => x.NgayTao)
+                .OrderByDescending(x => x.NgayDat)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(x => new DonHangIndexViewModel.ItemViewModel
@@ -58,6 +58,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     MaHienThi = x.MaHienThi ?? "DH" + x.ID.ToString("0000"),
                     TenKhachHang = x.KhachHang != null ? x.KhachHang.HoTen : "",
                     TenNhanVien = x.NhanVien != null ? x.NhanVien.HoTen : "",
+                    HinhAnhNhanVien = x.NhanVien != null ? x.NhanVien.AnhDaiDien : null,
                     NgayDat = x.NgayDat,
                     TongTien = x.TongTien ?? 0,
                     SoTienDatCoc = x.SoTienDatCoc ?? 0,
@@ -126,19 +127,52 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var entity = await _context.DonHang.FindAsync(id);
             if (entity == null) return false;
 
-            
+            // 1. Nếu đơn đã hủy, chỉ cho phép cập nhật Ghi chú
+            if (entity.TrangThai == "Đã hủy")
+            {
+                if (model.TrangThai != "Đã hủy") return false; // Không cho phép khôi phục đơn đã hủy
+                entity.GhiChu = model.GhiChu;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            // 2. Validate chuyển đổi trạng thái (chỉ được tiến tới, không được lùi)
+            string currentStatus = entity.TrangThai ?? "Chờ xác nhận";
+            string newStatus = model.TrangThai ?? "Chờ xác nhận";
+
+            // Nếu trạng thái thay đổi
+            if (currentStatus != newStatus)
+            {
+                int currentLevel = GetStatusLevel(currentStatus);
+                int newLevel = GetStatusLevel(newStatus);
+
+                // Đặc biệt: Nếu muốn Hủy đơn (level 0 hoặc -1) thì OK (trừ khi đã thanh toán/giao hàng?)
+                // Yêu cầu: "Đã giao" thì không sửa lại được "Đã hủy"?, "Đã thanh toán" thì không sửa lại được "Đã hủy"
+                if (newStatus == "Đã hủy")
+                {
+                    if (currentStatus == "Đã giao" || currentStatus == "Đã thanh toán")
+                    {
+                         // Không cho hủy khi đã giao/thanh toán (theo yêu cầu)
+                         return false; 
+                    }
+                }
+                else if (newLevel < currentLevel)
+                {
+                    // Không cho phép quay lui trạng thái
+                    return false;
+                }
+            }
+
             decimal datCocCu = entity.SoTienDatCoc ?? 0;
             decimal datCocMoi = model.SoTienDatCoc ?? 0;
             decimal tienCocToiThieu = (entity.TongTien ?? 0) * 0.1M;
 
             if (datCocMoi < datCocCu)
             {
-                
                 return false;
             }
             if (model.TrangThai == "Đã xác nhận" && datCocMoi < tienCocToiThieu)
             {
-
                 return false;
             }
             if (model.NgayDatCoc.HasValue && model.NgayDatCoc.Value.Year < 1753)
@@ -177,9 +211,27 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var entity = await _context.DonHang.FindAsync(id);
             if (entity != null)
             {
-                _context.DonHang.Remove(entity);
-                await _context.SaveChangesAsync();
+                // Chỉ cho phép xóa đơn hàng Chờ xác nhận và Đã xác nhận
+                if (entity.TrangThai == "Chờ xác nhận" || entity.TrangThai == "Đã xác nhận")
+                {
+                    _context.DonHang.Remove(entity);
+                    await _context.SaveChangesAsync();
+                }
             }
+        }
+
+        private int GetStatusLevel(string status)
+        {
+            return status.Trim() switch
+            {
+                "Chờ xác nhận" => 1,
+                "Đã xác nhận" => 2,
+                "Đang xử lý" => 3,
+                "Đã giao" => 4,
+                "Đã thanh toán" => 5,
+                "Đã hủy" => 100, // Status cuối
+                _ => 0
+            };
         }
 
         public async Task<List<KhachHang>> GetKhachHangLookupAsync()

@@ -1,0 +1,89 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu
+
+@{
+    ViewData["Title"] = "Chi tiết loại vật tư";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Chi tiết loại vật tư</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Danh sách loại vật tư</a></li>
+        <li class="breadcrumb-item active">Chi tiết</li>
+    </ol>
+
+    <div class="card mb-4 shadow-sm rounded-4">
+         <div class="card-header bg-warning text-dark py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i>Thông tin: @Model.TenLoaiVatTu</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Mã hiển thị</label>
+                    <p class="form-control-plaintext border-bottom">@Model.MaHienThi</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Tên loại vật tư</label>
+                    <p class="form-control-plaintext border-bottom fw-bold text-primary">@Model.TenLoaiVatTu</p>
+                </div>
+                <div class="col-12">
+                     <label class="form-label fw-bold text-muted">Mô tả</label>
+                     <div class="p-3 bg-light rounded border">
+                         @if(!string.IsNullOrEmpty(Model.MoTa)) {
+                             @Html.Raw(Model.MoTa.Replace("\n", "<br>"))
+                         } else {
+                             <span class="text-muted fst-italic">Không có mô tả</span>
+                         }
+                     </div>
+                </div>
+                 <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Ngày tạo</label>
+                    <p class="form-control-plaintext border-bottom">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+                 <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Số lượng vật tư thuộc loại này</label>
+                    <p class="form-control-plaintext border-bottom fw-bold">@(Model.VatTus?.Count ?? 0) sản phẩm</p>
+                </div>
+            </div>
+            
+            @if (Model.VatTus != null && Model.VatTus.Any())
+            {
+                <div class="mt-4">
+                    <h6 class="fw-bold border-bottom pb-2">Danh sách vật tư thuộc loại này</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã VT</th>
+                                    <th>Tên Vật Tư</th>
+                                    <th>Số Lượng Tồn</th>
+                                    <th>Đơn Vị Tính</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var vt in Model.VatTus.Take(10)) 
+                                {
+                                    <tr>
+                                        <td>@vt.MaHienThi</td>
+                                        <td>@vt.TenVatTu</td>
+                                        <td class="text-end">@((vt.SoLuongTon ?? 0).ToString("N0"))</td>
+                                        <td>@vt.DonViTinh</td>
+                                    </tr>
+                                }
+                                @if(Model.VatTus.Count > 10) {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted fst-italic">... và @(Model.VatTus.Count - 10) vật tư khác ...</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between py-3">
+             <a asp-action="Index" class="btn btn-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+             <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary rounded-pill px-4"><i class="fas fa-edit me-2"></i>Chỉnh sửa</a>
+        </div>
+    </div>
+</div>

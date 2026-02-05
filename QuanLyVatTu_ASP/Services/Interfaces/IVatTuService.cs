@@ -18,5 +18,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<(List<LoaiVatTu> LoaiList, List<NhaCungCap> NccList)> GetDropdownDataAsync();
 
         Task<string> GetNextMaHienThiAsync();
+
+        Task<VatTu?> GetByIdAsync(int id);
     }
 }

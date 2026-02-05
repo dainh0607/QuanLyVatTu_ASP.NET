@@ -187,5 +187,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             return $"KH{nextNumber:D3}";
         }
+
+        public async Task<KhachHang?> GetByIdAsync(int id)
+        {
+            return await _context.KhachHangs.FindAsync(id);
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<string?> DeleteAsync(int id);
 
         Task<string> GetNextMaHienThiAsync();
+
+        Task<QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang?> GetByIdAsync(int id);
     }
 }

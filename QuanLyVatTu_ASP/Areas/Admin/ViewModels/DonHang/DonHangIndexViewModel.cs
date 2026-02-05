@@ -19,6 +19,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
             public string MaHienThi { get; set; } = string.Empty;
             public string TenKhachHang { get; set; } = string.Empty;
             public string TenNhanVien { get; set; } = string.Empty;
+            public string? HinhAnhNhanVien { get; set; }
             public DateTime NgayDat { get; set; }
             public decimal TongTien { get; set; }
             public decimal? SoTienDatCoc { get; set; }

@@ -47,6 +47,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             return View(new VatTuCreateEditViewModel { MaHienThi = nextMa });
         }
 
+        // GET: /admin/vat-tu/chi-tiet/5
+        [HttpGet("chi-tiet/{id:int}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = await _vatTuService.GetByIdAsync(id);
+            if (model == null) return NotFound();
+            return View(model);
+        }
+
         // API: /admin/vat-tu/get-next-ma
         [HttpGet("get-next-ma")]
         public async Task<IActionResult> GetNextMaHienThi()

@@ -1,0 +1,61 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.NhaCungCap
+
+@{
+    ViewData["Title"] = "Chi tiết nhà cung cấp";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Chi tiết nhà cung cấp</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Nhà cung cấp</a></li>
+        <li class="breadcrumb-item active">Chi tiết</li>
+    </ol>
+
+    <div class="card mb-4 shadow-sm rounded-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-building me-2"></i>Thông tin: @Model.TenNhaCungCap</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Mã hiển thị</label>
+                    <p class="form-control-plaintext border-bottom">@Model.MaHienThi</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Tên nhà cung cấp</label>
+                    <p class="form-control-plaintext border-bottom fw-bold text-primary">@Model.TenNhaCungCap</p>
+                </div>
+                 <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Số điện thoại</label>
+                    <p class="form-control-plaintext border-bottom">
+                        @if(!string.IsNullOrEmpty(Model.SoDienThoai)) {
+                            <a href="tel:@Model.SoDienThoai" class="text-decoration-none">@Model.SoDienThoai</a>
+                        } else { <span class="text-muted">-</span> }
+                    </p>
+                </div>
+                 <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Email</label>
+                    <p class="form-control-plaintext border-bottom">
+                         @if(!string.IsNullOrEmpty(Model.Email)) {
+                            <a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a>
+                        } else { <span class="text-muted">-</span> }
+                    </p>
+                </div>
+                <div class="col-12">
+                     <label class="form-label fw-bold text-muted">Địa chỉ</label>
+                     <p class="form-control-plaintext border-bottom">@Model.DiaChi</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted">Ngày tạo</label>
+                    <p class="form-control-plaintext border-bottom">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between py-3">
+             <a asp-action="Index" class="btn btn-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+             <div class="d-flex gap-2">
+                 <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary rounded-pill px-4"><i class="fas fa-edit me-2"></i>Chỉnh sửa</a>
+             </div>
+        </div>
+    </div>
+</div>

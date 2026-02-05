@@ -74,17 +74,23 @@
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số tiền đặt cọc</label>
                                     <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" 
-                                           value="@(Model.SoTienDatCoc?.ToString("0") ?? "")" />
+                                           value="@(Model.SoTienDatCoc?.ToString("0") ?? "")" 
+                                           readonly="@(Model.TrangThai == "Đã hủy")" />
                                     <span asp-validation-for="SoTienDatCoc" class="text-danger"></span>
                                     <small id="depositHint" class="text-muted fst-italic">* Số tiền cần đặt cọc là @(((Model.TongTien ?? 0) * 0.1m).ToString("N0")) (10% giá trị đơn hàng)</small>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Phương thức thanh toán <span class="text-danger">*</span></label>
-                                    <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3" id="PhuongThucDatCoc" required>
-                                        <option value="">-- Chọn phương thức --</option>
-                                        <option value="Tiền mặt">Tiền mặt</option>
-                                        <option value="Chuyển khoản">Chuyển khoản</option>
-                                    </select>
+                                    @if(Model.TrangThai == "Đã hủy") {
+                                         <input type="text" class="form-control form-control-lg rounded-3 bg-light" value="@Model.PhuongThucDatCoc" readonly />
+                                         <input type="hidden" asp-for="PhuongThucDatCoc" />
+                                    } else {
+                                        <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3" id="PhuongThucDatCoc" required>
+                                            <option value="">-- Chọn phương thức --</option>
+                                            <option value="Tiền mặt">Tiền mặt</option>
+                                            <option value="Chuyển khoản">Chuyển khoản</option>
+                                        </select>
+                                    }
                                     <span asp-validation-for="PhuongThucDatCoc" class="text-danger"></span>
                                 </div>
                                 <div class="mb-4">
@@ -127,9 +133,45 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Logic chặn chuyển trạng thái ngược
+            const statusLevels = {
+                'Chờ xác nhận': 1,
+                'Đã xác nhận': 2,
+                'chưa thanh toán': 2, // Coi như ngang hàng Đã xác nhận? Hoặc thấp hơn? Để tạm
+                'Đang xử lý': 3,
+                'Đã giao': 4,
+                'Đã thanh toán': 5,
+                'Đã hoàn thành': 5,
+                'Đã hủy': 100
+            };
+
+            const currentStatus = '@Html.Raw(Model.TrangThai)';
+            const currentLevel = statusLevels[currentStatus] || 0;
+            const select = $('select[name="TrangThai"]');
+
+            if (select.length > 0) {
+                select.find('option').each(function() {
+                    const optionStatus = $(this).val();
+                    const optionLevel = statusLevels[optionStatus] || 0;
+
+                    // 1. Không cho chọn level thấp hơn hiện tại (quay lui)
+                    if (optionLevel < currentLevel) {
+                         $(this).prop('disabled', true);
+                    }
+
+                    // 2. Đặc biệt: Đã giao/Đã thanh toán thì không được chọn Đã hủy
+                    if (optionStatus === 'Đã hủy') {
+                        if (currentStatus === 'Đã giao' || currentStatus === 'Đã thanh toán' || currentStatus === 'Đã hoàn thành') {
+                             $(this).prop('disabled', true);
+                        }
+                    }
+                });
+            }
+
+
             $('form').submit(function (e) {
                 // Validate phương thức thanh toán
-                if (!$('#PhuongThucDatCoc').val()) {
+                if (!$('#PhuongThucDatCoc').val() && !$('#PhuongThucDatCoc').prop('disabled')) {
                     e.preventDefault();
                     $('#PhuongThucDatCoc').addClass('is-invalid');
                     alert("Vui lòng chọn phương thức thanh toán!");
@@ -144,11 +186,12 @@
                 var datCoc = parseFloat(datCocStr) || 0;
                 var minDeposit = tongTien * 0.1;
 
-                if (datCoc < minDeposit) {
-                   e.preventDefault(); // Prevent submit
-                   $('#depositHint').removeClass('text-muted').addClass('text-danger fw-bold');
-                   alert("Số tiền đặt cọc chưa đủ 10% tổng giá trị đơn hàng!");
-                   return false;
+                if (datCoc < minDeposit && !$('#SoTienDatCoc').prop('disabled')) {
+                   if (!confirm("Số tiền đặt cọc chưa đủ 10%. Bạn có chắc muốn tiếp tục không?")) {
+                       e.preventDefault(); // Prevent submit
+                       $('#depositHint').removeClass('text-muted').addClass('text-danger fw-bold');
+                       return false;
+                   }
                 } else {
                    $('#depositHint').removeClass('text-danger fw-bold').addClass('text-muted');
                 }

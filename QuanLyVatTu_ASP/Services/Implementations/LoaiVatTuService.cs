@@ -157,5 +157,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             return $"LVT{nextNumber:D3}";
         }
+
+        public async Task<LoaiVatTu?> GetByIdAsync(int id)
+        {
+            return await _context.LoaiVatTus
+                .Include(x => x.VatTus)
+                .FirstOrDefaultAsync(x => x.ID == id);
+        }
     }
 }

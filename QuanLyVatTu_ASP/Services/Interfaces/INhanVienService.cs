@@ -18,5 +18,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<UserProfileViewModel?> GetByEmailAsync(string email);
 
         Task<string> GetNextMaHienThiAsync();
+
+        Task<QuanLyVatTu_ASP.Areas.Admin.Models.NhanVien?> GetByIdAsync(int id);
     }
 }

@@ -216,5 +216,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             return $"NV{nextNumber:D3}";
         }
+
+        public async Task<NhanVien?> GetByIdAsync(int id)
+        {
+            return await _context.NhanViens.FindAsync(id);
+        }
     }
 }

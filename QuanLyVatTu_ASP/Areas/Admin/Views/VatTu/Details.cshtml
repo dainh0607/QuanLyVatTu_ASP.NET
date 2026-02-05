@@ -1,0 +1,82 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.VatTu
+
+@{
+    ViewData["Title"] = "Chi tiết vật tư";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Chi tiết vật tư</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Danh sách vật tư</a></li>
+        <li class="breadcrumb-item active">Chi tiết</li>
+    </ol>
+
+    <div class="card mb-4 shadow-sm rounded-4">
+        <div class="card-header bg-info text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i>Thông tin chi tiết: @Model.TenVatTu</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    <label class="form-label fw-bold d-block">Hình ảnh</label>
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <img src="@Model.HinhAnh" class="img-fluid rounded shadow-sm" style="max-height: 300px; object-fit: contain;" alt="@Model.TenVatTu" />
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded text-muted" style="height: 250px;">
+                            <i class="fas fa-image fa-4x"></i>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-8">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Mã hiển thị</label>
+                            <p class="form-control-plaintext border-bottom">@Model.MaHienThi</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Tên vật tư</label>
+                            <p class="form-control-plaintext border-bottom fw-bold text-primary">@Model.TenVatTu</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Đơn vị tính</label>
+                            <p class="form-control-plaintext border-bottom">@Model.DonViTinh</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Số lượng tồn</label>
+                             <p class="form-control-plaintext border-bottom text-success fw-bold">@((Model.SoLuongTon ?? 0).ToString("N0"))</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Giá nhập</label>
+                            <p class="form-control-plaintext border-bottom">@((Model.GiaNhap ?? 0).ToString("N0")) đ</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Giá bán</label>
+                            <p class="form-control-plaintext border-bottom text-danger fw-bold">@((Model.GiaBan ?? 0).ToString("N0")) đ</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Loại vật tư</label>
+                            <p class="form-control-plaintext border-bottom">@(Model.LoaiVatTu?.TenLoaiVatTu ?? "-")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Nhà cung cấp</label>
+                            <p class="form-control-plaintext border-bottom">@(Model.NhaCungCap?.TenNhaCungCap ?? "-")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted">Ngày tạo</label>
+                            <p class="form-control-plaintext border-bottom">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between py-3">
+             <a asp-action="Index" class="btn btn-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+             <div class="d-flex gap-2">
+                 <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary rounded-pill px-4"><i class="fas fa-edit me-2"></i>Chỉnh sửa</a>
+             </div>
+        </div>
+    </div>
+</div>

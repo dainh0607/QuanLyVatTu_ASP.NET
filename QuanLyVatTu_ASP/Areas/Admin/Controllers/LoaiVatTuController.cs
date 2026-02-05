@@ -33,6 +33,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             return View(new LoaiVatTuCreateEditViewModel { MaHienThi = nextMa });
         }
 
+        // GET: /admin/loai-vat-tu/chi-tiet/5
+        [HttpGet("chi-tiet/{id:int}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = await _loaiVatTuService.GetByIdAsync(id);
+            if (model == null) return NotFound();
+            return View(model);
+        }
+
         // API: /admin/loai-vat-tu/get-next-ma
         [HttpGet("get-next-ma")]
         public async Task<IActionResult> GetNextMaHienThi()

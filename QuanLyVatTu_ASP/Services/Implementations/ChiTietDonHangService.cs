@@ -73,7 +73,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 ChiTietDonHang = chiTiet,
                 SearchTerm = search,
                 HoaDonId = hoaDonId,
-                SoTienDatCoc = donHang?.SoTienDatCoc
+                SoTienDatCoc = donHang?.SoTienDatCoc,
+                TrangThai = donHang?.TrangThai ?? ""
             };
         }
 

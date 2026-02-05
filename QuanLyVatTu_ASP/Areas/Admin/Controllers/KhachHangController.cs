@@ -34,6 +34,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             return View(new KhachHangCreateEditViewModel { MaHienThi = nextMa });
         }
 
+        // GET: /admin/khach-hang/chi-tiet/5
+        [HttpGet("chi-tiet/{id:int}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = await _khachHangService.GetByIdAsync(id);
+            if (model == null) return NotFound();
+            return View(model);
+        }
+
         // API: /admin/khach-hang/get-next-ma
         [HttpGet("get-next-ma")]
         public async Task<IActionResult> GetNextMaHienThi()

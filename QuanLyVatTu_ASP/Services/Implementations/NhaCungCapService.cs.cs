@@ -176,5 +176,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             return $"NCC{nextNumber:D3}";
         }
+
+        public async Task<NhaCungCap?> GetByIdAsync(int id)
+        {
+             return await _context.NhaCungCaps.FindAsync(id);
+        }
     }
 }
