@@ -44,14 +44,14 @@ builder.Services.AddScoped<IThongKeService, ThongKeService>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Google.GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options => 
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/Login";
-})
-.AddGoogle(options =>
+});
+/*.AddGoogle(options =>
 {
     // Cấu hình ClientId và ClientSecret từ appsettings.json
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("profile");
     options.Scope.Add("email");
     options.SaveTokens = true;
-});
+});*/
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
