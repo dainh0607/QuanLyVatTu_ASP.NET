@@ -26,6 +26,8 @@ builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
 builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
+builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
+builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
 
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
@@ -66,6 +68,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
