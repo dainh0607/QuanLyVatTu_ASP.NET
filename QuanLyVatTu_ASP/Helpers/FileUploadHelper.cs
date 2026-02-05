@@ -1,3 +1,6 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+
 namespace QuanLyVatTu_ASP.Helpers
 {
     public static class FileUploadHelper
@@ -13,25 +16,77 @@ namespace QuanLyVatTu_ASP.Helpers
         {
             if (file == null || file.Length == 0) return null;
 
-            // Tạo đường dẫn thư mục
+            // Tạo đường dẫn thư mục lưu trữ
             var uploadPath = Path.Combine(webRootPath, subFolder);
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
             }
 
-            // Tạo tên file duy nhất
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(uploadPath, fileName);
+            // Kiểm tra xem file có phải là ảnh không (theo extension)
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff" };
 
-            // Lưu file
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (imageExtensions.Contains(extension))
+            {
+                // Nếu là ảnh, xử lý chuyển đổi sang WebP và Resize
+                try
+                {
+                    // Tên file mới với đuôi .webp
+                    var fileName = $"{Guid.NewGuid()}.webp";
+                    var filePath = Path.Combine(uploadPath, fileName);
+
+                    // Load ảnh từ stream
+                    using (var image = await SixLabors.ImageSharp.Image.LoadAsync(file.OpenReadStream()))
+                    {
+                        // Logic Resize: Nếu chiều rộng > 800px thì resize về 800px (giữ tỷ lệ)
+                        const int maxDimension = 800;
+                        if (image.Width > maxDimension || image.Height > maxDimension)
+                        {
+                           // Tính toán kích thước mới giữ nguyên tỷ lệ
+                           int newWidth, newHeight;
+                           if (image.Width > image.Height)
+                           {
+                               newWidth = maxDimension;
+                               newHeight = (int)((float)image.Height / image.Width * maxDimension);
+                           }
+                           else
+                           {
+                               newHeight = maxDimension;
+                               newWidth = (int)((float)image.Width / image.Height * maxDimension);
+                           }
+
+                           image.Mutate(x => x.Resize(newWidth, newHeight));
+                        }
+
+                        // Lưu ảnh dưới dạng WebP với chất lượng 75
+                        var encoder = new SixLabors.ImageSharp.Formats.Webp.WebpEncoder()
+                        {
+                            Quality = 75
+                        };
+                        await image.SaveAsync(filePath, encoder);
+                    }
+
+                    // Trả về đường dẫn WebP
+                    return $"/{subFolder.Replace("\\", "/")}/{fileName}";
+                }
+                catch (Exception)
+                {
+                    // Nếu lỗi xử lý ảnh (vd file lỗi), fallback về save thường
+                    // (Hoặc có thể log lỗi và return null hoặc throw tùy yêu cầu)
+                }
+            }
+
+            // --- Logic Fallback / File thường (giữ nguyên logic cũ) ---
+            var defaultFileName = $"{Guid.NewGuid()}{extension}";
+            var defaultFilePath = Path.Combine(uploadPath, defaultFileName);
+
+            using (var stream = new FileStream(defaultFilePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // Trả về đường dẫn tương đối (cho URL)
-            return $"/{subFolder.Replace("\\", "/")}/{fileName}";
+            return $"/{subFolder.Replace("\\", "/")}/{defaultFileName}";
         }
 
         /// <summary>
