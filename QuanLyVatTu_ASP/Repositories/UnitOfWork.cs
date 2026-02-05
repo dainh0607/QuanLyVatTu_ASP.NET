@@ -18,6 +18,8 @@ namespace QuanLyVatTu_ASP.Repositories
         public IHoaDonRepository HoaDonRepository { get; private set; }
         public IChiTietHoaDonRepository ChiTietHoaDonRepository { get; private set; }
         public IYeuThichRepository YeuThichRepository { get; private set; }
+        public IGioHangRepository GioHangRepository { get; private set; }
+        public IChiTietGioHangRepository ChiTietGioHangRepository { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -34,6 +36,8 @@ namespace QuanLyVatTu_ASP.Repositories
             ChiTietHoaDonRepository = new ChiTietHoaDonRepository(_context);
             // DanhGiaRepository = new DanhGiaRepository(_context);
             YeuThichRepository = new YeuThichRepository(_context);
+            GioHangRepository = new GioHangRepository(_context);
+            ChiTietGioHangRepository = new ChiTietGioHangRepository(_context);
         }
 
         public int Save()

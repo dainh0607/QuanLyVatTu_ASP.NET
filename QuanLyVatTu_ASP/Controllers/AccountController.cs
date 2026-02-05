@@ -183,14 +183,20 @@ namespace QuanLyVatTu_ASP.Controllers
             // Xóa toàn bộ Session
             HttpContext.Session.Clear();
             
-            // Xóa Cookie Session để ngăn chặn việc sử dụng lại Session ID cũ
-            foreach (var cookie in Request.Cookies.Keys)
+            // Xóa Cookie Session (Dùng đúng tên đã config trong Program.cs)
+            if (Request.Cookies[".QuanLyVatTu.Session"] != null)
             {
-                if (cookie == ".AspNetCore.Session" || cookie == "AspNetCore.Antiforgery")
-                {
-                    Response.Cookies.Delete(cookie);
-                }
+                Response.Cookies.Delete(".QuanLyVatTu.Session");
             }
+            if (Request.Cookies[".AspNetCore.Session"] != null)
+            {
+                Response.Cookies.Delete(".AspNetCore.Session");
+            }
+
+            // Thêm Header để ngăn browser cache (Chống Back sau khi Logout)
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
             
             return RedirectToAction("Login");
         }

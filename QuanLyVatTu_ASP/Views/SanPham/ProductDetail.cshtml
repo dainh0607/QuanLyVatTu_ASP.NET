@@ -74,6 +74,22 @@
         color: #fff;
     }
 
+    .shopee-btn-primary {
+        background-color: var(--shopee-orange);
+        color: #fff;
+        border: 1px solid var(--shopee-orange);
+        border-radius: 8px;
+        height: 48px;
+        font-size: 16px;
+        text-transform: uppercase;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .shopee-btn-primary:hover {
+        background-color: #a80015;
+        color: #fff;
+    }
+
     /* Policy Sidebar */
     .policy-list .policy-item {
         display: flex;
@@ -218,6 +234,9 @@
                         <div class="d-flex gap-3">
                             <button class="btn shopee-btn-black flex-grow-1" onclick="addToCart(@Model.ID)">
                                 <i class="fas fa-shopping-cart me-2"></i> THÊM VÀO GIỎ HÀNG
+                            </button>
+                            <button class="btn shopee-btn-primary flex-grow-1" onclick="buyNow(@Model.ID)">
+                                Mua Ngay
                             </button>
                         </div>
                     }
@@ -443,6 +462,20 @@
                     new bootstrap.Modal(document.getElementById('cartModal')).show();
                     // Update cart count if exists in layout
                     if(res.count && $('.cart-count').length) $('.cart-count').text(res.count);
+                } else {
+                    alert(res.message);
+                }
+            }).fail(function() {
+                alert('Lỗi kết nối');
+            });
+        }
+
+        // Buy Now
+        function buyNow(id) {
+            const qty = document.getElementById('qty').value;
+             $.post('/GioHang/BuyNow', { productId: id, quantity: qty }, function(res) {
+                if(res.success) {
+                    window.location.href = "/ThanhToan/Checkout?isBuyNow=true";
                 } else {
                     alert(res.message);
                 }

@@ -48,6 +48,7 @@
         <div class="checkout-container">
             
             <form action="/ThanhToan/ProcessCheckout" method="post" id="checkoutForm">
+                <input type="hidden" name="isBuyNow" value="@((ViewBag.IsBuyNow == true) ? "true" : "false")" />
                 <div class="checkout-layout">
                     
                     <!-- LEFT COLUMN: Forms -->

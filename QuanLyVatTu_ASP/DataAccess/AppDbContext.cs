@@ -33,6 +33,8 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<TuongTacDanhGia> TuongTacDanhGias { get; set; }
         public DbSet<YeuThich> YeuThichs { get; set; }
         public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
+        public DbSet<GioHang> GioHangs { get; set; }
+        public DbSet<ChiTietGioHang> ChiTietGioHangs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

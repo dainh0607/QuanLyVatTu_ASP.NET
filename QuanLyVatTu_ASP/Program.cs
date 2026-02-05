@@ -5,6 +5,8 @@ using QuanLyVatTu_ASP.Repositories.Implementations;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
 using QuanLyVatTu_ASP.Services.Interfaces;
 using QuanLyVatTu_ASP.Services.Implementations;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IChiTietDonHangRepository, ChiTietDonHangRepository>();
 builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
+builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
+builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
 
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
@@ -33,10 +37,36 @@ builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<IVatTuService, VatTuService>();
 builder.Services.AddScoped<IThongKeService, ThongKeService>();
 
+
+// Cấu hình Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Google.GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(options => 
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/Login";
+})
+.AddGoogle(options =>
+{
+    // Cấu hình ClientId và ClientSecret từ appsettings.json
+    var googleAuth = builder.Configuration.GetSection("Authentication:Google");
+    
+    options.ClientId = googleAuth["ClientId"]; 
+    options.ClientSecret = googleAuth["ClientSecret"];
+    
+    // Yêu cầu scope profile email
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.SaveTokens = true;
+});
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".QuanLyVatTu.Session";
@@ -57,6 +87,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseSession();
+app.UseAuthentication();
 app.UseRouting();
 
 app.MapControllerRoute(

@@ -14,6 +14,8 @@ namespace QuanLyVatTu_ASP.Repositories
         IHoaDonRepository HoaDonRepository { get; }
         IChiTietHoaDonRepository ChiTietHoaDonRepository { get; }
         IYeuThichRepository YeuThichRepository { get; }
+        IGioHangRepository GioHangRepository { get; }
+        IChiTietGioHangRepository ChiTietGioHangRepository { get; }
 
 
         int Save();
