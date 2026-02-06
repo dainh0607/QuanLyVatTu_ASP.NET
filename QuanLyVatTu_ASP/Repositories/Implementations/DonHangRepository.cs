@@ -19,7 +19,16 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
                 .Include(x => x.ChiTietDonHangs)
                 .ThenInclude(ct => ct.VatTu)
                 .OrderByDescending(x => x.NgayDat)
+                .OrderByDescending(x => x.NgayDat)
                 .ToListAsync();
+        }
+
+        public async Task<DonHang?> GetDonHangByIdAsync(int id)
+        {
+            return await _context.DonHang
+                .Include(x => x.ChiTietDonHangs)
+                .ThenInclude(ct => ct.VatTu)
+                .FirstOrDefaultAsync(x => x.ID == id);
         }
     }
 }
