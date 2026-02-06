@@ -72,6 +72,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
+    options.Cookie.SameSite = SameSiteMode.Strict; // Ngăn chặn CSRF
     options.Cookie.Name = ".QuanLyVatTu.Session";
 });
 

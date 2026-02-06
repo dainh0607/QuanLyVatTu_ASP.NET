@@ -74,14 +74,7 @@ namespace QuanLyVatTu_ASP.Controllers
                  return RedirectToRoute("AdminDonHang");
              }
 
-            // 3. Kiểm tra tài khoản Admin (hardcode cho mục đích demo - KHÔNG KHUYẾN KHÍCH DÙNG LÂU DÀI)
-            if (email == "admin@gmail.com" && password == "123456")
-            {
-                HttpContext.Session.SetString("UserName", "Admin User");
-                HttpContext.Session.SetString("Email", email);
-                HttpContext.Session.SetString("Role", "Admin");
-                return RedirectToRoute("AdminDonHang");
-            }
+
 
             ViewBag.Error = "Tài khoản hoặc mật khẩu không chính xác";
             return View();
