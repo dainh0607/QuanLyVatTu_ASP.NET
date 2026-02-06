@@ -61,6 +61,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 HttpContext.Session.SetString("Email", khachHang.Email ?? "");
                 HttpContext.Session.SetInt32("KhachHangId", khachHang.ID);
                 HttpContext.Session.SetString("Role", "Customer");
+                HttpContext.Session.SetString("AvatarUrl", khachHang.AnhDaiDien ?? "");
 
                 // Khách hàng thì về Trang chủ (Home) chứ không vào Admin
                 return RedirectToAction("Index", "Home", new { area = "" });

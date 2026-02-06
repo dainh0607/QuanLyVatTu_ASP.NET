@@ -202,6 +202,12 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     HttpContext.Session.SetString("UserName", request.HoTen.Trim());
                 }
+                
+                // Cập nhật session avatar nếu đổi ảnh
+                if (!string.IsNullOrEmpty(khachHang.AnhDaiDien))
+                {
+                    HttpContext.Session.SetString("AvatarUrl", khachHang.AnhDaiDien);
+                }
 
                 return Json(new { success = true, message = "Cập nhật thông tin thành công!" });
             }
