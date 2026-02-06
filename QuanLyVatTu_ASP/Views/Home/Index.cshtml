@@ -1,16 +1,13 @@
 ﻿@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>
 @{
     ViewData["Title"] = "Trang Chủ";
-    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+
 }
 
 <div class="container-fluid px-4 px-lg-5 py-4">
-    <!-- Hero Section (Material 3 Large Surface) -->
-    <!-- Hero Section (Modern Material) -->
     <section class="hero-section mb-5 position-relative overflow-hidden shadow-lg" 
              style="border-radius: 28px; min-height: 500px; display: flex; align-items: center; background: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop') no-repeat center center; background-size: cover;">
         
-        <!-- Dark Overlay -->
         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%);"></div>
 
         <div class="row w-100 align-items-center position-relative z-2 ps-4 ps-md-5">
@@ -24,11 +21,11 @@
                 <p class="lead mb-4 fw-light" style="max-width: 600px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
                     Đối tác tin cậy cung cấp vật liệu xây dựng, thiết bị thi công và nội thất công trình chất lượng cao.
                 </p>
-                <div class="d-flex gap-3">
-                    <a href="/SanPham" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold border-0" style="background-color: var(--md-sys-color-primary);">
+                <div class="d-flex gap-4">
+                    <a href="/SanPham" class="btn btn-primary btn-lg rounded-pill px-4 py-2 shadow-lg fw-bold border-0" style="background-color: var(--md-sys-color-primary);">
                         Khám phá ngay <i class="fas fa-arrow-right ms-2"></i>
                     </a>
-                    <a href="/Contact" class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg" style="color: var(--md-sys-color-primary);">
+                    <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg rounded-pill px-4 py-2 fw-bold shadow-lg" style="color: var(--md-sys-color-primary);">
                         Liên hệ tư vấn
                     </a>
                 </div>

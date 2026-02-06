@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>
 @{
     ViewData["Title"] = "Danh mục sản phẩm";
-    Layout = "~/Views/Shared/_Layout_Customer.cshtml";
+
     
     // Helper to get names for active filters
     var categories = (ViewBag.Categories as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>) ?? Enumerable.Empty<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>();
