@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Core CSS -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/user/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <!-- Custom CSS -->
@@ -29,6 +29,30 @@
         body { 
             background-color: #f9fafb; 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f2937;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 9999;
+            transition: transform 0.3s ease;
+            visibility: hidden;
+        }
+        
+        .toast-notification.active {
+            transform: translateX(-50%) translateY(0);
+            visibility: visible;
         }
     </style>
 </head>
@@ -278,55 +302,8 @@
                             </div>
                         </div>
 
-                        <!-- 5. Deposit Options -->
-                        <div class="form-section deposit-section">
-                            <div class="section-header">
-                                <div class="section-icon" style="background: #fef3c7;">
-                                    <i class="fa-solid fa-coins" style="color: #f59e0b;"></i>
-                                </div>
-                                <h2 class="section-title">Phương thức đặt cọc</h2>
-                            </div>
-                            
-                            <div class="deposit-info-box">
-                                <i class="fa-solid fa-circle-info"></i>
-                                <p>Đơn hàng trên <strong>10.000.000₫</strong> bắt buộc đặt cọc. Quý khách vui lòng chọn mức cọc phù hợp.</p>
-                            </div>
-                            
-                            <div class="deposit-options">
-                                <label class="deposit-option">
-                                    <input type="radio" name="depositPercent" value="0" checked>
-                                    <div class="deposit-content">
-                                        <span class="deposit-percent">0%</span>
-                                        <span class="deposit-label">Không cọc</span>
-                                        <span class="deposit-note">(Đơn < 10 triệu)</span>
-                                    </div>
-                                </label>
-                                <label class="deposit-option">
-                                    <input type="radio" name="depositPercent" value="30">
-                                    <div class="deposit-content">
-                                        <span class="deposit-percent">30%</span>
-                                        <span class="deposit-label">Cọc chuẩn</span>
-                                        <span class="deposit-amount">@((total * 0.3m).ToString("N0"))₫</span>
-                                    </div>
-                                </label>
-                                <label class="deposit-option">
-                                    <input type="radio" name="depositPercent" value="50">
-                                    <div class="deposit-content">
-                                        <span class="deposit-percent">50%</span>
-                                        <span class="deposit-label">Ưu tiên giao</span>
-                                        <span class="deposit-amount">@((total * 0.5m).ToString("N0"))₫</span>
-                                    </div>
-                                </label>
-                                <label class="deposit-option">
-                                    <input type="radio" name="depositPercent" value="100">
-                                    <div class="deposit-content">
-                                        <span class="deposit-percent">100%</span>
-                                        <span class="deposit-label">Thanh toán hết</span>
-                                        <span class="deposit-amount">@total.ToString("N0")₫</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
+                        <!-- 5. Deposit Options REMOVED as per user request -->
+                        <!-- Logic for high value orders handles deposit automatically in controller -->
 
                         <!-- 6. Notes -->
                         <div class="form-section">
@@ -438,28 +415,100 @@
         <span>Đã sao chép!</span>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/user/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Data from server
+        // Data from server
+        const totalAmount = @Json.Serialize(total);
+        const depositThreshold = 5000000;
+        
         // Shipping Fee Logic
         document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                const shippingFeeEl = document.getElementById('shippingFee');
-                const finalTotalEl = document.getElementById('finalTotal');
-                const baseTotal = @total;
-                
-                if (this.value === 'standard') {
-                    shippingFeeEl.textContent = '47.000₫';
-                    shippingFeeEl.classList.remove('text-success');
-                    shippingFeeEl.style.color = '#111827';
-                    finalTotalEl.textContent = formatCurrency(baseTotal + 47000) + '₫';
-                } else {
-                    shippingFeeEl.textContent = 'Miễn phí';
-                    shippingFeeEl.classList.add('text-success');
-                    finalTotalEl.textContent = formatCurrency(baseTotal) + '₫';
-                }
+                updateTotal();
             });
         });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            handleDepositLogic();
+            updateTotal();
+        });
+
+        function handleDepositLogic() {
+            const isHighValue = totalAmount >= depositThreshold;
+            const pmRadios = document.querySelectorAll('input[name="paymentMethod"]');
+            const depositSection = document.querySelector('.deposit-section');
+            const depositOptions = document.querySelector('.deposit-options');
+            const depositInfoBox = document.querySelector('.deposit-info-box');
+            
+            if (isHighValue) {
+                // 1. Force Bank Transfer
+                // Find and check 'bank' option
+                const bankRadio = document.querySelector('input[name="paymentMethod"][value="bank"]');
+                if(bankRadio) bankRadio.checked = true;
+                
+                // Disable 'cod' option
+                const codRadio = document.querySelector('input[name="paymentMethod"][value="cod"]');
+                if(codRadio) {
+                    codRadio.disabled = true;
+                    codRadio.closest('.custom-radio-card').style.opacity = '0.5';
+                    codRadio.closest('.custom-radio-card').title = "Đơn hàng trên 5 triệu bắt buộc cọc qua chuyển khoản";
+                }
+
+                // 2. Hide Deposit Options (0, 30, 50, 100)
+                // Removed from UI
+
+                // 3. Show Mandatory Deposit Message
+                if(depositInfoBox) {
+                     depositInfoBox.innerHTML = `
+                        <div class="alert alert-warning border-warning d-flex align-items-center mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+                            <div>
+                                <strong>Đơn hàng giá trị lớn (>= 5.000.000₫):</strong><br>
+                                Bắt buộc đặt cọc trước <strong>10%</strong> giá trị đơn hàng.<br>
+                                Số tiền cọc cần thanh toán: <strong class="text-danger">${formatCurrency(totalAmount * 0.1)}₫</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Update Button Text
+                const btn = document.querySelector('.btn-place-order span');
+                if(btn) btn.textContent = "Đặt hàng & Thanh toán cọc";
+            }
+        }
+
+        function updateTotal() {
+            const shippingMethod = document.querySelector('input[name="shippingMethod"]:checked').value;
+            const shippingFeeEl = document.getElementById('shippingFee');
+            const finalTotalEl = document.getElementById('finalTotal');
+            
+            let shippingFee = 0;
+            if (shippingMethod === 'delivery' || shippingMethod === 'delivery_unload') {
+                shippingFee = 47000; // Mock fee, adjust as needed
+                shippingFeeEl.textContent = '47.000₫';
+                shippingFeeEl.classList.remove('text-success');
+                shippingFeeEl.style.color = '#111827';
+            } else {
+                shippingFee = 0;
+                shippingFeeEl.textContent = 'Miễn phí';
+                shippingFeeEl.classList.add('text-success');
+            }
+            
+            // Check high value logic for display
+             const isHighValue = totalAmount >= depositThreshold;
+             if(isHighValue) {
+                  // Show total but imply deposit is separate step
+                  finalTotalEl.innerHTML = `
+                    <div>${formatCurrency(totalAmount + shippingFee)}₫</div>
+                    <div style="font-size: 0.8rem; color: #ef4444; font-weight: normal;">(Cọc trước: ${formatCurrency(totalAmount * 0.1)}₫)</div>
+                  `;
+             } else {
+                  finalTotalEl.textContent = formatCurrency(totalAmount + shippingFee) + '₫';
+             }
+        }
 
         function copyToClipboard(elementId) {
             const text = document.getElementById(elementId).innerText;
@@ -483,13 +532,14 @@
 
         // Display Server-Side Messages
         document.addEventListener('DOMContentLoaded', function() {
-            @if (TempData["Error"] != null)
-            {
-                <text>showToast("@Html.Raw(TempData["Error"])");</text>
+            var errorMessage = @Json.Serialize(TempData["Error"]);
+            var warningMessage = @Json.Serialize(TempData["Warning"]);
+
+            if (errorMessage) {
+                showToast(errorMessage);
             }
-            @if (TempData["Warning"] != null)
-            {
-                <text>showToast("@Html.Raw(TempData["Warning"])");</text>
+            if (warningMessage) {
+                showToast(warningMessage);
             }
         });
 
@@ -510,6 +560,22 @@
             if (!isValid) {
                 e.preventDefault();
                 showToast('Vui lòng điền đầy đủ thông tin!');
+            } else {
+                // Show loading state
+                const btn = document.querySelector('.btn-place-order');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                btn.style.opacity = '0.7';
+                btn.style.pointerEvents = 'none';
+                
+                // Optional: Timeout to reset if taking too long (e.g. 10s)
+                setTimeout(() => {
+                    if(!btn.disabled) { // If page hasn't unloaded
+                         btn.innerHTML = originalContent;
+                         btn.style.opacity = '1';
+                         btn.style.pointerEvents = 'auto';
+                    }
+                }, 15000);
             }
         });
 

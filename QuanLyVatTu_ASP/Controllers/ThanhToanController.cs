@@ -18,6 +18,33 @@ namespace QuanLyVatTu_ASP.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        private async Task<List<CartItem>> GetCartItemsSecureAsync(bool isBuyNow)
+        {
+            if (isBuyNow)
+            {
+                return HttpContext.Session.Get<List<CartItem>>(DIRECT_CART_KEY) ?? new List<CartItem>();
+            }
+
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId != null)
+            {
+                var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+                if (gioHang == null || gioHang.ChiTietGioHangs == null) return new List<CartItem>();
+                
+                return gioHang.ChiTietGioHangs.Select(ct => new CartItem
+                {
+                    VatTuId = ct.MaVatTu,
+                    TenVatTu = ct.VatTu?.TenVatTu,
+                    DonGia = ct.VatTu?.GiaBan ?? 0,
+                    SoLuong = ct.SoLuong,
+                    DonViTinh = ct.VatTu?.DonViTinh,
+                    HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
+                }).ToList();
+            }
+            
+            return HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+        }
+
         [HttpGet]
         public async Task<IActionResult> Checkout(bool isBuyNow = false)
         {
@@ -26,8 +53,7 @@ namespace QuanLyVatTu_ASP.Controllers
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "0";
 
-            var cartKey = isBuyNow ? DIRECT_CART_KEY : CART_KEY;
-            var cart = HttpContext.Session.Get<List<CartItem>>(cartKey) ?? new List<CartItem>();
+            var cart = await GetCartItemsSecureAsync(isBuyNow);
             
             // Nếu giỏ hàng trống, redirect về trang sản phẩm
             if (!cart.Any())
@@ -68,8 +94,7 @@ namespace QuanLyVatTu_ASP.Controllers
             string shippingMethod = "delivery",
             bool isBuyNow = false)
         {
-            var cartKey = isBuyNow ? DIRECT_CART_KEY : CART_KEY;
-            var cart = HttpContext.Session.Get<List<CartItem>>(cartKey);
+            var cart = await GetCartItemsSecureAsync(isBuyNow);
             if (cart == null || !cart.Any()) 
             {
                 TempData["Warning"] = "Giỏ hàng của bạn đang trống.";
@@ -119,7 +144,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
                 foreach (var item in cart)
                 {
-                    var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(item.VatTuId);
+                    var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(item.VatTuId, tracking: true);
 
                     if (vatTu == null || vatTu.SoLuongTon < item.SoLuong)
                     {
@@ -145,46 +170,85 @@ namespace QuanLyVatTu_ASP.Controllers
                     tongTien += item.ThanhTien;
                     await _unitOfWork.ChiTietDonHangRepository.AddAsync(chiTiet);
                 }
-                // Tính toán cọc nếu đơn hàng > 5.000.000 VÀ không phải là COD (khách chọn COD thì không bắt cọc)
-                if (tongTien > 5000000 && paymentMethod != "cod")
+                if (tongTien >= 5000000)
                 {
+                    // Logic mới: Đơn hàng >= 5.000.000 bắt buộc cọc 10%
                     donHang.SoTienDatCoc = tongTien * 0.1m; // 10%
                     donHang.TrangThai = "Chờ đặt cọc";
                     donHang.PhuongThucDatCoc = "Chuyển khoản (QR)";
-                    donHang.GhiChu += " | Đơn hàng cần cọc 10%.";
+                    donHang.GhiChu += " | Đơn hàng >= 5tr, bắt buộc cọc 10%.";
+                }
+                else if (paymentMethod != "cod" && paymentMethod != "bank") // Logic cũ cho các mức cọc tùy chọn (nếu có - hiện tại logic mới override)
+                {
+                     // Giữ lại logic cũ nếu cần thiết, nhưng theo yêu cầu mới thì >= 5tr là fix cứng 10%.
+                     // Nếu < 5tr mà user chọn cọc (nếu UI cho phép) thì xử lý ở đây. 
+                     // Tuy nhiên UI sẽ được update để ẩn options.
                 }
 
                 donHang.TongTien = tongTien;
                 _unitOfWork.DonHangRepository.Update(donHang); 
                 _unitOfWork.Save();
 
-                // Lưu thông tin vào TempData để hiển thị ở trang success
-                // Serialize DonHang to JSON to avoid DefaultTempDataSerializer issues with EF entities
-                TempData["DonHangJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(donHang, new Newtonsoft.Json.JsonSerializerSettings { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore });
+                // Serialize DonHang to JSON using safe anonymous object to avoid EF Proxy issues
+                var donHangSafe = new 
+                {
+                    ID = donHang.ID,
+                    MaHienThi = donHang.MaHienThi,
+                    TongTien = donHang.TongTien,
+                    SoTienDatCoc = donHang.SoTienDatCoc,
+                    TrangThai = donHang.TrangThai,
+                    PhuongThucDatCoc = donHang.PhuongThucDatCoc
+                };
+                TempData["DonHangJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(donHangSafe);
                 
-                // TempData["DonHang"] = donHang; // REMOVED: Causes InvalidOperationException
-                TempData["CartItemsJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(cart); // Also serialize cart list just in case
-                TempData["CartItems"] = null; // Clear old key if present to avoid confusion
+                // Safe cart serialization
+                var cartSafe = cart.Select(c => new {
+                    c.VatTuId, c.TenVatTu, c.DonGia, c.SoLuong, c.ThanhTien, c.HinhAnh
+                }).ToList();
+                TempData["CartItemsJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(cartSafe);
+                
+                TempData["CartItems"] = null;
                 TempData["TongTien"] = tongTien.ToString();
                 TempData["PaymentMethod"] = paymentMethod;
                 TempData["ShippingMethod"] = shippingMethod;
                 TempData["HoTen"] = khachHang.HoTen;
                 TempData["SoDienThoai"] = soDienThoai;
                 TempData["MaHienThi"] = donHang.MaHienThi;
-                TempData["SoTienDatCoc"] = donHang.SoTienDatCoc.ToString(); // Pass deposit amount as string
+                TempData["SoTienDatCoc"] = donHang.SoTienDatCoc.ToString(); 
 
-                HttpContext.Session.Remove(cartKey);
+                // Clear Cart
+                if (isBuyNow)
+                {
+                     HttpContext.Session.Remove(DIRECT_CART_KEY);
+                }
+                else
+                {
+                    // If DB cart, remove from DB
+                    if (khachHang.ID > 0)
+                    {
+                        var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHang.ID);
+                        if (gioHang != null && gioHang.ChiTietGioHangs.Any())
+                        {
+                            // Fix: Use ToList() to prevent 'Collection was modified' error
+                            var itemsToDelete = gioHang.ChiTietGioHangs.ToList();
+                            foreach (var item in itemsToDelete)
+                            {
+                                _unitOfWork.ChiTietGioHangRepository.Delete(item);
+                            }
+                            _unitOfWork.Save();
+                        }
+                    }
+                    // Also clear session just in case
+                    HttpContext.Session.Remove(CART_KEY);
+                }
 
                 // Redirect logic
-                if (donHang.SoTienDatCoc > 0)
+                if (donHang.SoTienDatCoc > 0 || paymentMethod == "bank")
                 {
-                    // Redirect to QR page specifically for deposit
+                    // Redirect to QR page specifically for deposit or full payment
                     return RedirectToAction("OrderSuccessQR"); 
                 }
-                else if (paymentMethod == "bank")
-                {
-                    return RedirectToAction("OrderSuccessQR");
-                }
+                
                 return RedirectToAction("OrderSuccessThankYou");
             }
             catch (Exception ex)
@@ -208,6 +272,41 @@ namespace QuanLyVatTu_ASP.Controllers
         public IActionResult OrderSuccessQR()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SimulateTransfer(int orderId)
+        {
+            try
+            {
+                var donHang = await _unitOfWork.DonHangRepository.GetByIdAsync(orderId);
+                if (donHang == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+                }
+
+                // Cập nhật trạng thái thanh toán
+                if (donHang.TrangThai == "Chờ đặt cọc")
+                {
+                    donHang.TrangThai = "Đã đặt cọc";
+                    donHang.NgayDatCoc = DateTime.Now;
+                    donHang.GhiChu += " | Đã thanh toán cọc (Giả lập).";
+                }
+                else if (donHang.TrangThai == "Chờ thanh toán")
+                {
+                     donHang.TrangThai = "Đã thanh toán";
+                     donHang.GhiChu += " | Đã thanh toán (Giả lập).";
+                }
+
+                _unitOfWork.DonHangRepository.Update(donHang);
+                _unitOfWork.Save();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                 return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

@@ -50,7 +50,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/user/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <style>
@@ -488,6 +488,10 @@
                 <i class="fas fa-list-ul"></i>
                 Xem đơn hàng
             </a>
+            <button onclick="simulatePayment(@(donHang?.ID ?? 0))" class="btn-action" style="background-color: #f59e0b; color: white; border: none;">
+                <i class="fas fa-bolt"></i>
+                Giả lập Thanh toán
+            </button>
             <a href="/SanPham" class="btn-action btn-primary-action">
                 <i class="fas fa-shopping-cart"></i>
                 Tiếp tục mua sắm
@@ -501,7 +505,7 @@
         <span id="toastText">Đã sao chép!</span>
     </div>
     
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function copyText(elementId, btn, isAmount = false) {
             const el = document.getElementById(elementId);
@@ -527,6 +531,43 @@
                     btn.innerHTML = originalHtml;
                     btn.classList.remove('copied');
                 }, 2000);
+            });
+        }
+
+        function simulatePayment(orderId) {
+            if (orderId === 0) {
+                alert("Không tìm thấy ID đơn hàng để giả lập.");
+                return;
+            }
+            
+            if(!confirm('Xác nhận giả lập thanh toán thành công cho đơn hàng #' + orderId + '?')) return;
+            
+            // Use FormData to send POST data
+            const formData = new FormData();
+            formData.append('orderId', orderId);
+
+            fetch('/ThanhToan/SimulateTransfer', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    // Show success toast then redirect
+                    const toast = document.getElementById('toast');
+                    document.getElementById('toastText').textContent = 'Thanh toán thành công!';
+                    toast.classList.add('show');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/ThanhToan/OrderSuccessThankYou';
+                    }, 1000);
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Lỗi kết nối đến server');
             });
         }
     </script>
