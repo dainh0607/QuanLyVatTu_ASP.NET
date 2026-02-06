@@ -17,7 +17,7 @@ namespace QuanLyVatTu_ASP.Repositories
         IGioHangRepository GioHangRepository { get; }
         IChiTietGioHangRepository ChiTietGioHangRepository { get; }
 
-
         int Save();
+        Task<int> SaveAsync(); // Thêm phương thức async
     }
 }
