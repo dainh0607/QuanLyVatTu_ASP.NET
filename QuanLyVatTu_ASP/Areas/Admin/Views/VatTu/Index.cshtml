@@ -17,11 +17,16 @@
                             <i class="bi bi-search position-absolute top-50 ms-2 translate-middle-y text-muted"></i>
                         </div>
                         <button type="submit" class="btn btn-primary rounded-pill px-4">Tìm</button>
+                        <select name="filterType" class="form-select ms-4 rounded-3 bg-light border-0 fw-semibold" style="width: 200px;" onchange="this.form.submit()">
+                            <option value="" selected="@(ViewBag.FilterType == null || ViewBag.FilterType == "" ? "selected" : null)">Tất cả kho</option>
+                            <option value="sap-het-hang" selected="@(ViewBag.FilterType == "sap-het-hang" ? "selected" : null)">Sắp hết hàng (≤10)</option>
+                            <option value="het-hang" class="text-danger" selected="@(ViewBag.FilterType == "het-hang" ? "selected" : null)">Hết hàng (0)</option>
+                        </select>
                     </form>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <a asp-action="Create" asp-controller="VatTu" class="btn btn-success rounded-pill px-4 shadow-sm">
-                        <i class="bi bi-box-seam me-1"></i> Thêm mới
+                        <i class="bi bi-plus-lg me-1"></i> Thêm mới
                     </a>
                 </div>
             </div>
@@ -132,19 +137,22 @@
                         <nav>
                             <ul class="pagination pagination-modern mb-0">
                                 <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" asp-route-keyword="@ViewBag.Keyword">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex - 1)" 
+                                       asp-route-keyword="@ViewBag.Keyword" asp-route-filterType="@ViewBag.FilterType">
                                         <i class="fa-solid fa-chevron-left"></i> </a>
                                 </li>
 
                                 @for (int i = 1; i <= Model.TotalPages; i++)
                                 {
                                     <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-keyword="@ViewBag.Keyword">@i</a>
+                                        <a class="page-link" asp-action="Index" asp-route-page="@i" 
+                                           asp-route-keyword="@ViewBag.Keyword" asp-route-filterType="@ViewBag.FilterType">@i</a>
                                     </li>
                                 }
 
                                 <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" asp-route-keyword="@ViewBag.Keyword">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageIndex + 1)" 
+                                       asp-route-keyword="@ViewBag.Keyword" asp-route-filterType="@ViewBag.FilterType">
                                         <i class="fa-solid fa-chevron-right"></i> </a>
                                 </li>
                             </ul>

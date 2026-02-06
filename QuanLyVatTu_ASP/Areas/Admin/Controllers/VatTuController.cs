@@ -31,10 +31,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
         // GET: /admin/vat-tu
         [HttpGet("")]
-        public async Task<IActionResult> Index(string keyword = "", int page = 1)
+        public async Task<IActionResult> Index(string keyword = "", string filterType = "", int page = 1)
         {
-            var model = await _vatTuService.GetAllPagingAsync(keyword, page, 15);
+            var model = await _vatTuService.GetAllPagingAsync(keyword, filterType, page, 15);
             ViewBag.Keyword = keyword;
+            ViewBag.FilterType = filterType;
             return View(model);
         }
 

@@ -224,6 +224,6 @@ namespace QuanLyVatTu_ASP.Controllers
     public class ReplyRequest
     {
         public int MaDanhGia { get; set; }
-        public string NoiDung { get; set; }
+        public string NoiDung { get; set; } = null!;
     }
 }

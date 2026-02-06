@@ -258,10 +258,10 @@ namespace QuanLyVatTu_ASP.Controllers
                 return gioHang.ChiTietGioHangs.Select(ct => new CartItem
                 {
                     VatTuId = ct.MaVatTu,
-                    TenVatTu = ct.VatTu?.TenVatTu,
+                    TenVatTu = ct.VatTu?.TenVatTu ?? "",
                     DonGia = ct.VatTu?.GiaBan ?? 0,
                     SoLuong = ct.SoLuong,
-                    DonViTinh = ct.VatTu?.DonViTinh,
+                    DonViTinh = ct.VatTu?.DonViTinh ?? "",
                     HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
                 }).ToList();
             }

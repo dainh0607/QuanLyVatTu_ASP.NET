@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-8 col-xl-9">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-primary text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -19,28 +19,21 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-8">
+                            <!-- Row 1: Identity & Contact -->
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Mã khách hàng</label>
+                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-5">
                                 <div class="mb-4">
                                     <label asp-for="HoTen" class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
                                     <input asp-for="HoTen" class="form-control form-control-lg rounded-3" placeholder="Nhập họ tên đầy đủ" />
                                     <span asp-validation-for="HoTen" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Mã khách hàng</label>
-                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="example@mail.com" />
-                                    <span asp-validation-for="Email" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label asp-for="SoDienThoai" class="form-label fw-semibold">Số điện thoại</label>
                                     <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="09xxxxxxxx" />
@@ -48,42 +41,52 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <!-- Row 2: Account Info -->
+                            <div class="col-md-4">
                                 <div class="mb-4">
-                                    <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>
-                                    <input asp-for="AnhDaiDienFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
-                                    <small class="text-muted">Chấp nhận JPG, PNG, GIF - Tối đa 5MB</small>
+                                    <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="example@mail.com" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Xem trước</label>
-                                    <div id="imagePreview" class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
-                                        <span class="text-muted">Chưa có ảnh</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="mb-4">
-                                    <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ</label>
-                                    <textarea asp-for="DiaChi" class="form-control rounded-3" rows="3" placeholder="Số nhà, đường, phường/xã..."></textarea>
-                                    <span asp-validation-for="DiaChi" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label asp-for="TaiKhoan" class="form-label fw-semibold">Tài khoản đăng nhập <span class="text-danger">*</span></label>
                                     <input asp-for="TaiKhoan" class="form-control form-control-lg rounded-3" placeholder="Username" />
                                     <span asp-validation-for="TaiKhoan" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label asp-for="MatKhau" class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
                                     <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" placeholder="••••••" />
                                     <span asp-validation-for="MatKhau" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Address & Avatar -->
+                            <div class="col-md-6">
+                                <div class="mb-4 h-100">
+                                    <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ</label>
+                                    <textarea asp-for="DiaChi" class="form-control rounded-3 h-100" rows="5" placeholder="Số nhà, đường, phường/xã..."></textarea>
+                                    <span asp-validation-for="DiaChi" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>
+                                        <input asp-for="AnhDaiDienFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
+                                        <small class="text-muted">Chấp nhận JPG, PNG, GIF - Tối đa 5MB</small>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="mb-4">
+                                            <label class="form-label fw-semibold">Xem trước</label>
+                                            <div id="imagePreview" class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
+                                                <span class="text-muted">Chưa có ảnh</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

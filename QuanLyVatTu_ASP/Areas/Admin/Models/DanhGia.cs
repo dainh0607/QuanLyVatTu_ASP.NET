@@ -9,7 +9,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        // Khóa ngoại trỏ về Khách Hàng
         [ForeignKey("KhachHang")]
         public int MaKhachHang { get; set; }
 
@@ -24,11 +23,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Range(1, 5, ErrorMessage = "Số sao phải từ 1 đến 5")]
         public int SoSao { get; set; }
 
-        // Loại bỏ ChatLuongSanPham nếu thừa, hoặc giữ lại nhưng cho phép null/default
-        // Ở đây comment lại để tập trung vào SoSao
-        // [Required]
-        // [Range(1, 5)]
-        // public int ChatLuongSanPham { get; set; }
+        [Required]
+        [Range(1, 5, ErrorMessage = "Chất lượng sản phẩm phải từ 1 đến 5")]
+        public int ChatLuongSanPham { get; set; }
 
         public string? BinhLuan { get; set; }
 

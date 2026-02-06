@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-9 col-xl-10">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-primary text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -19,55 +19,63 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-6">
+                            <!-- Row 1: Personal Info -->
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                                    <input asp-for="HoTen" class="form-control form-control-lg rounded-3" placeholder="Nhập họ tên nhân viên..." required />
+                                    <input asp-for="HoTen" class="form-control form-control-lg rounded-3" placeholder="Nhập họ tên..." required />
                                     <span asp-validation-for="HoTen" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Ngày sinh <span class="text-danger">*</span></label>
                                     <input asp-for="NgaySinh" class="form-control form-control-lg rounded-3" type="date" required />
                                     <span asp-validation-for="NgaySinh" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">CCCD <span class="text-danger">*</span></label>
-                                    <input asp-for="CCCD" class="form-control form-control-lg rounded-3" maxlength="12" placeholder="Số căn cước công dân..." required />
+                                    <input asp-for="CCCD" class="form-control form-control-lg rounded-3" maxlength="12" placeholder="Số căn cước..." required />
                                     <span asp-validation-for="CCCD" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="Số điện thoại liên hệ..." required />
+                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="Số điện thoại..." required />
                                     <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <!-- Row 2: Account & Role -->
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Email</label>
                                     <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="email@company.com" />
                                     <span asp-validation-for="Email" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold">Tài khoản đăng nhập <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-semibold">Tài khoản <span class="text-danger">*</span></label>
                                     <input asp-for="TaiKhoan" class="form-control form-control-lg rounded-3" placeholder="Username..." required />
                                     <span asp-validation-for="TaiKhoan" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
-                                    <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" placeholder="Nhập mật khẩu..." required />
+                                    <input asp-for="MatKhau" class="form-control form-control-lg rounded-3" type="password" placeholder="Mật khẩu..." required />
                                     <span asp-validation-for="MatKhau" class="text-danger small"></span>
                                 </div>
-
+                            </div>
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Vai trò <span class="text-danger">*</span></label>
                                     <select asp-for="VaiTro" class="form-select form-select-lg rounded-3" required>
-                                        <option value="">-- Chọn vai trò --</option>
+                                        <option value="">-- Chọn --</option>
                                         <option value="Quản trị">Quản trị</option>
                                         <option value="Nhân viên">Nhân viên</option>
                                         <option value="Kế toán">Kế toán</option>
@@ -77,22 +85,19 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-4">
-                                            <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>
-                                            <input asp-for="AnhDaiDienFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
-                                            <small class="text-muted">Chấp nhận JPG, PNG, GIF - Tối đa 5MB</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-4">
-                                            <label class="form-label fw-semibold">Xem trước</label>
-                                            <div id="imagePreview" class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
-                                                <span class="text-muted">Chưa có ảnh</span>
-                                            </div>
-                                        </div>
+                            <!-- Row 3: Avatar -->
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>
+                                    <input asp-for="AnhDaiDienFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
+                                    <small class="text-muted">Chấp nhận JPG, PNG, GIF - Tối đa 5MB</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Xem trước</label>
+                                    <div id="imagePreview" class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 100px;">
+                                        <span class="text-muted">Chưa có ảnh</span>
                                     </div>
                                 </div>
                             </div>

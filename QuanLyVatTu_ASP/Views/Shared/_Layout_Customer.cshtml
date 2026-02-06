@@ -54,16 +54,24 @@
         
         <!-- Admin Shortcut for authenticated employees/admins -->
         <!-- Admin Shortcut for authenticated employees/admins -->
-        @if (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Employee" || Context.Session.GetString("UserName")?.Contains("Admin") == true)
+        <!-- Admin Shortcut for authenticated employees/admins -->
+        @{
+             var currentRole = Context.Session.GetString("Role");
+             var currentName = Context.Session.GetString("UserName");
+             bool showAdminLink = (!string.IsNullOrEmpty(currentRole) && (currentRole.Equals("Admin", StringComparison.OrdinalIgnoreCase) || currentRole.Equals("Employee", StringComparison.OrdinalIgnoreCase))) 
+                                  || (!string.IsNullOrEmpty(currentName) && currentName.Contains("Admin", StringComparison.OrdinalIgnoreCase));
+        }
+
+        @if (showAdminLink)
         {
             <div class="ms-3 d-none d-md-block">
-                <a href="/Admin/DonHang" class="btn btn-outline-primary rounded-pill btn-sm fw-bold">
+                <a asp-route="AdminDonHang" class="btn btn-outline-primary rounded-pill btn-sm fw-bold">
                     <i class="fas fa-user-shield me-1"></i> Trang Quản Trị
                 </a>
             </div>
             <!-- Mobile Icon -->
             <div class="d-md-none ms-2">
-                <a href="/Admin/DonHang" class="text-primary fs-4">
+                <a asp-route="AdminDonHang" class="text-primary fs-4">
                     <i class="fas fa-user-shield"></i>
                 </a>
             </div>
@@ -185,9 +193,17 @@
                         <li><hr class="dropdown-divider"></li>
                         
                         @* Admin Link Logic: Check Role or Session/Claims *@
-                        @if (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Employee" || Context.Session.GetString("UserName")?.Contains("Admin") == true)
+                        @* Admin Link Logic: Check Role or Session/Claims *@
+                        @{
+                            var userRole = Context.Session.GetString("Role");
+                            var userName = Context.Session.GetString("UserName");
+                            bool isAdmin = !string.IsNullOrEmpty(userRole) && (userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase) || userRole.Equals("Employee", StringComparison.OrdinalIgnoreCase));
+                            bool isLegacyAdmin = !string.IsNullOrEmpty(userName) && userName.Contains("Admin", StringComparison.OrdinalIgnoreCase);
+                        }
+                        
+                        @if (isAdmin || isLegacyAdmin)
                         {
-                            <li><a class="dropdown-item rounded-3 py-2 text-primary fw-bold" href="/Admin/DonHang"><i class="fas fa-user-shield me-2"></i>Trang Quản Trị</a></li>
+                            <li><a class="dropdown-item rounded-3 py-2 text-primary fw-bold" asp-route="AdminDonHang"><i class="fas fa-user-shield me-2"></i>Trang Quản Trị</a></li>
                         }
                         
                         @* Only show Customer Profile links if Role is Customer or Not Set (Legacy) AND it's not explicitly an Admin role *@

@@ -336,7 +336,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     KhachHangId = khachHang.ID,
                     HoTen = model.HoTen ?? khachHang.HoTen,
-                    SoDienThoai = model.SoDienThoai ?? khachHang.SoDienThoai,
+                    SoDienThoai = model.SoDienThoai ?? khachHang.SoDienThoai ?? "",
                     DiaChi = model.DiaChi,
                     KinhDo = model.KinhDo,
                     ViDo = model.ViDo,
@@ -402,6 +402,8 @@ namespace QuanLyVatTu_ASP.Controllers
             if (string.IsNullOrEmpty(email)) return Unauthorized();
 
             var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
             var address = await _context.DiaChiNhanHangs
                 .FirstOrDefaultAsync(x => x.ID == id && x.KhachHangId == khachHang.ID);
             

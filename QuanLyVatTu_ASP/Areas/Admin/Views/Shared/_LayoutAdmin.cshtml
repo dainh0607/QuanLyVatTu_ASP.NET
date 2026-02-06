@@ -224,8 +224,8 @@
                 </a>
                 <div class="collapse @(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "show" : "")" id="collapseQLVT">
                     <div class="sub-menu">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VatTu" ? "active" : "")" asp-area="Admin" asp-controller="VatTu" asp-action="Index">Sản phẩm</a>
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LoaiVatTu" ? "active" : "")" asp-area="Admin" asp-controller="LoaiVatTu" asp-action="Index">Danh mục</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VatTu" ? "active" : "")" asp-area="Admin" asp-controller="VatTu" asp-action="Index">Vật tư</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LoaiVatTu" ? "active" : "")" asp-area="Admin" asp-controller="LoaiVatTu" asp-action="Index">Loại vật tư</a>
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhaCungCap" ? "active" : "")" asp-area="Admin" asp-controller="NhaCungCap" asp-action="Index">Nhà cung cấp</a>
                     </div>
                 </div>
@@ -286,13 +286,7 @@
                         <div class="d-none d-sm-block">
                             <span class="d-block small fw-bold">Administrator</span>
                         </div>
-                        <i class="fas fa-chevron-down small text-muted ms-1"></i>
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2">
-                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-user-cog me-2"></i>Cài đặt</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger py-2" asp-action="Logout" asp-controller="Account" asp-area=""><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
-                    </ul>
                  </div>
             </div>
         </header>

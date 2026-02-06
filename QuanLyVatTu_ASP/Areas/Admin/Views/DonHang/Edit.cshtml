@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-10 col-xl-11">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-warning text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -23,22 +23,16 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-6">
-                                <div class="mb-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Khách hàng</label>
                                     <input type="text" class="form-control form-control-lg rounded-3 bg-light" readonly value="@ViewBag.CurrentKhachHangName" />
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Nhân viên phụ trách</label>
                                     <input type="text" class="form-control form-control-lg rounded-3 bg-light" readonly value="@ViewBag.CurrentNhanVienName" />
                                 </div>
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Ngày đặt <span class="text-danger">*</span></label>
-                                    <input asp-for="NgayDat" class="form-control form-control-lg rounded-3 bg-light opacity-75" type="datetime-local" readonly 
-                                           value="@Model.NgayDat.ToString("yyyy-MM-ddTHH:mm")" />
-                                    <span asp-validation-for="NgayDat" class="text-danger"></span>
-                                </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Trạng thái</label>
                                     @if (Model.TrangThai == "Đã giao")
                                     {
@@ -64,22 +58,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Tổng tiền (Tự động tính)</label>
-                                    <input type="text" id="TongTien" class="form-control form-control-lg rounded-3 text-end text-danger fw-bold bg-light"
-                                           readonly value="@(Model.TongTien?.ToString("N0") ?? "0")" />
-                                    <small class="text-muted fst-italic">* Tổng tiền được tính từ chi tiết đơn hàng.</small>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Ngày đặt <span class="text-danger">*</span></label>
+                                    <input asp-for="NgayDat" class="form-control form-control-lg rounded-3 bg-light opacity-75" type="datetime-local" readonly 
+                                           value="@Model.NgayDat.ToString("yyyy-MM-ddTHH:mm")" />
+                                    <span asp-validation-for="NgayDat" class="text-danger"></span>
                                 </div>
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Số tiền đặt cọc</label>
-                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" 
-                                           value="@(Model.SoTienDatCoc?.ToString("0") ?? "")" 
-                                           readonly="@(Model.TrangThai == "Đã hủy")" />
-                                    <span asp-validation-for="SoTienDatCoc" class="text-danger"></span>
-                                    <small id="depositHint" class="text-muted fst-italic">* Số tiền cần đặt cọc là @(((Model.TongTien ?? 0) * 0.1m).ToString("N0")) (10% giá trị đơn hàng)</small>
-                                </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Phương thức thanh toán <span class="text-danger">*</span></label>
                                     @if(Model.TrangThai == "Đã hủy") {
                                          <input type="text" class="form-control form-control-lg rounded-3 bg-light" value="@Model.PhuongThucDatCoc" readonly />
@@ -93,10 +79,27 @@
                                     }
                                     <span asp-validation-for="PhuongThucDatCoc" class="text-danger"></span>
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Ngày đặt cọc</label>
                                     <input asp-for="NgayDatCoc" class="form-control form-control-lg rounded-3 bg-light opacity-75" type="date" readonly 
                                            value="@(Model.NgayDatCoc?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tổng tiền (Tự động tính)</label>
+                                    <input type="text" id="TongTien" class="form-control form-control-lg rounded-3 text-end text-danger fw-bold bg-light"
+                                           readonly value="@(Model.TongTien?.ToString("N0") ?? "0")" />
+                                    <small class="text-muted fst-italic">* Tổng tiền được tính từ chi tiết đơn hàng.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Số tiền đặt cọc</label>
+                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" 
+                                           value="@(Model.SoTienDatCoc?.ToString("0") ?? "")" 
+                                           readonly="@(Model.TrangThai == "Đã hủy")" />
+                                    <span asp-validation-for="SoTienDatCoc" class="text-danger"></span>
+                                    <small id="depositHint" class="text-muted fst-italic">* Số tiền cần đặt cọc là @(((Model.TongTien ?? 0) * 0.1m).ToString("N0")) (10% giá trị đơn hàng)</small>
                                 </div>
                             </div>
 

@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <a asp-action="Create" asp-controller="NhanVien" class="btn btn-success rounded-pill px-4 shadow-sm">
-                        <i class="bi bi-person-plus-fill me-1"></i> Thêm mới
+                        <i class="bi bi-plus-lg me-1"></i> Thêm mới
                     </a>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                                 <tr>
                                     <td class="text-center text-muted">@item.ID</td>
                                     <td><strong>@item.MaHienThi</strong></td>
-                                    <td class="fw-bold text-primary">@item.HoTen</td>
+                                    <td class="text-black">@item.HoTen</td>
                                     <td>@item.NgaySinh.ToString("dd/MM/yyyy")</td>
                                     <td>@item.CCCD</td>
                                     <td>

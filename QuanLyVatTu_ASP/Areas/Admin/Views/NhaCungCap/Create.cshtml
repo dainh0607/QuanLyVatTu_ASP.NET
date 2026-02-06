@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-8 col-xl-9">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-primary text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -19,29 +19,22 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-8">
+                            <!-- Row 1: Identity & Contact -->
+                            <div class="col-md-2">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Mã NCC</label>
+                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
+                                    <small class="text-muted fst-italic">* Tự động</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Tên nhà cung cấp <span class="text-danger">*</span></label>
-                                    <input asp-for="TenNhaCungCap" class="form-control form-control-lg rounded-3" placeholder="Nhập tên công ty/nhà cung cấp..." required />
+                                    <input asp-for="TenNhaCungCap" class="form-control form-control-lg rounded-3" placeholder="Nhập tên nhà cung cấp..." required />
                                     <span asp-validation-for="TenNhaCungCap" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Mã nhà cung cấp</label>
-                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
-                                    <small class="text-muted fst-italic">* Tự động tạo</small>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Email</label>
-                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="contact@company.com" />
-                                    <span asp-validation-for="Email" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số điện thoại</label>
                                     <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="028..." />
@@ -49,10 +42,18 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <!-- Row 2: Email & Address -->
+                            <div class="col-md-4">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <input asp-for="Email" class="form-control form-control-lg rounded-3" type="email" placeholder="contact@company.com" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Địa chỉ</label>
-                                    <textarea asp-for="DiaChi" class="form-control rounded-3" rows="3" placeholder="Địa chỉ trụ sở..."></textarea>
+                                    <textarea asp-for="DiaChi" class="form-control rounded-3" rows="1" placeholder="Địa chỉ trụ sở..."></textarea>
                                     <span asp-validation-for="DiaChi" class="text-danger"></span>
                                 </div>
                             </div>

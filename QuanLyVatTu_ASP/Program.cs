@@ -56,8 +56,8 @@ builder.Services.AddAuthentication(options =>
     // Cấu hình ClientId và ClientSecret từ appsettings.json
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
     
-    options.ClientId = googleAuth["ClientId"]; 
-    options.ClientSecret = googleAuth["ClientSecret"];
+    options.ClientId = googleAuth["ClientId"] ?? ""; 
+    options.ClientSecret = googleAuth["ClientSecret"] ?? "";
     
     // Yêu cầu scope profile email
     options.Scope.Add("profile");

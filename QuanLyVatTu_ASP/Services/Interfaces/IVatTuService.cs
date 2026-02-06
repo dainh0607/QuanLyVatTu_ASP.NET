@@ -5,7 +5,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
 {
     public interface IVatTuService
     {
-        Task<VatTuIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize);
+        Task<VatTuIndexViewModel> GetAllPagingAsync(string keyword, string? filterType, int page, int pageSize);
 
         Task<VatTuCreateEditViewModel?> GetByIdForEditAsync(int id);
 

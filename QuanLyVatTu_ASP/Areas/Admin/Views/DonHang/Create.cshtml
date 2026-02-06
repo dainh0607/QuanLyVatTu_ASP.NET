@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-10 col-xl-11">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-primary text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -19,46 +19,48 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-6">
-                                <div class="mb-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Khách hàng <span class="text-danger">*</span></label>
                                     <select asp-for="KhachHangId" class="form-select form-select-lg rounded-3" asp-items="ViewBag.KhachHangList" required>
                                         <option value="">-- Chọn khách hàng --</option>
                                     </select>
                                     <span asp-validation-for="KhachHangId" class="text-danger"></span>
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Nhân viên phụ trách</label>
                                     <input type="hidden" asp-for="NhanVienId" />
                                     <input type="text" class="form-control form-control-lg rounded-3 bg-light" readonly value="@ViewBag.CurrentNhanVienName" />
                                 </div>
-                                <div class="mb-4">
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Ngày đặt <span class="text-danger">*</span></label>
                                     <input asp-for="NgayDat" class="form-control form-control-lg rounded-3 bg-light" type="datetime-local" readonly
                                            value="@(Model?.NgayDat.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))" />
                                     <span asp-validation-for="NgayDat" class="text-danger"></span>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Tổng tiền (Khởi tạo)</label>
-                                    <input asp-for="TongTien" class="form-control form-control-lg rounded-3 text-end fw-bold bg-light"
-                                           readonly value="0" />
-                                    <small class="text-muted fst-italic">* Tiền hàng sẽ được tính sau khi thêm vật tư.</small>
-                                </div>
-
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Số tiền đặt cọc</label>
-                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" />
-                                </div>
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Phương thức đặt cọc</label>
                                     <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3">
                                         <option value="">-- Chọn phương thức --</option>
                                         <option value="Tiền mặt">Tiền mặt</option>
                                         <option value="Chuyển khoản">Chuyển khoản</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Số tiền đặt cọc</label>
+                                    <input asp-for="SoTienDatCoc" class="form-control form-control-lg rounded-3 text-end" placeholder="0" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tổng tiền (Khởi tạo)</label>
+                                    <input asp-for="TongTien" class="form-control form-control-lg rounded-3 text-end fw-bold bg-light"
+                                           readonly value="0" />
+                                    <small class="text-muted fst-italic">* Tiền hàng sẽ được tính sau khi thêm vật tư.</small>
                                 </div>
                             </div>
 

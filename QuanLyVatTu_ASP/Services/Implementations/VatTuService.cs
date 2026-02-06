@@ -15,7 +15,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             _context = context;
         }
 
-        public async Task<VatTuIndexViewModel> GetAllPagingAsync(string keyword, int page, int pageSize)
+        public async Task<VatTuIndexViewModel> GetAllPagingAsync(string keyword, string? filterType, int page, int pageSize)
         {
             if (page < 1) page = 1;
 
@@ -33,6 +33,20 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     x.DonViTinh.ToLower().Contains(keyword) ||
                     (x.LoaiVatTu != null && x.LoaiVatTu.TenLoaiVatTu.ToLower().Contains(keyword)) ||
                     (x.NhaCungCap != null && x.NhaCungCap.TenNhaCungCap.ToLower().Contains(keyword)));
+            }
+
+            // Lọc theo trạng thái tồn kho
+            if (!string.IsNullOrEmpty(filterType))
+            {
+                switch (filterType)
+                {
+                    case "sap-het-hang": // Warning: 0 < SoLuongTon <= 10
+                        query = query.Where(x => x.SoLuongTon > 0 && x.SoLuongTon <= 10);
+                        break;
+                    case "het-hang": // Danger: SoLuongTon <= 0
+                        query = query.Where(x => x.SoLuongTon <= 0);
+                        break;
+                }
             }
 
             var total = await query.CountAsync();

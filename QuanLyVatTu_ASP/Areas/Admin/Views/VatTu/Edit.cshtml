@@ -6,7 +6,7 @@
 
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
-        <div class="col-xxl-10 col-xl-11">
+        <div class="col-12">
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-header bg-gradient-warning text-white py-4 px-5">
                     <h3 class="mb-0 fw-bold">
@@ -21,28 +21,28 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                         <div class="row g-4">
-                            <div class="col-lg-8">
+                            <!-- Row 1: Basic Info -->
+                            <div class="col-md-2">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Mã VT</label>
+                                    <input type="text" class="form-control form-control-lg bg-light px-2" value="@Model.MaHienThi" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-5">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Tên vật tư <span class="text-danger">*</span></label>
                                     <input asp-for="TenVatTu" class="form-control form-control-lg rounded-3" required />
                                     <span asp-validation-for="TenVatTu" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-md-2">
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold">Mã vật tư</label>
-                                    <input type="text" class="form-control form-control-lg bg-light" value="@Model.MaHienThi" disabled />
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Đơn vị tính <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-semibold">ĐVT <span class="text-danger">*</span></label>
                                     <input asp-for="DonViTinh" class="form-control form-control-lg rounded-3" required />
                                     <span asp-validation-for="DonViTinh" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Số lượng tồn</label>
                                     <input asp-for="SoLuongTon" class="form-control form-control-lg rounded-3" type="number" min="0" />
@@ -50,7 +50,8 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <!-- Row 2: Pricing & Category -->
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Giá nhập <span class="text-danger">*</span></label>
                                     <input asp-for="GiaNhap" class="form-control form-control-lg rounded-3 text-end" 
@@ -58,7 +59,7 @@
                                     <span asp-validation-for="GiaNhap" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Giá bán <span class="text-danger">*</span></label>
                                     <input asp-for="GiaBan" class="form-control form-control-lg rounded-3 text-end" 
@@ -66,17 +67,16 @@
                                     <span asp-validation-for="GiaBan" class="text-danger"></span>
                                 </div>
                             </div>
-
-                            <div class="col-lg-6">
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Loại vật tư <span class="text-danger">*</span></label>
                                     <select asp-for="MaLoaiVatTu" class="form-select form-select-lg rounded-3" asp-items="ViewBag.LoaiVatTuList" required>
-                                        <option value="">-- Chọn loại --</option>
+                                        <option value="">-- Chọn --</option>
                                     </select>
                                     <span asp-validation-for="MaLoaiVatTu" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Nhà cung cấp <span class="text-danger">*</span></label>
                                     <select asp-for="MaNhaCungCap" class="form-select form-select-lg rounded-3" asp-items="ViewBag.NhaCungCapList" required>
@@ -86,20 +86,21 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <!-- Row 3: Image -->
+                            <div class="col-md-6">
                                 <div class="mb-4">
                                     <label asp-for="HinhAnhFile" class="form-label fw-semibold">Hình ảnh sản phẩm</label>
                                     <input asp-for="HinhAnhFile" class="form-control form-control-sm rounded-3" type="file" accept="image/*" />
                                     <small class="text-muted">Chọn ảnh mới để thay thế</small>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-md-6">
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">Ảnh hiện tại</label>
-                                    <div class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
+                                    <div class="border rounded-3 p-2 d-flex align-items-center justify-content-center bg-light" style="height: 100px;">
                                         @if (!string.IsNullOrEmpty(Model.HinhAnh))
                                         {
-                                            <img src="@Model.HinhAnh" alt="Hình ảnh sản phẩm" class="img-fluid rounded" style="max-height: 100px;" />
+                                            <img src="@Model.HinhAnh" alt="Hình ảnh sản phẩm" class="img-fluid rounded" style="max-height: 80px;" />
                                         }
                                         else
                                         {
