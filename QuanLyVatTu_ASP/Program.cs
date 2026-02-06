@@ -48,8 +48,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/Login";
-});
-/*.AddGoogle(options =>
+})
+.AddGoogle(options =>
 {
     // Cấu hình ClientId và ClientSecret từ appsettings.json
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("profile");
     options.Scope.Add("email");
     options.SaveTokens = true;
-});*/
+});
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

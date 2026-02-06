@@ -2,6 +2,30 @@
 @{
     ViewData["Title"] = "Danh mục sản phẩm";
 
+    // Danh sách ảnh có sẵn trong folder wwwroot/user/images
+    var availableImages = new string[] {
+        "/user/images/Máy khoan cầm tay mẫu 1.jpg",
+        "/user/images/Máy khoan cầm tay mẫu 2.jpg",
+        "/user/images/Máy khoan cầm tay mẫu 3.jpg",
+        "/user/images/Máy khoan cầm tay mẫu 4.jpg",
+        "/user/images/Máy cắt - Uốn.jpg",
+        "/user/images/Máy cắt bê tông KC16 (Không động cơ).jpg",
+        "/user/images/Máy cắt sắt thủy lực cầm tay RC-25.jpg",
+        "/user/images/Máy làm nền.jpg",
+        "/user/images/Máy mài sàn bê tông DMS250.jpg",
+        "/user/images/Máy xoa nền đôi Conmec (Ngồi lái).jpg",
+        "/user/images/Máy xoa nền đơn Honda GX160.jpg",
+        "/user/images/Máy đầm cóc Mikasa MT55.jpg",
+        "/user/images/Máy đầm dùi chạy điện Jinlong 1.5KW.jpg",
+        "/user/images/Máy đầm.jpg",
+        "/user/images/Đầm bàn PC60.jpg"
+    };
+
+    // Helper function để lấy ảnh cho sản phẩm (xoay vòng theo index)
+    Func<int, string?, string> GetProductImage = (index, existingImage) => {
+        if (!string.IsNullOrEmpty(existingImage)) return existingImage;
+        return availableImages[index % availableImages.Length];
+    };
     
     // Helper to get names for active filters
     var categories = (ViewBag.Categories as IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>) ?? Enumerable.Empty<QuanLyVatTu_ASP.Areas.Admin.Models.LoaiVatTu>();
@@ -131,13 +155,16 @@
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                     @if (Model != null && Model.Any())
                     {
-                        foreach (var product in Model)
+                        var productList = Model.ToList();
+                        for (int i = 0; i < productList.Count; i++)
                         {
+                            var product = productList[i];
+                            var productImage = GetProductImage(i, product.HinhAnh);
                             <div class="col">
                                 <div class="card md-card h-100 border-0 position-relative" style="transition: transform 0.2s, box-shadow 0.2s;">
                                      <div class="position-relative overflow-hidden bg-light rounded-top" style="height: 220px; border-radius: 12px 12px 0 0;">
                                         <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })" class="d-flex align-items-center justify-content-center h-100 w-100">
-                                            <img src="@(string.IsNullOrEmpty(product.HinhAnh) ? $"/user/images/{product.TenVatTu}.jpg" : product.HinhAnh)" 
+                                            <img src="@productImage" 
                                                  class="img-fluid p-4" 
                                                  alt="@product.TenVatTu" 
                                                  style="max-height: 100%; object-fit: contain; transition: transform 0.3s;">

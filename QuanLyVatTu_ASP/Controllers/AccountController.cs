@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using QuanLyVatTu_ASP.Areas.Admin.Models;
 using QuanLyVatTu_ASP.Repositories;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace QuanLyVatTu_ASP.Controllers
@@ -112,6 +116,13 @@ namespace QuanLyVatTu_ASP.Controllers
                 return View("Login");
             }
 
+            // Kiểm tra email có đuôi @gmail.com
+            if (!email.EndsWith("@gmail.com"))
+            {
+                ViewBag.RegisterError = "Email phải có đuôi @gmail.com";
+                return View("Login");
+            }
+
             // Kiểm tra email đã tồn tại chưa
             var existingByEmail = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
             if (existingByEmail != null)
@@ -142,8 +153,8 @@ namespace QuanLyVatTu_ASP.Controllers
                     HoTen = hoTen,
                     Email = email,
                     MatKhau = BCrypt.Net.BCrypt.HashPassword(password), // Mã hóa BCrypt
-                    DiaChi = "",
-                    SoDienThoai = "",
+                    DiaChi = null, // Fix: Set to null to avoid MaxLength/Regex validation on empty string if any
+                    SoDienThoai = null, // Fix: Set to null to pass Regex ^0\d{9}$ check
                     TaiKhoan = taiKhoanTuDong,
                     NgayTao = DateTime.Now,
                     DangNhapGoogle = false
@@ -192,6 +203,92 @@ namespace QuanLyVatTu_ASP.Controllers
             Response.Headers["Expires"] = "0";
             
             return RedirectToAction("Login");
+        }
+
+        // ============= GOOGLE AUTHENTICATION =============
+        
+        /// <summary>
+        /// Khởi tạo đăng nhập bằng Google
+        /// </summary>
+        [HttpGet]
+        public IActionResult LoginByGoogle()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleCallback", "Account")
+            };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        /// <summary>
+        /// Callback sau khi Google xác thực
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GoogleCallback()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            if (!result.Succeeded)
+            {
+                ViewBag.Error = "Đăng nhập bằng Google thất bại.";
+                return View("Login");
+            }
+
+            // Lấy thông tin từ Google claims
+            var claims = result.Principal?.Identities.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Không thể lấy email từ tài khoản Google.";
+                return View("Login");
+            }
+
+            // Kiểm tra xem email đã tồn tại trong DB chưa
+            var existingUser = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            
+            if (existingUser != null)
+            {
+                // Đăng nhập người dùng hiện tại
+                HttpContext.Session.SetString("UserName", existingUser.HoTen);
+                HttpContext.Session.SetString("Email", existingUser.Email ?? "");
+                HttpContext.Session.SetInt32("KhachHangId", existingUser.ID);
+                HttpContext.Session.SetString("Role", "Customer");
+            }
+            else
+            {
+                // Tạo tài khoản mới cho người dùng Google
+                string taiKhoan = email.Split('@')[0];
+                var existingByTaiKhoan = await _unitOfWork.KhachHangRepository.GetByTaiKhoanAsync(taiKhoan);
+                if (existingByTaiKhoan != null)
+                {
+                    taiKhoan = taiKhoan + new Random().Next(100, 999).ToString();
+                }
+
+                var newUser = new KhachHang
+                {
+                    MaHienThi = "KH" + DateTime.Now.ToString("yyyyMMddHHmmss") + new Random().Next(10, 99).ToString(),
+                    HoTen = name ?? email.Split('@')[0],
+                    Email = email,
+                    MatKhau = "", // Không cần mật khẩu cho Google login
+                    DiaChi = null,
+                    SoDienThoai = null,
+                    TaiKhoan = taiKhoan,
+                    NgayTao = DateTime.Now,
+                    DangNhapGoogle = true
+                };
+
+                _unitOfWork.KhachHangRepository.Add(newUser);
+                _unitOfWork.Save();
+
+                HttpContext.Session.SetString("UserName", newUser.HoTen);
+                HttpContext.Session.SetString("Email", newUser.Email);
+                HttpContext.Session.SetInt32("KhachHangId", newUser.ID);
+                HttpContext.Session.SetString("Role", "Customer");
+            }
+
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
     }
 }
