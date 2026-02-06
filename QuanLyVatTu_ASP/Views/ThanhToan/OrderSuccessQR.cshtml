@@ -28,9 +28,10 @@
     var maHienThi = TempData["MaHienThi"]?.ToString() ?? donHang?.MaHienThi ?? donHang?.ID.ToString();
 
     // VietQR format
-    var bankId = "VCB"; // Vietcombank
-    var accountNo = "0071000123456";
-    var accountName = "CTY MAY THIET BI KIM LONG";
+    // VietQR format
+    var bankId = "BIDV"; 
+    var accountNo = "8861365240";
+    var accountName = "DOAN QUOC CUONG"; // Cập nhật tên chủ tài khoản đúng của bạn
     
     // Content: COC [CODE] for deposit, DH[ID] for full
     var transferContent = isDeposit 
@@ -421,8 +422,8 @@
                         <div class="bank-row">
                             <span class="bank-label">Ngân hàng</span>
                             <span class="bank-value">
-                                <img src="https://api.vietqr.io/img/VCB.png" alt="VCB" style="height: 24px;">
-                                Vietcombank
+                                <img src="https://api.vietqr.io/img/BIDV.png" alt="BIDV" style="height: 24px;">
+                                BIDV
                             </span>
                         </div>
                         <div class="bank-row">
