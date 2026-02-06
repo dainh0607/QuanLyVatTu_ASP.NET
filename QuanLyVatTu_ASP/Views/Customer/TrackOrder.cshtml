@@ -56,6 +56,9 @@
                             <span class="badge @GetStatusBadgeClass(Model.TrangThai) fs-6">
                                 @Model.TrangThai
                             </span>
+                            <button class="btn btn-warning text-dark ms-2 btn-sm" onclick="reorder(@Model.ID)" title="Mua lại đơn hàng này">
+                                <i class="fas fa-redo me-1"></i> Mua lại
+                            </button>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -240,4 +243,35 @@
             _ => "bg-secondary"
         };
     }
+}
+
+@section Scripts {
+    <script>
+        function reorder(orderId) {
+            if (typeof showGlobalConfirm === 'function') {
+                showGlobalConfirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '? \n(Các sản phẩm sẽ được thêm vào giỏ hàng hiện tại)', function() {
+                    postReorder(orderId);
+                });
+            } else {
+                if (confirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?')) {
+                    postReorder(orderId);
+                }
+            }
+        }
+
+        function postReorder(orderId) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/GioHang/ReOrder';
+            
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'orderId';
+            input.value = orderId;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 }

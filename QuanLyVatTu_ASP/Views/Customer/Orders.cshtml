@@ -690,19 +690,29 @@
     // Reorder functionality
     function reorder(orderId) {
         if (typeof showGlobalConfirm === 'function') {
-            showGlobalConfirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?', function() {
-                // TODO: Implement reorder logic - add items to cart
-                if (typeof showGlobalMessage === 'function') {
-                    showGlobalMessage('Chức năng đang được phát triển!', 'Thông báo', 'info');
-                } else {
-                    alert('Chức năng đang được phát triển!');
-                }
+            showGlobalConfirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '? \n(Các sản phẩm sẽ được thêm vào giỏ hàng hiện tại)', function() {
+                postReorder(orderId);
             });
         } else {
             if (confirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?')) {
-                alert('Chức năng đang được phát triển!');
+                postReorder(orderId);
             }
         }
+    }
+
+    function postReorder(orderId) {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/GioHang/ReOrder';
+        
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'orderId';
+        input.value = orderId;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
 }

@@ -462,7 +462,7 @@
             const titleEl = document.getElementById('globalMessageTitle');
             const iconEl = document.getElementById('globalMessageIcon');
             
-            if (contentEl) contentEl.innerText = message;
+            if (contentEl) contentEl.innerHTML = message;
             if (titleEl) titleEl.innerText = title;
             
             if (iconEl) {
@@ -687,6 +687,23 @@
                 showGlobalMessage('Có lỗi xảy ra. Vui lòng thử lại.', 'Lỗi', 'error');
             });
         };
+    </script>
+    <script>
+        // Handle TempData messages from Controller
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["Success"] != null)
+            {
+                <text>showGlobalMessage(@Html.Raw(Json.Serialize(TempData["Success"])), 'Thành công', 'success');</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>showGlobalMessage(@Html.Raw(Json.Serialize(TempData["Error"])), 'Lỗi', 'error');</text>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <text>showGlobalMessage(@Html.Raw(Json.Serialize(TempData["Warning"])), 'Thông báo', 'info');</text>
+            }
+        });
     </script>
 </body>
 </html>

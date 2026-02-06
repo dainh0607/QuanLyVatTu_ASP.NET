@@ -369,5 +369,142 @@ namespace QuanLyVatTu_ASP.Controllers
             return View(cart);
         }
 
+
+
+        [HttpPost]
+        public async Task<IActionResult> ReOrder(int orderId)
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId == null)
+            {
+                TempData["Warning"] = "Vui lòng đăng nhập để thực hiện chức năng này.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var donHang = await _unitOfWork.DonHangRepository.GetDonHangByIdAsync(orderId);
+            if (donHang == null || donHang.KhachHangId != khachHangId)
+            {
+                TempData["Error"] = "Không tìm thấy đơn hàng.";
+                return RedirectToAction("Orders", "Customer");
+            }
+
+            // Get active cart or create new
+            var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHangId.Value);
+            if (gioHang == null)
+            {
+                gioHang = new GioHang { MaKhachHang = khachHangId.Value };
+                await _unitOfWork.GioHangRepository.AddAsync(gioHang);
+                _unitOfWork.Save();
+            }
+
+            int addedCount = 0;
+            var successMessages = new List<string>();
+            var warningMessages = new List<string>();
+
+            if (donHang.ChiTietDonHangs != null)
+            {
+                foreach (var detail in donHang.ChiTietDonHangs)
+                {
+                    // Check current product state
+                    // Force reload to bypass cache and get real-time stock
+                    var vatTu = await _unitOfWork.VatTuRepository.GetByIdRealtimeAsync(detail.MaVatTu);
+
+                    // Check if product exists and is active (you might want to check a 'Deleted' flag if exists, here checking null)
+                    if (vatTu == null)
+                    {
+                         warningMessages.Add($"SP #{detail.MaVatTu}: Không còn tồn tại.");
+                         continue;
+                    }
+
+                    if (vatTu.SoLuongTon <= 0)
+                    {
+                        warningMessages.Add($"{vatTu.TenVatTu}: Đã hết hàng.");
+                        continue;
+                    }
+
+                    int quantityRequested = detail.SoLuong ?? 1;
+                    int quantityToAdd = quantityRequested;
+                    bool isPartial = false;
+
+                    // Partial Stock Check
+                    if (quantityToAdd > vatTu.SoLuongTon)
+                    {
+                        quantityToAdd = vatTu.SoLuongTon ?? 0;
+                        isPartial = true;
+                    }
+
+                    if (quantityToAdd <= 0) 
+                    {
+                         warningMessages.Add($"{vatTu.TenVatTu}: Đã hết hàng thực tế.");
+                         continue;
+                    }
+
+                    var existingItem = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == detail.MaVatTu);
+                    if (existingItem != null)
+                    {
+                        existingItem.SoLuong += quantityToAdd;
+                        // Re-check stock cap for total in cart (optional but safe)
+                        if (existingItem.SoLuong > vatTu.SoLuongTon) 
+                        {
+                            existingItem.SoLuong = vatTu.SoLuongTon ?? 0;
+                        }
+                        _unitOfWork.ChiTietGioHangRepository.Update(existingItem);
+                    }
+                    else
+                    {
+                        var newItem = new ChiTietGioHang
+                        {
+                            MaGioHang = gioHang.ID,
+                            MaVatTu = detail.MaVatTu,
+                            SoLuong = quantityToAdd
+                        };
+                        await _unitOfWork.ChiTietGioHangRepository.AddAsync(newItem);
+                    }
+                    
+                    addedCount++;
+                    
+                    if (isPartial)
+                    {
+                        warningMessages.Add($"{vatTu.TenVatTu}: Tồn kho không đủ (Cần {quantityRequested}, chỉ còn {quantityToAdd}). Đã thêm {quantityToAdd}.");
+                    }
+                    else
+                    {
+                        successMessages.Add($"{vatTu.TenVatTu}: Đã thêm {quantityToAdd}.");
+                    }
+                }
+            }
+            
+            _unitOfWork.Save();
+
+            // Construct Result Message
+            var finalMessage = "";
+            if (addedCount > 0)
+            {
+                finalMessage += $"<div class=\"text-success fw-bold mb-2\"><i class=\"fas fa-check-circle me-1\"></i>Đã thêm {addedCount} sản phẩm vào giỏ hàng</div>";
+            }
+            
+            if (warningMessages.Any())
+            {
+                finalMessage += "<div class=\"text-start mt-2\"><div class=\"fw-bold text-warning mb-1\"><i class=\"fas fa-exclamation-triangle me-1\"></i>Một số sản phẩm chưa được thêm:</div><ul class=\"mb-0 ps-3 text-secondary text-start\" style=\"list-style-type: disc;\">";
+                foreach (var msg in warningMessages)
+                {
+                    finalMessage += $"<li class=\"mb-1\">{msg}</li>";
+                }
+                finalMessage += "</ul></div>";
+                
+                TempData["Warning"] = finalMessage; 
+            }
+            else if (addedCount > 0)
+            {
+                TempData["Success"] = finalMessage;
+            }
+            else
+            {
+                TempData["Error"] = "Tất cả sản phẩm trong đơn hàng này hiện đã hết hàng.";
+                return RedirectToAction("Orders", "Customer");
+            }
+
+            return RedirectToAction("GioHang");
+        }
     }
 }
