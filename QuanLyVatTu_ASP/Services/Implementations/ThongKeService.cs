@@ -23,7 +23,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             int? nhanVienId,
             int? khachHangId)
         {
-            // 1. Build Query
+            // 1. Build Query với Eager Loading cho navigation properties cần thiết
             var query = _context.DonHang
                 .Include(d => d.KhachHang)
                 .Include(d => d.NhanVien)
@@ -61,15 +61,23 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 query = query.Where(x => x.KhachHangId == khachHangId);
             }
 
-            // 3. Execute Query
-            var rawData = await query.OrderByDescending(x => x.NgayDat).ToListAsync();
+            // 3. Tính toán aggregate trực tiếp trên database (tối ưu hiệu suất)
+            var totalRevenue = await query.SumAsync(x => x.TongTien ?? 0);
+            var totalOrders = await query.CountAsync();
+            var paidOrders = await query.CountAsync(x => x.TrangThai == "Hoàn thành" || x.TrangThai == "Đã thanh toán");
 
-            // 4. Calculate Stats
+            // 4. Chỉ load dữ liệu chi tiết cho danh sách hiển thị (có phân trang nếu cần)
+            var rawData = await query
+                .OrderByDescending(x => x.NgayDat)
+                .Take(100) // Giới hạn số lượng để tránh load quá nhiều
+                .ToListAsync();
+
+            // 5. Build ViewModel
             var model = new DashboardViewModel
             {
-                TotalRevenue = rawData.Sum(x => x.TongTien ?? 0),
-                TotalOrders = rawData.Count,
-                PaidOrders = rawData.Count(x => x.TrangThai == "Hoàn thành" || x.TrangThai == "Đã thanh toán"),
+                TotalRevenue = totalRevenue,
+                TotalOrders = totalOrders,
+                PaidOrders = paidOrders,
 
                 // Retain filter values for View
                 FromDate = fromDate,
@@ -80,7 +88,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 KhachHangId = khachHangId
             };
 
-            // 5. Map to List Items
+            // 6. Map to List Items (sử dụng Lazy Loading cho navigation properties)
             model.Orders = rawData.Select(x => new OrderStatisticItem
             {
                 Id = x.ID,
@@ -92,7 +100,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 TrangThai = x.TrangThai ?? "Mới tạo"
             }).ToList();
 
-            // 6. Process Chart Data (Group by Date)
+            // 7. Process Chart Data (Group by Date) - tính trên dữ liệu đã load
             var chartGrouping = rawData
                 .GroupBy(x => x.NgayDat.Date)
                 .OrderBy(g => g.Key)

@@ -45,6 +45,11 @@ namespace QuanLyVatTu_ASP.Repositories
             return _context.SaveChanges();
         }
 
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
         public void Dispose()
         {
             _context.Dispose();

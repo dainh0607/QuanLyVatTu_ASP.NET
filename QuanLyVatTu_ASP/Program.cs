@@ -26,8 +26,6 @@ builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
 builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
-builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
-builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
 
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
@@ -68,8 +66,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(10);
-    options.IdleTimeout = TimeSpan.FromMinutes(10);
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tăng timeout cho session
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
@@ -93,6 +90,7 @@ app.UseStaticFiles();
 
 app.UseSession();
 app.UseAuthentication();
+app.UseAuthorization(); // Thêm Authorization middleware
 app.UseRouting();
 
 app.MapControllerRoute(

@@ -186,7 +186,6 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             entity.KhachHangId = model.KhachHangId;
             entity.NhanVienId = model.NhanVienId;
-            entity.NhanVienId = model.NhanVienId;
             
             // Safeguard SqlDateTime overflow
             if (model.NgayDat.Year >= 1753)
