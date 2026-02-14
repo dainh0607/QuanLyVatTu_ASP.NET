@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseLazyLoadingProxies()
-                              .UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -35,6 +35,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
         public DbSet<GioHang> GioHangs { get; set; }
         public DbSet<ChiTietGioHang> ChiTietGioHangs { get; set; }
+        public DbSet<HoaDonVAT> HoaDonVATs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -230,6 +231,26 @@ namespace QuanLyVatTu_ASP.DataAccess
                     .WithMany(p => p.YeuThichs)
                     .HasForeignKey(d => d.MaVatTu)
                     .OnDelete(DeleteBehavior.Cascade); // Xóa SP -> xóa khỏi danh sách yêu thích
+            });
+
+            // --- 13. HoaDonVAT ---
+            modelBuilder.Entity<HoaDonVAT>(entity =>
+            {
+                entity.ToTable("HoaDonVAT");
+                entity.Property(e => e.SoHoaDon)
+                      .HasComputedColumnSql("'VAT' + FORMAT(GETDATE(), 'yyyy') + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(d => d.DonHang)
+                    .WithMany()
+                    .HasForeignKey(d => d.MaDonHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany()
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
