@@ -36,6 +36,8 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<GioHang> GioHangs { get; set; }
         public DbSet<ChiTietGioHang> ChiTietGioHangs { get; set; }
         public DbSet<HoaDonVAT> HoaDonVATs { get; set; }
+        public DbSet<YeuCauBaoGia> YeuCauBaoGia { get; set; }
+        public DbSet<ChiTietYeuCauBaoGia> ChiTietYeuCauBaoGia { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -238,7 +240,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             {
                 entity.ToTable("HoaDonVAT");
                 entity.Property(e => e.SoHoaDon)
-                      .HasComputedColumnSql("'VAT' + FORMAT(GETDATE(), 'yyyy') + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
+                      .HasComputedColumnSql("'VAT' + FORMAT(GETDATE(), 'yyyy') + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)", stored: false);
                 entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
 
@@ -250,6 +252,33 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.HasOne(d => d.KhachHang)
                     .WithMany()
                     .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- 14. YeuCauBaoGia ---
+            modelBuilder.Entity<YeuCauBaoGia>(entity =>
+            {
+                entity.ToTable("YeuCauBaoGia");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany() // No collection in KhachHang for simplicity for now
+                    .HasForeignKey(d => d.KhachHangId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ChiTietYeuCauBaoGia>(entity =>
+            {
+                entity.ToTable("ChiTietYeuCauBaoGia");
+
+                entity.HasOne(d => d.YeuCauBaoGia)
+                    .WithMany(p => p.ChiTietYeuCauBaoGias)
+                    .HasForeignKey(d => d.YeuCauBaoGiaId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.VatTu)
+                    .WithMany()
+                    .HasForeignKey(d => d.VatTuId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
