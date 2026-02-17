@@ -206,7 +206,8 @@
 
             // AJAX call
              $.post('/GioHang/UpdateQuantity', { productId, quantity: newQty }, function() {
-                 // Optional: Show toast on success
+                 // Sync header cart dropdown
+                 if (typeof refreshCartDropdown === 'function') refreshCartDropdown();
              });
         }
 
@@ -233,6 +234,9 @@
                         const row = document.querySelector(`tr[data-item-id="${productId}"]`);
                         row.remove();
                         updateCartSummary();
+                        
+                        // Sync header cart dropdown
+                        if (typeof refreshCartDropdown === 'function') refreshCartDropdown();
                         
                         // Show toast
                         var toastEl = document.getElementById('cartToast');

@@ -33,7 +33,18 @@
                 <!-- User Card -->
                 <div class="sidebar-user-card">
                     <div class="user-avatar-wrapper">
-                        <img src="@(string.IsNullOrEmpty(Model.KhachHang.AnhDaiDien) ? "https://i.pravatar.cc/150?img=12" : Model.KhachHang.AnhDaiDien)" alt="Avatar" class="user-avatar" id="userAvatar">
+                        @{
+                            var avatarUrl = Context.Session.GetString("AvatarUrl");
+                            if (string.IsNullOrEmpty(avatarUrl) && !string.IsNullOrEmpty(Model.KhachHang.AnhDaiDien))
+                            {
+                                avatarUrl = Model.KhachHang.AnhDaiDien;
+                            }
+                            if (string.IsNullOrEmpty(avatarUrl))
+                            {
+                                avatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.KhachHang.HoTen ?? "User")}&background=0B57D0&color=fff";
+                            }
+                        }
+                        <img src="@avatarUrl" alt="Avatar" class="user-avatar" id="userAvatar" onerror="this.onerror=null;this.src='https://placehold.co/150x150?text=User';">
                         <label for="avatarUpload" class="avatar-edit-btn">
                             <i class="fas fa-camera"></i>
                         </label>
@@ -91,10 +102,6 @@
                         <a href="#quotes" class="nav-item" data-tab="quotes">
                             <i class="fas fa-file-invoice"></i>
                             Yêu cầu báo giá
-                        </a>
-                        <a href="#history" class="nav-item" data-tab="history">
-                            <i class="fas fa-history"></i>
-                            Lịch sử mua hàng
                         </a>
                     </div>
 
@@ -423,6 +430,31 @@
                                                     }
                                                 </div>
                                             }
+                                            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                                                <a href="/Customer/TrackOrder?id=@order.ID" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #e5e7eb; border-radius: 8px; color: #374151; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+                                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                                </a>
+                                                @{
+                                                    var pResetStatuses = new[] { "chờ xác nhận", "đã xác nhận", "đang xử lý", "chờ thanh toán", "chờ đặt cọc", "công nợ" };
+                                                    var pReorderStatuses = new[] { "hoàn thành", "đã hủy", "đã giao" };
+                                                    var statusLower = order.TrangThai?.ToLower() ?? "";
+                                                }
+                                                @if (pResetStatuses.Contains(statusLower))
+                                                {
+                                                    <button onclick="editOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #f59e0b; border-radius: 8px; color: #92400e; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                                        <i class="fas fa-edit"></i> Chỉnh sửa
+                                                    </button>
+                                                }
+                                                @if (pReorderStatuses.Contains(statusLower))
+                                                {
+                                                    <form method="post" action="/GioHang/ReOrder" style="display:inline;">
+                                                        <input type="hidden" name="orderId" value="@order.ID" />
+                                                        <button type="submit" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-undo"></i> Đặt lại
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -445,45 +477,107 @@
                 <!-- Placeholder tabs -->
                 <section class="tab-panel" id="tab-quotes" style="display: none;">
                     <div class="content-card">
-                        <div class="card-header">
-                            <h2 class="card-title">Yêu cầu báo giá</h2>
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 class="card-title">Yêu cầu báo giá</h2>
+                                <p class="card-subtitle">Quản lý các yêu cầu báo giá của bạn</p>
+                            </div>
+                            <button onclick="createQuoteRequest()" class="btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">
+                                <i class="fas fa-plus"></i> Tạo yêu cầu mới
+                            </button>
                         </div>
-                        <div class="card-body" style="text-align: center; padding: 60px;">
-                            <i class="fas fa-file-invoice" style="font-size: 4rem; color: #e5e7eb;"></i>
-                            <p style="color: #6b7280; margin-top: 16px;">Chức năng đang được phát triển</p>
+                        <div class="card-body">
+                            <div id="rfqLoading" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <p style="color: #6b7280; margin-top: 12px;">Đang tải yêu cầu báo giá...</p>
+                            </div>
+
+                            <div id="rfqContent" style="display: none;">
+                                <div class="table-responsive">
+                                    <table class="table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: #f3f4f6;">
+                                                <th style="padding: 12px; text-align: left;">Mã Yêu Cầu</th>
+                                                <th style="padding: 12px; text-align: center;">Ngày tạo</th>
+                                                <th style="padding: 12px; text-align: center;">Số lượng</th>
+                                                <th style="padding: 12px; text-align: right;">Tổng dự kiến</th>
+                                                <th style="padding: 12px; text-align: center;">Trạng thái</th>
+                                                <th style="padding: 12px; text-align: center;">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rfqTableBody">
+                                            <!-- JS populated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="noRfqMessage" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
+                                    <i class="fas fa-file-invoice" style="font-size: 3rem; color: #e5e7eb; margin-bottom: 12px;"></i>
+                                    <p>Bạn chưa có yêu cầu báo giá nào.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                <section class="tab-panel" id="tab-history" style="display: none;">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h2 class="card-title">Lịch sử mua hàng</h2>
-                        </div>
-                        <div class="card-body" style="text-align: center; padding: 60px;">
-                            <i class="fas fa-history" style="font-size: 4rem; color: #e5e7eb;"></i>
-                            <p style="color: #6b7280; margin-top: 16px;">Xem chi tiết tại tab "Đơn hàng của tôi"</p>
-                        </div>
-                    </div>
-                </section>
+
 
                 <section class="tab-panel" id="tab-debt" style="display: none;">
                     <div class="content-card">
                         <div class="card-header">
                             <h2 class="card-title">Công nợ</h2>
+                            <p class="card-subtitle">Theo dõi hạn mức tín dụng và các đơn hàng chưa thanh toán</p>
                         </div>
                         <div class="card-body">
-                            <div class="credit-limit-section" style="max-width: 500px;">
-                                <div class="credit-header">
-                                    <span class="credit-label">Công nợ hiện tại</span>
-                                    <span class="credit-value" style="color: #ef4444;">15.000.000đ</span>
+                            <div id="debtLoading" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <p style="color: #6b7280; margin-top: 12px;">Đang tải thông tin công nợ...</p>
+                            </div>
+                            
+                            <div id="debtContent" style="display: none;">
+                                <!-- Credit Limit Section -->
+                                <div class="credit-limit-section" style="max-width: 600px; margin: 0 auto 30px; background: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                                    <div class="credit-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span class="credit-label" style="font-weight: 600; color: #374151;">Dư nợ hiện tại</span>
+                                        <span id="currentDebtDisplay" class="credit-value" style="font-weight: 700; color: #ef4444; font-size: 1.25rem;">0đ</span>
+                                    </div>
+                                    <div class="credit-progress" style="height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 12px;">
+                                        <div id="debtProgressBar" class="credit-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b); transition: width 0.5s ease;"></div>
+                                    </div>
+                                    <div class="credit-stats" style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #6b7280;">
+                                        <span>Hạn mức: <strong id="creditLimitDisplay">0đ</strong></span>
+                                        <span>Còn được mua: <strong id="remainingCreditDisplay" style="color: #10b981;">0đ</strong></span>
+                                    </div>
                                 </div>
-                                <div class="credit-progress">
-                                    <div class="credit-progress-bar" style="width: 30%; background: linear-gradient(90deg, #ef4444, #f59e0b);"></div>
+
+                                <!-- Debt Detail Table -->
+                                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: #111827;">Chi tiết công nợ</h3>
+                                <div class="table-responsive">
+                                    <table class="table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: #f3f4f6; text-align: left;">
+                                                <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600;">Mã đơn</th>
+                                                <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600;">Ngày đặt</th>
+                                                <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600;">Trạng thái</th>
+                                                <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600; text-align: right;">Số tiền</th>
+                                                <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600; text-align: center;">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="debtTableBody">
+                                            <!-- Rows populated by JS -->
+                                        </tbody>
+                                        <tfoot>
+                                            <tr style="background: #f9fafb;">
+                                                <td colspan="3" style="padding: 12px; font-weight: 600; text-align: right;">Tổng cộng:</td>
+                                                <td id="tableTotalDebt" style="padding: 12px; font-weight: 700; text-align: right; color: #ef4444;">0đ</td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
-                                <div class="credit-stats">
-                                    <span>Hạn mức: 50.000.000đ</span>
-                                    <span>Còn được mua: 35.000.000đ</span>
+                                
+                                <div id="noDebtMessage" style="display: none; text-align: center; padding: 30px; color: #6b7280;">
+                                    <i class="fas fa-check-circle" style="font-size: 3rem; color: #10b981; margin-bottom: 12px;"></i>
+                                    <p>Bạn không có khoản công nợ nào cần thanh toán.</p>
                                 </div>
                             </div>
                         </div>
@@ -493,11 +587,18 @@
                 <section class="tab-panel" id="tab-invoice" style="display: none;">
                     <div class="content-card">
                         <div class="card-header">
-                            <h2 class="card-title">Hóa đơn VAT</h2>
+                            <div class="card-header-left">
+                                <h2 class="card-title">Hóa đơn VAT</h2>
+                                <p class="card-subtitle">Danh sách hóa đơn GTGT đã xuất cho đơn hàng của bạn</p>
+                            </div>
                         </div>
-                        <div class="card-body" style="text-align: center; padding: 60px;">
-                            <i class="fas fa-file-invoice-dollar" style="font-size: 4rem; color: #e5e7eb;"></i>
-                            <p style="color: #6b7280; margin-top: 16px;">Chưa có hóa đơn VAT nào</p>
+                        <div class="card-body">
+                            <div id="vatInvoiceList">
+                                <div style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                    <p style="color: #6b7280; margin-top: 12px;">Đang tải...</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1151,6 +1252,56 @@
         });
     });
 
+    // --- Edit Order Function (Formerly Reset) ---
+    function editOrder(orderId) {
+        Swal.fire({
+            title: 'Chỉnh sửa đơn hàng?',
+            html: 'Toàn bộ chi tiết đơn hàng sẽ bị xóa để bạn <b>chọn lại sản phẩm</b>.<br>Trạng thái sẽ giữ nguyên hoặc về "Chờ xác nhận".',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-edit"></i> Chỉnh sửa',
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: '#f59e0b'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/Customer/EditOrder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderId)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message })
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Lỗi', data.message, 'error');
+                    }
+                })
+                .catch(() => Swal.fire('Lỗi', 'Không thể kết nối server!', 'error'));
+            }
+        });
+    }
+
+    // --- Reorder Create Function ---
+    // --- Reorder To Cart Function (Client-side Wrapper if needed, but mostly Form Submit now) ---
+    // Kept generic if called via JS
+    function reorderToCart(orderId) {
+         // Create a form and submit it
+         var form = document.createElement('form');
+         form.method = 'POST';
+         form.action = '/GioHang/ReOrder';
+         
+         var input = document.createElement('input');
+         input.type = 'hidden';
+         input.name = 'orderId';
+         input.value = orderId;
+         
+         form.appendChild(input);
+         document.body.appendChild(form);
+         form.submit();
+    }
+
     // Toggle Password Visibility
     function togglePassword(inputId, iconContainer) {
         const input = document.getElementById(inputId);
@@ -1166,6 +1317,271 @@
             icon.classList.add('fa-eye');
         }
     }
+    // ===== VAT INVOICES =====
+    let vatInvoicesLoaded = false;
+    
+    function loadVATInvoices() {
+        if (vatInvoicesLoaded) return;
+        
+        $.get('/Customer/GetVATInvoices', function(res) {
+            vatInvoicesLoaded = true;
+            const container = document.getElementById('vatInvoiceList');
+            
+            if (!res.success || !res.data || res.data.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 4rem; color: #e5e7eb;"></i>
+                        <p style="color: #6b7280; margin-top: 16px;">Chưa có hóa đơn VAT nào</p>
+                        <p style="color: #9ca3af; font-size: 0.85rem;">Bạn có thể yêu cầu xuất hóa đơn VAT khi thanh toán</p>
+                    </div>`;
+                return;
+            }
+            
+            let html = `<div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151;">Số HĐ</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151;">Đơn hàng</th>
+                            <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151;">Công ty</th>
+                            <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #374151;">Trước thuế</th>
+                            <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #374151;">Thuế (10%)</th>
+                            <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #374151;">Tổng cộng</th>
+                            <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #374151;">Ngày</th>
+                            <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #374151;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            res.data.forEach(inv => {
+                const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
+                html += `
+                    <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseenter="this.style.background='#f9fafb'" onmouseleave="this.style.background='transparent'">
+                        <td style="padding: 12px 16px; font-weight: 600; color: #3b82f6;">${inv.soHoaDon || '-'}</td>
+                        <td style="padding: 12px 16px; color: #6b7280;">${inv.maDonHang || '-'}</td>
+                        <td style="padding: 12px 16px;">
+                            <div style="font-weight: 500; color: #111827;">${inv.tenCongTy}</div>
+                            <div style="font-size: 0.8rem; color: #9ca3af;">MST: ${inv.maSoThue}</div>
+                        </td>
+                        <td style="padding: 12px 16px; text-align: right; color: #111827;">${fmt(inv.tongTienTruocThue)}₫</td>
+                        <td style="padding: 12px 16px; text-align: right; color: #ef4444;">${fmt(inv.tienThue)}₫</td>
+                        <td style="padding: 12px 16px; text-align: right; font-weight: 700; color: #111827;">${fmt(inv.tongTienSauThue)}₫</td>
+                        <td style="padding: 12px 16px; text-align: center; color: #6b7280;">${inv.ngayLap}</td>
+                        <td style="padding: 12px 16px; text-align: center;">
+                            <span style="display: inline-block; padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; font-weight: 600; 
+                                background: ${inv.trangThai === 'Đã xuất' ? '#dcfce7' : '#fef3c7'}; 
+                                color: ${inv.trangThai === 'Đã xuất' ? '#16a34a' : '#d97706'};">
+                                ${inv.trangThai}
+                            </span>
+                        </td>
+                    </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }).fail(function() {
+            document.getElementById('vatInvoiceList').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
+                    <p style="margin-top: 12px;">Không thể tải hóa đơn. Vui lòng thử lại sau.</p>
+                </div>`;
+        });
+    }
+
+    // Hook into tab switching to load VAT invoices when tab becomes visible
+    document.querySelectorAll('[data-tab="invoice"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadVATInvoices, 100);
+        });
+    });
+    // ===== DEBT MANAGEMENT =====
+    let debtLoaded = false;
+    
+    function loadDebtSummary() {
+        if (debtLoaded) return;
+        
+        $.get('/Customer/GetDebtSummary', function(res) {
+            debtLoaded = true;
+            document.getElementById('debtLoading').style.display = 'none';
+            document.getElementById('debtContent').style.display = 'block';
+            
+            if (res.success) {
+                // Update Credit Limit Section
+                const fmt = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+                
+                document.getElementById('currentDebtDisplay').textContent = fmt(res.totalDebt);
+                document.getElementById('creditLimitDisplay').textContent = fmt(res.creditLimit);
+                
+                const remaining = res.creditLimit - res.totalDebt;
+                document.getElementById('remainingCreditDisplay').textContent = fmt(remaining);
+                
+                // Progress Bar
+                const percent = Math.min((res.totalDebt / res.creditLimit) * 100, 100);
+                document.getElementById('debtProgressBar').style.width = percent + '%';
+                
+                // Populate Table
+                const tbody = document.getElementById('debtTableBody');
+                if (res.orders && res.orders.length > 0) {
+                    let html = '';
+                    res.orders.forEach(order => {
+                        html += `
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 12px; font-weight: 600; color: #3b82f6;">${order.maHienThi || '#' + order.id}</td>
+                                <td style="padding: 12px; color: #6b7280;">${order.ngayDat}</td>
+                                <td style="padding: 12px;">
+                                    <span style="padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; font-weight: 600; background: #fee2e2; color: #b91c1c;">
+                                        ${order.trangThai}
+                                    </span>
+                                </td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #111827;">${fmt(order.tongTien)}</td>
+                                <td style="padding: 12px; text-align: center;">
+                                    <a href="/Customer/TrackOrder?id=${order.id}" class="btn-sm btn-outline-primary" style="text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 4px;">
+                                        Xem
+                                    </a>
+                                    <button onclick="editOrder(${order.id})" class="btn-sm btn-outline-warning" style="border: 1px solid #f59e0b; background: white; color: #d97706; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem;" title="Chỉnh sửa đơn hàng">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+                    tbody.innerHTML = html;
+                    document.getElementById('tableTotalDebt').textContent = fmt(res.totalDebt);
+                } else {
+                    // No debt orders found - scoped to #tab-debt
+                    if (res.totalDebt === 0) {
+                        const debtTab = document.getElementById('tab-debt');
+                        const debtHeader = debtTab.querySelector('.credit-limit-section + h3');
+                        if (debtHeader) debtHeader.style.display = 'none';
+                        const debtTable = debtTab.querySelector('.table-responsive');
+                        if (debtTable) debtTable.style.display = 'none';
+                        document.getElementById('noDebtMessage').style.display = 'block';
+                    }
+                }
+            }
+        });
+    }
+
+    // ===== RFQ MANAGEMENT =====
+    let rfqLoaded = false;
+    
+    function loadRFQList() {
+        if (rfqLoaded) return;
+        
+        $.get('/Customer/GetQuoteRequests', function(res) {
+            rfqLoaded = true;
+            document.getElementById('rfqLoading').style.display = 'none';
+            document.getElementById('rfqContent').style.display = 'block';
+            
+            const tbody = document.getElementById('rfqTableBody');
+            
+            if (res.success && res.data && res.data.length > 0) {
+                let html = '';
+                const fmt = n => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+                
+                res.data.forEach(item => {
+                    let statusColor = '#6b7280';
+                    let statusBg = '#f3f4f6';
+                    
+                    if (item.trangThai === 'Mới') { statusColor = '#3b82f6'; statusBg = '#dbeafe'; }
+                    else if (item.trangThai === 'Đã báo giá') { statusColor = '#d97706'; statusBg = '#fef3c7'; }
+                    else if (item.trangThai === 'Đã duyệt') { statusColor = '#16a34a'; statusBg = '#dcfce7'; }
+                    else if (item.trangThai === 'Đã hủy') { statusColor = '#ef4444'; statusBg = '#fee2e2'; }
+
+                    const cancelBtn = item.trangThai === 'Mới' 
+                        ? `<button onclick="cancelQuoteRequest(${item.id})" class="btn-sm btn-outline-danger" title="Hủy yêu cầu" style="border: 1px solid #fee2e2; background: white; color: #ef4444; border-radius: 4px; padding: 4px 8px;">
+                                <i class="fas fa-times"></i>
+                           </button>` 
+                        : '';
+
+                    html += `
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 12px; font-weight: 600; color: #374151;">${item.maHienThi}</td>
+                            <td style="padding: 12px; text-align: center; color: #6b7280;">${item.ngayTao}</td>
+                            <td style="padding: 12px; text-align: center;">${item.itemCount} sp</td>
+                            <td style="padding: 12px; text-align: right; font-weight: 600;">${fmt(item.tongTienDuKien)}</td>
+                            <td style="padding: 12px; text-align: center;">
+                                <span style="padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; font-weight: 600; background: ${statusBg}; color: ${statusColor};">
+                                    ${item.trangThai}
+                                </span>
+                            </td>
+                            <td style="padding: 12px; text-align: center;">
+                                ${cancelBtn}
+                            </td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            } else {
+                // Scoped to #tab-quotes to avoid hiding wrong table
+                const quotesTab = document.getElementById('tab-quotes');
+                const quotesTable = quotesTab.querySelector('.table-responsive');
+                if (quotesTable) quotesTable.style.display = 'none';
+                document.getElementById('noRfqMessage').style.display = 'block';
+            }
+        });
+    }
+
+    function createQuoteRequest() {
+        Swal.fire({
+            title: 'Tạo yêu cầu báo giá?',
+            text: 'Hệ thống sẽ tạo yêu cầu báo giá dựa trên các sản phẩm hiện có trong giỏ hàng của bạn.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Tạo yêu cầu',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('/Customer/CreateQuoteRequest', function(res) {
+                    if (res.success) {
+                        Swal.fire('Thành công', res.message, 'success').then(() => {
+                            rfqLoaded = false; // logic to reload
+                            loadRFQList();
+                            // Optional: Refresh cart if we decided to clear it, but currently we kept it
+                        });
+                    } else {
+                        Swal.fire('Lỗi', res.message, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    function cancelQuoteRequest(id) {
+        Swal.fire({
+            title: 'Hủy yêu cầu?',
+            text: 'Bạn có chắc chắn muốn hủy yêu cầu báo giá này không?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý hủy',
+            cancelButtonText: 'Không'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('/Customer/CancelQuoteRequest', { id: id }, function(res) {
+                    if (res.success) {
+                        // Reload list
+                        rfqLoaded = false;
+                        loadRFQList();
+                        Swal.fire('Đã hủy', res.message, 'success');
+                    } else {
+                        Swal.fire('Lỗi', res.message, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    // Hook into tab switching
+    document.querySelectorAll('[data-tab="quotes"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadRFQList, 100);
+        });
+    });
+
+    // Hook into tab switching for Debt
+    document.querySelectorAll('[data-tab="debt"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadDebtSummary, 100);
+        });
+    });
 </script>
 
 @functions {

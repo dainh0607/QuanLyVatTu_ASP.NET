@@ -5,6 +5,7 @@ using QuanLyVatTu_ASP.DataAccess;
 
 namespace QuanLyVatTu_ASP.Controllers
 {
+    [IgnoreAntiforgeryToken]
     public class DanhGiaController : Controller
     {
         private readonly AppDbContext _context;
@@ -35,12 +36,12 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     d.ID,
                     d.SoSao,
-                    // d.ChatLuongSanPham,
                     d.BinhLuan,
                     d.PhanHoi,
                     d.NgayPhanHoi,
                     d.LuotThich,
                     d.NgayDanhGia,
+                    d.MaKhachHang,
                     TenKhachHang = d.KhachHang!.HoTen ?? "Khách hàng",
                     AvatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(d.KhachHang!.HoTen ?? "KH")}&background=3b82f6&color=fff&size=48"
                 })
@@ -62,7 +63,8 @@ namespace QuanLyVatTu_ASP.Controllers
                 Sao1 = allReviews.Count(r => r.SoSao == 1)
             };
 
-            return Json(new { success = true, reviews, stats });
+            var currentKhachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            return Json(new { success = true, reviews, stats, currentKhachHangId });
         }
 
         // POST: DanhGia/Create
@@ -205,6 +207,35 @@ namespace QuanLyVatTu_ASP.Controllers
 
             return Json(new { success = true, message = "Đã gửi phản hồi!", ngayPhanHoi = danhGia.NgayPhanHoi });
         }
+
+        /// <summary>
+        /// Sửa đánh giá — chỉ chủ sở hữu mới được phép
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Update([FromBody] UpdateDanhGiaRequest request)
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId == null)
+                return Json(new { success = false, message = "Vui lòng đăng nhập." });
+
+            var danhGia = await _context.DanhGias.FindAsync(request.Id);
+            if (danhGia == null)
+                return Json(new { success = false, message = "Đánh giá không tồn tại." });
+
+            if (danhGia.MaKhachHang != khachHangId.Value)
+                return Json(new { success = false, message = "Bạn không có quyền sửa đánh giá này." });
+
+            if (request.SoSao < 1 || request.SoSao > 5)
+                return Json(new { success = false, message = "Số sao phải từ 1 đến 5." });
+
+            danhGia.SoSao = request.SoSao;
+            danhGia.BinhLuan = request.BinhLuan?.Trim();
+            danhGia.NgayDanhGia = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Đã cập nhật đánh giá!" });
+        }
     }
 
     // Request DTOs
@@ -225,5 +256,12 @@ namespace QuanLyVatTu_ASP.Controllers
     {
         public int MaDanhGia { get; set; }
         public string NoiDung { get; set; } = null!;
+    }
+
+    public class UpdateDanhGiaRequest
+    {
+        public int Id { get; set; }
+        public int SoSao { get; set; }
+        public string? BinhLuan { get; set; }
     }
 }

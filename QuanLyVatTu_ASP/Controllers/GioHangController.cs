@@ -57,6 +57,13 @@ namespace QuanLyVatTu_ASP.Controllers
             var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
             if (vatTu == null) return Json(new { success = false, message = "Sản phẩm không tồn tại" });
 
+            // Server-side stock validation
+            if (quantity < 1) quantity = 1;
+            if (quantity > vatTu.SoLuongTon)
+            {
+                return Json(new { success = false, message = $"Chỉ còn {vatTu.SoLuongTon} sản phẩm trong kho." });
+            }
+
             var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
             
             if (khachHangId != null)
@@ -350,10 +357,11 @@ namespace QuanLyVatTu_ASP.Controllers
         }
 
         /// <summary>
+        /// Xuất báo giá từ giỏ hàng (supports both DB and session carts)
         /// </summary>
-        public IActionResult BaoGia()
+        public async Task<IActionResult> BaoGia()
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>(CART_KEY) ?? new List<CartItem>();
+            var cart = await GetCartItemsSecureAsync();
 
             // Nếu giỏ hàng trống, redirect về trang sản phẩm
             if (!cart.Any())

@@ -36,6 +36,7 @@ builder.Services.AddScoped<ILoaiVatTuService, LoaiVatTuService>();
 builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<IVatTuService, VatTuService>();
 builder.Services.AddScoped<IThongKeService, ThongKeService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 
 // Cấu hình Authentication
@@ -48,8 +49,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/Login";
-})
-.AddGoogle(options =>
+});
+/*.AddGoogle(options =>
 {
     // Cấu hình ClientId và ClientSecret từ appsettings.json
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
@@ -61,7 +62,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("profile");
     options.Scope.Add("email");
     options.SaveTokens = true;
-});
+});*/
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

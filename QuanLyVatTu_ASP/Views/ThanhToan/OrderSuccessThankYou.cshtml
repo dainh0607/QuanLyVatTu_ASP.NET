@@ -353,6 +353,15 @@
         </div>
         
         <!-- Order Card -->
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning" role="alert" style="margin-bottom: 24px; border-radius: 10px; border: 1px solid #f59e0b; background-color: #fef3c7; color: #92400e; padding: 15px; display: flex; align-items: flex-start; gap: 10px;">
+                <i class="fas fa-exclamation-triangle" style="margin-top: 4px;"></i>
+                <div>
+                    <strong>Lưu ý:</strong> @TempData["Warning"]
+                </div>
+            </div>
+        }
         <div class="order-card">
             <div class="order-card-header">
                 <span class="order-number">

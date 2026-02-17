@@ -25,7 +25,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? DonGia { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "decimal(18,2)")]
         public decimal ThanhTien { get; set; }
 

@@ -68,8 +68,33 @@
         </div>
     </header>
 
-    <div class="checkout-page">
-        <div class="checkout-container">
+    <div class="container checkout-container">
+        <!-- Edit Order Banner -->
+        @if (ViewBag.IsEditingOrder == true)
+        {
+            <div class="alert alert-warning d-flex align-items-center justify-content-between mb-4 shadow-sm" style="border-left: 5px solid #ffc107;">
+                <div>
+                    <h5 class="alert-heading mb-1"><i class="fas fa-edit me-2"></i>Đang ở chế độ chỉnh sửa đơn hàng</h5>
+                    <p class="mb-0">Bạn đang cập nhật nội dung cho đơn hàng <strong>#@ViewBag.EditingOrderId</strong>. Mọi thay đổi sẽ được lưu vào đơn hàng này.</p>
+                </div>
+                <button onclick="cancelEdit()" class="btn btn-sm btn-outline-danger fw-bold">
+                    <i class="fas fa-times me-1"></i> Hủy chỉnh sửa
+                </button>
+            </div>
+            <script>
+                function cancelEdit() {
+                    if(confirm('Bạn có chắc muốn hủy chế độ chỉnh sửa? Đơn hàng sẽ không bị thay đổi.')) {
+                        fetch('/Customer/CancelEdit', { method: 'POST' })
+                        .then(r => r.json())
+                        .then(d => {
+                            if(d.success) location.reload();
+                        });
+                    }
+                }
+            </script>
+        }
+        
+        <div class="text-center mb-4">
             
             <form action="/ThanhToan/ProcessCheckout" method="post" id="checkoutForm">
                 <input type="hidden" name="isBuyNow" value="@((ViewBag.IsBuyNow == true) ? "true" : "false")" />
@@ -137,23 +162,10 @@
                                     <div class="radio-content">
                                         <div class="radio-circle"></div>
                                         <div class="radio-info">
-                                            <span class="radio-title">🚚 Cửa hàng giao tận nơi (Không dỡ hàng)</span>
+                                            <span class="radio-title">🚚 Cửa hàng giao tận nơi</span>
                                             <span class="radio-desc">Xe cửa hàng giao đến công trình - Quý khách tự bốc xếp</span>
                                         </div>
                                         <span class="radio-price">Phí theo khoảng cách</span>
-                                    </div>
-                                </label>
-                                
-                                <!-- Self Delivery - With Unloading -->
-                                <label class="custom-radio-card">
-                                    <input type="radio" name="shippingMethod" value="delivery_unload">
-                                    <div class="radio-content">
-                                        <div class="radio-circle"></div>
-                                        <div class="radio-info">
-                                            <span class="radio-title">🚚 Cửa hàng giao + Dỡ hàng</span>
-                                            <span class="radio-desc">Nhân viên cửa hàng hỗ trợ dỡ hàng tại điểm giao</span>
-                                        </div>
-                                        <span class="radio-price">Phí giao + 100.000₫/tấn</span>
                                     </div>
                                 </label>
                                 
@@ -275,7 +287,7 @@
                                 </div>
                                 <h2 class="section-title">Xuất hóa đơn VAT</h2>
                                 <label class="toggle-switch ms-auto">
-                                    <input type="checkbox" name="xuatVAT" id="vatToggle">
+                                    <input type="checkbox" name="xuatVAT" value="true" id="vatToggle">
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -452,9 +464,9 @@
                 // Disable 'cod' option
                 const codRadio = document.querySelector('input[name="paymentMethod"][value="cod"]');
                 if(codRadio) {
-                    codRadio.disabled = true;
-                    codRadio.closest('.custom-radio-card').style.opacity = '0.5';
-                    codRadio.closest('.custom-radio-card').title = "Đơn hàng trên 5 triệu bắt buộc cọc qua chuyển khoản";
+                    // codRadio.disabled = true; // Enabled COD for all
+                    // codRadio.closest('.custom-radio-card').style.opacity = '0.5';
+                    // codRadio.closest('.custom-radio-card').title = "Đơn hàng trên 5 triệu bắt buộc cọc qua chuyển khoản";
                 }
 
                 // 2. Hide Deposit Options (0, 30, 50, 100)
@@ -587,10 +599,28 @@
         });
 
         // VAT Toggle
-        document.getElementById('vatToggle').addEventListener('change', function() {
-            const vatForm = document.getElementById('vatForm');
-            vatForm.style.display = this.checked ? 'block' : 'none';
-        });
+        const vatToggle = document.getElementById('vatToggle');
+        const vatForm = document.getElementById('vatForm');
+        const vatInputs = vatForm.querySelectorAll('input');
+
+        function toggleVatFields() {
+            const isChecked = vatToggle.checked;
+            vatForm.style.display = isChecked ? 'block' : 'none';
+            
+            vatInputs.forEach(input => {
+                if (isChecked) {
+                    input.setAttribute('required', 'required');
+                } else {
+                    input.removeAttribute('required');
+                    input.classList.remove('is-invalid'); // Clear errors if hidden
+                }
+            });
+        }
+
+        vatToggle.addEventListener('change', toggleVatFields);
+        
+        // Run on load in case browser remembers checkbox state
+        toggleVatFields();
 
         // Shipping fee update for new options
         document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
@@ -874,8 +904,21 @@
             acceptBtn.addEventListener('click', function() {
                 if (!this.disabled) {
                     document.getElementById('termsCheck').checked = true;
-                    bootstrap.Modal.getInstance(modal).hide();
+                    var modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
                 }
+            });
+
+            // Ensure full cleanup when modal is hidden
+            modal.addEventListener('hidden.bs.modal', function () {
+                // Remove any leftover backdrop
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                // Remove body scroll lock
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('overflow');
+                document.body.style.removeProperty('padding-right');
             });
         });
     </script>

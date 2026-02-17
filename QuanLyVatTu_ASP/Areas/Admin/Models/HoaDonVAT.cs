@@ -5,17 +5,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 {
     public class HoaDonVAT : BaseEntity
     {
-        // Auto-generated invoice number, e.g., "VAT2026-001"
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        // Auto-generated invoice number in DB
+        // [DatabaseGenerated(DatabaseGeneratedOption.Computed)] <- Removed to allow manual insert attempts if needed
         [Column(TypeName = "nvarchar(50)")]
         public string? SoHoaDon { get; set; }
 
         [Required]
-        [ForeignKey("DonHang")]
         public int MaDonHang { get; set; }
 
         [Required]
-        [ForeignKey("KhachHang")]
         public int MaKhachHang { get; set; }
 
         // Buyer info

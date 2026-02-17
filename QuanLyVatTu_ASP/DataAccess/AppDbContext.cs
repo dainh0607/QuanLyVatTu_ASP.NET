@@ -239,8 +239,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             modelBuilder.Entity<HoaDonVAT>(entity =>
             {
                 entity.ToTable("HoaDonVAT");
-                entity.Property(e => e.SoHoaDon)
-                      .HasComputedColumnSql("'VAT' + FORMAT(GETDATE(), 'yyyy') + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)", stored: false);
+                // SoHoaDon is a regular column - value generated in C# code after insert (not a DB computed column)
                 entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
 

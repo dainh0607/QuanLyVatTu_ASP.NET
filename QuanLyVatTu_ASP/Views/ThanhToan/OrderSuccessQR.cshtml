@@ -1,13 +1,22 @@
 @using QuanLyVatTu_ASP.Models.ViewModels
 @using QuanLyVatTu_ASP.Areas.Admin.Models
+@using QuanLyVatTu_ASP.Models
+@model DonHang
 @{
     Layout = null;
     
-    // Deserialize DonHang
-    var donHangJson = TempData["DonHangJson"] as string;
-    var donHang = !string.IsNullOrEmpty(donHangJson) 
-        ? Newtonsoft.Json.JsonConvert.DeserializeObject<DonHang>(donHangJson) 
-        : null;
+    // 1. Try to get DonHang from Model
+    var donHang = Model;
+
+    // 2. Fallback to TempData if Model is null (for backward compatibility)
+    if (donHang == null)
+    {
+        var donHangJson = TempData["DonHangJson"] as string;
+        if (!string.IsNullOrEmpty(donHangJson)) 
+        {
+            donHang = Newtonsoft.Json.JsonConvert.DeserializeObject<DonHang>(donHangJson);
+        }
+    }
 
     // Deserialize CartItems if needed
     var cartItemsJson = TempData["CartItemsJson"] as string;
@@ -16,16 +25,39 @@
         : (TempData["CartItems"] as List<CartItem>); // Fallback just in case
 
     // Check if deposit is required
-    decimal.TryParse(TempData["SoTienDatCoc"]?.ToString(), out decimal soTienDatCoc);
-    var isDeposit = soTienDatCoc > 0;
-
-    decimal.TryParse(TempData["TongTien"]?.ToString(), out decimal tongTien);
-    if (tongTien == 0) tongTien = donHang?.TongTien ?? 0;
+    // If Model is used, we might need to recalculate isDeposit from Model properties if TempData is gone.
+    // However, rely on basic logic: if Total >= 5M, or Status contains "Chờ đặt cọc".
     
+    decimal soTienDatCoc = 0;
+    decimal tongTien = 0;
+
+    if (donHang != null)
+    {
+        tongTien = donHang.TongTien ?? 0;
+        soTienDatCoc = donHang.SoTienDatCoc ?? 0;
+    }
+    else
+    {
+        // Fallback to TempData values if completely no donHang object
+        decimal.TryParse(TempData["SoTienDatCoc"]?.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out soTienDatCoc);
+        decimal.TryParse(TempData["TongTien"]?.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out tongTien);
+    }
+    
+    var isDeposit = soTienDatCoc > 0 || (donHang?.TrangThai?.Contains("đặt cọc") == true);
+    // If donHang exists and isDeposit is true, ensure soTienDatCoc is set correctly if it was 0
+    if (isDeposit && soTienDatCoc == 0 && tongTien > 0) soTienDatCoc = tongTien * 0.1m;
+
     var finalAmount = isDeposit ? soTienDatCoc : tongTien;
     
-    var hoTen = TempData["HoTen"]?.ToString() ?? "";
-    var maHienThi = TempData["MaHienThi"]?.ToString() ?? donHang?.MaHienThi ?? donHang?.ID.ToString();
+    // Get info
+    var hoTen = TempData["HoTen"]?.ToString();
+    if (string.IsNullOrEmpty(hoTen) && donHang?.KhachHang != null) hoTen = donHang.KhachHang.HoTen; // if Include used
+    if (string.IsNullOrEmpty(hoTen)) hoTen = "KhachHang";
+
+    // Safe replace to avoid NullReferenceException
+    var cleanName = !string.IsNullOrEmpty(hoTen) ? hoTen.Replace(" ", "") : "KH";
+
+    var maHienThi = donHang?.MaHienThi ?? TempData["MaHienThi"]?.ToString() ?? donHang?.ID.ToString();
 
     // VietQR format
     // VietQR format
@@ -35,10 +67,10 @@
     
     // Content: COC [CODE] for deposit, DH[ID] for full
     var transferContent = isDeposit 
-        ? $"COC {maHienThi} {hoTen.Replace(" ", "")}" 
-        : $"DH{donHang?.ID ?? 0} {hoTen.Replace(" ", "")}";
+        ? $"COC {maHienThi} {cleanName}" 
+        : $"DH{donHang?.ID ?? 0} {cleanName}";
 
-    var qrUrl = $"https://img.vietqr.io/image/{bankId}-{accountNo}-compact2.png?amount={(int)finalAmount}&addInfo={Uri.EscapeDataString(transferContent)}&accountName={Uri.EscapeDataString(accountName)}";
+    var qrUrl = $"https://img.vietqr.io/image/{bankId}-{accountNo}-compact.png?amount={(int)finalAmount}&addInfo={Uri.EscapeDataString(transferContent)}&accountName={Uri.EscapeDataString(accountName)}";
 
 }
 
@@ -379,6 +411,15 @@
         </div>
         
         <!-- Main Layout -->
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning" role="alert" style="max-width: 900px; margin: 0 auto 20px; border-radius: 10px; border: 1px solid #f59e0b; background-color: #fef3c7; color: #92400e; padding: 15px; display: flex; align-items: flex-start; gap: 10px;">
+                <i class="fas fa-exclamation-triangle" style="margin-top: 4px;"></i>
+                <div>
+                    <strong>Lưu ý:</strong> @TempData["Warning"]
+                </div>
+            </div>
+        }
         <div class="payment-layout">
             <!-- QR Code Card -->
             <div class="payment-card">
@@ -389,7 +430,14 @@
                 <div class="card-body">
                     <div class="qr-section">
                         <div class="qr-code-wrapper">
-                            <img src="@qrUrl" alt="QR Code" class="qr-code" id="qrImage">
+                            <img src="@qrUrl" alt="QR Code" class="qr-code" id="qrImage" onerror="this.style.display='none'; document.getElementById('qrFallback').style.display='block';">
+                            <div id="qrFallback" style="display:none; padding:20px; text-align:center; color:#ef4444;">
+                                <i class="fas fa-exclamation-triangle" style="font-size:2rem;"></i>
+                                <p class="mt-2">Không tải được mã QR.<br>Vui lòng dùng thông tin bên cạnh để chuyển khoản.</p>
+                                <div class="mt-2 small text-muted">
+                                    Debug: @finalAmount | @transferContent | @qrUrl
+                                </div>
+                            </div>
                         </div>
                         <p class="qr-note">Mở app ngân hàng và quét mã QR để thanh toán</p>
                     </div>
@@ -438,8 +486,8 @@
                             <span class="bank-value" id="accountName">@accountName</span>
                         </div>
                         <div class="bank-row">
-                            <span class="bank-label">Số tiền</span>
-                            <span class="bank-value amount" id="amount">@tongTien.ToString("N0")₫</span>
+                            <span class="bank-label">Số tiền @(isDeposit ? "(cọc 10%)" : "")</span>
+                            <span class="bank-value amount" id="amount">@finalAmount.ToString("N0")₫</span>
                             <button class="copy-btn" onclick="copyText('amount', this, true)">
                                 <i class="far fa-copy"></i> Copy
                             </button>
