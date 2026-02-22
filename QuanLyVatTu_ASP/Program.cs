@@ -51,7 +51,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddGoogle(options =>
 {
-    // Cấu hình ClientId và ClientSecret từ appsettings.json
+    // Cấu hình ClientId và ClientSecret
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
     
     options.ClientId = googleAuth["ClientId"] ?? ""; 
@@ -66,7 +66,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tăng timeout cho session
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Timeout cho session
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS

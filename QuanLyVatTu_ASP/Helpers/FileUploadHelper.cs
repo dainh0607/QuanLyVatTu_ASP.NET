@@ -15,21 +15,17 @@ namespace QuanLyVatTu_ASP.Helpers
         public static async Task<string?> UploadFileAsync(IFormFile? file, string webRootPath, string subFolder)
         {
             if (file == null || file.Length == 0) return null;
-
-            // Tạo đường dẫn thư mục lưu trữ
             var uploadPath = Path.Combine(webRootPath, subFolder);
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
             }
 
-            // Kiểm tra xem file có phải là ảnh không (theo extension)
             var extension = Path.GetExtension(file.FileName).ToLower();
             var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff" };
 
             if (imageExtensions.Contains(extension))
             {
-                // Nếu là ảnh, xử lý chuyển đổi sang WebP và Resize
                 try
                 {
                     // Tên file mới với đuôi .webp
