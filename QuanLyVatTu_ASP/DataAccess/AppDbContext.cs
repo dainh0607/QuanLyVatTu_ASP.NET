@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseLazyLoadingProxies()
-                              .UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -35,6 +35,9 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
         public DbSet<GioHang> GioHangs { get; set; }
         public DbSet<ChiTietGioHang> ChiTietGioHangs { get; set; }
+        public DbSet<HoaDonVAT> HoaDonVATs { get; set; }
+        public DbSet<YeuCauBaoGia> YeuCauBaoGia { get; set; }
+        public DbSet<ChiTietYeuCauBaoGia> ChiTietYeuCauBaoGia { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -230,6 +233,52 @@ namespace QuanLyVatTu_ASP.DataAccess
                     .WithMany(p => p.YeuThichs)
                     .HasForeignKey(d => d.MaVatTu)
                     .OnDelete(DeleteBehavior.Cascade); // Xóa SP -> xóa khỏi danh sách yêu thích
+            });
+
+            // --- 13. HoaDonVAT ---
+            modelBuilder.Entity<HoaDonVAT>(entity =>
+            {
+                entity.ToTable("HoaDonVAT");
+                // SoHoaDon is a regular column - value generated in C# code after insert (not a DB computed column)
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.NgayLap).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(d => d.DonHang)
+                    .WithMany()
+                    .HasForeignKey(d => d.MaDonHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany()
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- 14. YeuCauBaoGia ---
+            modelBuilder.Entity<YeuCauBaoGia>(entity =>
+            {
+                entity.ToTable("YeuCauBaoGia");
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany() // No collection in KhachHang for simplicity for now
+                    .HasForeignKey(d => d.KhachHangId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ChiTietYeuCauBaoGia>(entity =>
+            {
+                entity.ToTable("ChiTietYeuCauBaoGia");
+
+                entity.HasOne(d => d.YeuCauBaoGia)
+                    .WithMany(p => p.ChiTietYeuCauBaoGias)
+                    .HasForeignKey(d => d.YeuCauBaoGiaId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.VatTu)
+                    .WithMany()
+                    .HasForeignKey(d => d.VatTuId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

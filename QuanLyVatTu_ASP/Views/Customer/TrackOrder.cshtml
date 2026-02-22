@@ -56,9 +56,25 @@
                             <span class="badge @GetStatusBadgeClass(Model.TrangThai) fs-6">
                                 @Model.TrangThai
                             </span>
-                            <button class="btn btn-warning text-dark ms-2 btn-sm" onclick="reorder(@Model.ID)" title="Mua lại đơn hàng này">
-                                <i class="fas fa-redo me-1"></i> Mua lại
-                            </button>
+                            @{
+                                var resetStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc", "Công nợ" };
+                                var reorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đã giao" };
+                            }
+                            @if (resetStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                <button class="btn-order btn-order-reorder" onclick="editOrder(@Model.ID)">
+                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                </button>
+                            }
+                            @if (reorderStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                <form method="post" action="/GioHang/ReOrder" style="display:inline;">
+                                    <input type="hidden" name="orderId" value="@Model.ID" />
+                                    <button type="submit" class="btn-order btn-order-detail" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none;">
+                                        <i class="fas fa-undo"></i> Đặt lại
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -247,31 +263,68 @@
 
 @section Scripts {
     <script>
-        function reorder(orderId) {
-            if (typeof showGlobalConfirm === 'function') {
-                showGlobalConfirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '? \n(Các sản phẩm sẽ được thêm vào giỏ hàng hiện tại)', function() {
-                    postReorder(orderId);
-                });
-            } else {
-                if (confirm('Bạn có muốn đặt lại đơn hàng #' + orderId + '?')) {
-                    postReorder(orderId);
-                }
-            }
+        // --- Edit Order Function (Formerly Reset) ---
+        function editOrder(orderId) {
+            Swal.fire({
+                title: 'Chỉnh sửa đơn hàng?',
+                html: 'Toàn bộ chi tiết đơn hàng sẽ bị xóa để bạn <b>chọn lại sản phẩm</b>.<br>Trạng thái sẽ giữ nguyên hoặc về "Chờ xác nhận".',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-edit"></i> Chỉnh sửa',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#f59e0b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/Customer/EditOrder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderId)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message })
+            });
         }
 
-        function postReorder(orderId) {
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/GioHang/ReOrder';
-            
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'orderId';
-            input.value = orderId;
-            
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
+        function reorderCreate(orderId) {
+            Swal.fire({
+                title: 'Mua lại đơn hàng?',
+                html: 'Hệ thống sẽ tạo <b>đơn hàng mới</b> với các sản phẩm từ đơn cũ.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-redo"></i> Mua lại',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#3b82f6'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/Customer/ReorderCreate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderId)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã tạo đơn hàng mới!',
+                                html: data.message,
+                                confirmButtonText: 'Xem đơn mới',
+                                showCancelButton: true,
+                                cancelButtonText: 'Ở lại'
+                            }).then((r) => {
+                                if (r.isConfirmed && data.newOrderId) {
+                                    window.location.href = '/Customer/TrackOrder?id=' + data.newOrderId;
+                                }
+                            });
+                        } else {
+                            Swal.fire('Lỗi', data.message, 'error');
+                        }
+                    })
+                    .catch(() => Swal.fire('Lỗi', 'Không thể kết nối server!', 'error'));
+                }
+            });
         }
     </script>
 }

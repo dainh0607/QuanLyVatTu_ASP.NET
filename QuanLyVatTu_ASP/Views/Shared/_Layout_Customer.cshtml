@@ -5,8 +5,29 @@
 @{
     var _layoutCategories = await _unitOfWork.LoaiVatTuRepository.GetAllAsync();
     
-    // Lấy dữ liệu giỏ hàng từ session
-    var _cart = Context.Session.Get<List<CartItem>>("MY_CART") ?? new List<CartItem>();
+    // Lấy dữ liệu giỏ hàng - ưu tiên DB cho user đã đăng nhập
+    var _cart = new List<CartItem>();
+    var _khachHangId = Context.Session.GetInt32("KhachHangId");
+    if (_khachHangId != null)
+    {
+        var _gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(_khachHangId.Value);
+        if (_gioHang?.ChiTietGioHangs != null)
+        {
+            _cart = _gioHang.ChiTietGioHangs.Select(ct => new CartItem
+            {
+                VatTuId = ct.MaVatTu,
+                TenVatTu = ct.VatTu?.TenVatTu ?? "",
+                DonGia = ct.VatTu?.GiaBan ?? 0,
+                SoLuong = ct.SoLuong,
+                DonViTinh = ct.VatTu?.DonViTinh ?? "",
+                HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
+            }).ToList();
+        }
+    }
+    else
+    {
+        _cart = Context.Session.Get<List<CartItem>>("MY_CART") ?? new List<CartItem>();
+    }
     var _cartCount = _cart.Sum(x => x.SoLuong);
     var _cartTotal = _cart.Sum(x => x.ThanhTien);
     

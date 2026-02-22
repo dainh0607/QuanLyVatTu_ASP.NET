@@ -421,5 +421,319 @@ namespace QuanLyVatTu_ASP.Controllers
             return Json(new { success = true, message = "Đã xóa địa chỉ" });
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetVATInvoices()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            try
+            {
+                var rawInvoices = await _context.HoaDonVATs
+                    .Where(h => h.MaKhachHang == khachHang.ID)
+                    .OrderByDescending(h => h.NgayLap)
+                    .Select(h => new
+                    {
+                        h.ID,
+                        h.SoHoaDon,
+                        h.TenCongTy,
+                        h.MaSoThue,
+                        h.DiaChiDKKD,
+                        h.EmailNhanHoaDon,
+                        h.TongTienTruocThue,
+                        h.ThueSuat,
+                        h.TienThue,
+                        h.TongTienSauThue,
+                        h.NgayLap,
+                        h.TrangThai,
+                        MaDonHang = h.DonHang != null ? h.DonHang.MaHienThi : ""
+                    })
+                    .ToListAsync();
+
+                // Format dates client-side (ToString with format can't be translated to SQL)
+                var invoices = rawInvoices.Select(h => new
+                {
+                    h.ID,
+                    h.SoHoaDon,
+                    h.TenCongTy,
+                    h.MaSoThue,
+                    h.DiaChiDKKD,
+                    h.EmailNhanHoaDon,
+                    h.TongTienTruocThue,
+                    h.ThueSuat,
+                    h.TienThue,
+                    h.TongTienSauThue,
+                    NgayLap = h.NgayLap.ToString("dd/MM/yyyy"),
+                    h.TrangThai,
+                    h.MaDonHang
+                }).ToList();
+
+                return Json(new { success = true, data = invoices });
+            }
+            catch
+            {
+                // Table may not exist yet (migration not applied)
+                return Json(new { success = true, data = new List<object>() });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetDebtSummary()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            var debtOrders = await _context.DonHang
+                .Where(d => d.KhachHangId == khachHang.ID &&
+                        (d.TrangThai == "Chờ thanh toán" || d.TrangThai == "Chờ đặt cọc"))
+                .Select(d => new
+                {
+                    d.ID,
+                    d.MaHienThi,
+                    d.NgayDat,
+                    d.TongTien,
+                    d.TrangThai,
+                    d.GhiChu
+                })
+                .OrderByDescending(d => d.NgayDat)
+                .ToListAsync();
+
+            var creditLimit = 50000000;
+            var totalDebt = debtOrders.Sum(x => x.TongTien ?? 0);
+
+            var formattedOrders = debtOrders.Select(d => new
+            {
+                d.ID,
+                d.MaHienThi,
+                NgayDat = d.NgayDat.ToString("dd/MM/yyyy"),
+                d.TongTien,
+                d.TrangThai,
+                d.GhiChu
+            });
+
+            return Json(new { success = true, totalDebt, creditLimit, orders = formattedOrders });
+        }
+
+        // --- RFQ / Yêu Cầu Báo Giá Actions ---
+
+        [HttpGet]
+        public async Task<IActionResult> GetQuoteRequests()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            try
+            {
+                var requests = await _context.YeuCauBaoGia
+                    .Where(r => r.KhachHangId == khachHang.ID)
+                    .OrderByDescending(r => r.NgayTao)
+                    .Select(r => new {
+                        r.ID,
+                        r.MaHienThi,
+                        NgayTao = r.NgayTao.ToString("dd/MM/yyyy HH:mm"),
+                        r.TrangThai,
+                        r.TongTienDuKien,
+                        ItemCount = r.ChiTietYeuCauBaoGias.Count()
+                    })
+                    .ToListAsync();
+
+                return Json(new { success = true, data = requests });
+            }
+            catch
+            {
+                // Table might not exist yet
+                return Json(new { success = true, data = new List<object>() });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateQuoteRequest([FromServices] IGioHangRepository _gioHangRepo)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Json(new { success = false, message = "Vui lòng đăng nhập." });
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return Json(new { success = false, message = "Lỗi tài khoản." });
+
+            // Get Cart (DB only since user is logged in)
+            var gioHang = await _gioHangRepo.GetByKhachHangIdAsync(khachHang.ID);
+            if (gioHang == null || gioHang.ChiTietGioHangs == null || !gioHang.ChiTietGioHangs.Any())
+            {
+                return Json(new { success = false, message = "Giỏ hàng trống. Vui lòng thêm sản phẩm." });
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Create RFQ Header
+                var rfq = new YeuCauBaoGia
+                {
+                    KhachHangId = khachHang.ID,
+                    NgayTao = DateTime.Now,
+                    TrangThai = "Mới",
+                    MaHienThi = "RFQ" + DateTime.Now.ToString("yyMMdd") + new Random().Next(1000, 9999),
+                    TongTienDuKien = 0
+                };
+                
+                _context.YeuCauBaoGia.Add(rfq);
+                await _context.SaveChangesAsync();
+
+                decimal total = 0;
+                foreach(var item in gioHang.ChiTietGioHangs)
+                {
+                    var detail = new ChiTietYeuCauBaoGia
+                    {
+                        YeuCauBaoGiaId = rfq.ID,
+                        VatTuId = item.MaVatTu,
+                        SoLuong = item.SoLuong,
+                        DonGiaDuKien = item.VatTu?.GiaBan ?? 0
+                    };
+                    _context.ChiTietYeuCauBaoGia.Add(detail);
+                    total += (detail.DonGiaDuKien ?? 0) * detail.SoLuong;
+                }
+
+                rfq.TongTienDuKien = total;
+                await _context.SaveChangesAsync();
+
+                // Clear Cart? 
+                // Requirement doesn't specify, but usually "Request Quote" implies converting cart to request.
+                // Let's clear it to avoid confusion, or keep it? 
+                // Let's KEEP it for now, as user might want to buy some items directly too.
+                // Or maybe ask user? For API simplicity, we just create the request.
+                
+                await transaction.CommitAsync();
+
+                return Json(new { success = true, message = "Đã gửi yêu cầu báo giá thành công!", rfqId = rfq.ID });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelQuoteRequest(int id)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+            
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            var rfq = await _context.YeuCauBaoGia.FirstOrDefaultAsync(r => r.ID == id && r.KhachHangId == khachHang.ID);
+            if (rfq == null) return Json(new { success = false, message = "Không tìm thấy yêu cầu." });
+
+            if (rfq.TrangThai != "Mới")
+                return Json(new { success = false, message = "Chỉ có thể hủy yêu cầu mới." });
+
+            rfq.TrangThai = "Đã hủy";
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Đã hủy yêu cầu báo giá." });
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> EditOrder([FromBody] int orderId)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Json(new { success = false, message = "Vui lòng đăng nhập." });
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return Json(new { success = false, message = "Không tìm thấy tài khoản." });
+
+            var donHang = await _context.DonHang
+                .Include(d => d.ChiTietDonHangs)
+                .FirstOrDefaultAsync(d => d.ID == orderId && d.KhachHangId == khachHang.ID);
+
+            if (donHang == null)
+                return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+
+            // Only allow edit for active orders
+            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc", "Công nợ" };
+            if (!allowedStatuses.Contains(donHang.TrangThai))
+                return Json(new { success = false, message = "Không thể chỉnh sửa đơn hàng đã hoàn thành hoặc đã hủy." });
+
+            // --- NEW LOGIC: Copy items to Cart ---
+            var gioHang = await _unitOfWork.GioHangRepository.GetByKhachHangIdAsync(khachHang.ID);
+            if (gioHang == null)
+            {
+                gioHang = new GioHang { MaKhachHang = khachHang.ID };
+                await _unitOfWork.GioHangRepository.AddAsync(gioHang);
+                _unitOfWork.Save();
+            }
+
+            if (donHang.ChiTietDonHangs != null)
+            {
+                // Clear existing cart? 
+                // Requirement implies "Edit Order" context, usually we want to isolate this order's items.
+                // But generally safe to just add/merge or warn.
+                // Let's MERGE for now to avoid accidental data loss of existing cart items.
+
+                foreach (var detail in donHang.ChiTietDonHangs)
+                {
+                    var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(detail.MaVatTu);
+                    if (vatTu == null) continue;
+
+                    var existingItem = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == detail.MaVatTu);
+                    if (existingItem != null)
+                    {
+                        // Optimization: Maybe don't double count if it's already there? 
+                        // But for "Edit", user expects these specific items. 
+                        // Let's just update quantity to match order if it's less, or add?
+                        // "Edit" usually means "Load these items". 
+                        // Simplest: Add quantity.
+                         existingItem.SoLuong += detail.SoLuong ?? 0;
+                         _unitOfWork.ChiTietGioHangRepository.Update(existingItem);
+                    }
+                    else
+                    {
+                        var newItem = new ChiTietGioHang
+                        {
+                            MaGioHang = gioHang.ID,
+                            MaVatTu = detail.MaVatTu,
+                            SoLuong = detail.SoLuong ?? 1
+                        };
+                        await _unitOfWork.ChiTietGioHangRepository.AddAsync(newItem);
+                    }
+                }
+            }
+            
+            // Set Session to track we are editing THIS order
+            HttpContext.Session.SetInt32("EditingOrderId", orderId);
+
+            // --- END NEW LOGIC ---
+
+            // Remove all order details
+            if (donHang.ChiTietDonHangs != null && donHang.ChiTietDonHangs.Any())
+            {
+                _context.Set<ChiTietDonHang>().RemoveRange(donHang.ChiTietDonHangs);
+            }
+
+            // Reset status
+            donHang.TrangThai = "Chờ xác nhận";
+            donHang.TongTien = 0;
+            donHang.SoTienDatCoc = null;
+            donHang.PhuongThucDatCoc = null;
+            donHang.NgayDatCoc = null;
+            donHang.GhiChu = null;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Đang chuyển đến giỏ hàng để chỉnh sửa..." });
+        }
+
     }
 }

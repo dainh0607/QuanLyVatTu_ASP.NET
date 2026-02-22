@@ -122,6 +122,43 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.ToTable("ChiTietHoaDon", (string)null);
                 });
 
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietYeuCauBaoGia", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<decimal?>("DonGiaDuKien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VatTuId")
+                        .HasColumnType("int")
+                        .HasColumnName("MaVatTu");
+
+                    b.Property<int>("YeuCauBaoGiaId")
+                        .HasColumnType("int")
+                        .HasColumnName("MaYeuCau");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("VatTuId");
+
+                    b.HasIndex("YeuCauBaoGiaId");
+
+                    b.ToTable("ChiTietYeuCauBaoGia", (string)null);
+                });
+
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia", b =>
                 {
                     b.Property<int>("ID")
@@ -326,6 +363,89 @@ namespace QuanLyVatTu_ASP.Migrations
 
                             t.HasCheckConstraint("CK_HoaDon_TyLeThueGTGT", "[TyLeThueGTGT] IN (0, 10)");
                         });
+                });
+
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDonVAT", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("DiaChiDKKD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DiaChiNguoiBan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("EmailNhanHoaDon")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("MaDonHang")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaKhachHang")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MaSoThue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MaSoThueBan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("NgayLap")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("NgayTao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("SoHoaDon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenCongTy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenNguoiBan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("ThueSuat")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("TienThue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TongTienSauThue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TongTienTruocThue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MaDonHang");
+
+                    b.HasIndex("MaKhachHang");
+
+                    b.ToTable("HoaDonVAT", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", b =>
@@ -616,6 +736,46 @@ namespace QuanLyVatTu_ASP.Migrations
                         });
                 });
 
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.YeuCauBaoGia", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("KhachHangId")
+                        .HasColumnType("int")
+                        .HasColumnName("MaKhachHang");
+
+                    b.Property<string>("MaHienThi")
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("NgayHetHan")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("NgayTao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<decimal?>("TongTienDuKien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("KhachHangId");
+
+                    b.ToTable("YeuCauBaoGia", (string)null);
+                });
+
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.YeuThich", b =>
                 {
                     b.Property<int>("ID")
@@ -748,6 +908,25 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("VatTu");
                 });
 
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietYeuCauBaoGia", b =>
+                {
+                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.VatTu", "VatTu")
+                        .WithMany()
+                        .HasForeignKey("VatTuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.YeuCauBaoGia", "YeuCauBaoGia")
+                        .WithMany("ChiTietYeuCauBaoGias")
+                        .HasForeignKey("YeuCauBaoGiaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VatTu");
+
+                    b.Navigation("YeuCauBaoGia");
+                });
+
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia", b =>
                 {
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
@@ -823,6 +1002,25 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("NhanVien");
                 });
 
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDonVAT", b =>
+                {
+                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.DonHang", "DonHang")
+                        .WithMany()
+                        .HasForeignKey("MaDonHang")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
+                        .WithMany()
+                        .HasForeignKey("MaKhachHang")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DonHang");
+
+                    b.Navigation("KhachHang");
+                });
+
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.TuongTacDanhGia", b =>
                 {
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia", "DanhGia")
@@ -859,6 +1057,17 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("LoaiVatTu");
 
                     b.Navigation("NhaCungCap");
+                });
+
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.YeuCauBaoGia", b =>
+                {
+                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang", "KhachHang")
+                        .WithMany()
+                        .HasForeignKey("KhachHangId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("KhachHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.YeuThich", b =>
@@ -937,6 +1146,11 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("DanhGias");
 
                     b.Navigation("YeuThichs");
+                });
+
+            modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.YeuCauBaoGia", b =>
+                {
+                    b.Navigation("ChiTietYeuCauBaoGias");
                 });
 #pragma warning restore 612, 618
         }
