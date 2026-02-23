@@ -433,20 +433,20 @@ namespace QuanLyVatTu_ASP.Controllers
 
             try
             {
-                var rawInvoices = await _context.HoaDonVATs
-                    .Where(h => h.MaKhachHang == khachHang.ID)
+                var rawInvoices = await _context.HoaDons
+                    .Where(h => h.MaKhachHang == khachHang.ID && h.IsVATInvoice)
                     .OrderByDescending(h => h.NgayLap)
                     .Select(h => new
                     {
                         h.ID,
-                        h.SoHoaDon,
+                        SoHoaDon = h.SoHoaDonVAT,
                         h.TenCongTy,
                         h.MaSoThue,
                         h.DiaChiDKKD,
                         h.EmailNhanHoaDon,
                         h.TongTienTruocThue,
                         h.ThueSuat,
-                        h.TienThue,
+                        TienThue = h.TienThueGTGT,
                         h.TongTienSauThue,
                         h.NgayLap,
                         h.TrangThai,

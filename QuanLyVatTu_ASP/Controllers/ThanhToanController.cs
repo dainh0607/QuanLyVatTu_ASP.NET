@@ -346,47 +346,54 @@ namespace QuanLyVatTu_ASP.Controllers
                 TempData["MaHienThi"] = donHang.MaHienThi;
                 TempData["SoTienDatCoc"] = (donHang.SoTienDatCoc ?? 0).ToString(System.Globalization.CultureInfo.InvariantCulture); 
 
-                // ===== BƯỚC 5: TẠO HÓA ĐƠN VAT (nếu được yêu cầu) =====
+                // ===== BƯỚC 5: TẠO HÓA ĐƠN (và ghi thông tin VAT nếu được yêu cầu) =====
                 if (xuatVAT && !string.IsNullOrEmpty(tenCongTy) && !string.IsNullOrEmpty(maSoThue))
                 {
                     try
                     {
                         var tienThue = tongTien * 0.10m;
-                        var hoaDonVAT = new HoaDonVAT
+                        var hoaDon = new HoaDon
                         {
                             MaDonHang = donHang.ID,
                             MaKhachHang = khachHang.ID,
+                            MaNhanVien = 1, // Default nhân viên xử lý
+                            NgayLap = DateTime.Now,
+                            TongTienTruocThue = tongTien,
+                            TyLeThueGTGT = 10,
+                            TienThueGTGT = tienThue,
+                            TongTienSauThue = tongTien + tienThue,
+                            TrangThai = "Đã xuất",
+                            PhuongThucThanhToan = paymentMethod == "bank" ? "Chuyển khoản" : "COD",
+                            // VAT specific fields
+                            IsVATInvoice = true,
                             TenCongTy = tenCongTy,
                             MaSoThue = maSoThue,
                             DiaChiDKKD = diaChiDKKD ?? diaChi,
                             EmailNhanHoaDon = emailVAT ?? email,
-                            TongTienTruocThue = tongTien,
-                            ThueSuat = 10,
-                            TienThue = tienThue,
-                            TongTienSauThue = tongTien + tienThue,
-                            NgayLap = DateTime.Now,
-                            TrangThai = "Đã xuất",
-                            NgayTao = DateTime.Now
+                            TenNguoiBan = "CTY MÁY THIẾT BỊ KIM LONG",
+                            MaSoThueBan = "0123456789",
+                            DiaChiNguoiBan = "TP. Hồ Chí Minh",
+                            ThueSuat = 10
                         };
 
                         // Step 1: Insert to get auto-generated ID
-                        _context.HoaDonVATs.Add(hoaDonVAT);
+                        _context.HoaDons.Add(hoaDon);
                         await _context.SaveChangesAsync();
 
-                        // Step 2: Generate SoHoaDon from ID (C# code thay vì computed column)
-                        hoaDonVAT.SoHoaDon = $"VAT{DateTime.Now:yyyy}-{hoaDonVAT.ID:D3}";
+                        // Step 2: Generate SoHoaDonVAT from ID
+                        hoaDon.SoHoaDonVAT = $"VAT{DateTime.Now:yyyy}-{hoaDon.ID:D3}";
                         await _context.SaveChangesAsync();
 
                         TempData["VATInvoiceCreated"] = "true";
 
                         // Send VAT invoice email to customer
-                        var recipientEmail = hoaDonVAT.EmailNhanHoaDon;
+                        var recipientEmail = hoaDon.EmailNhanHoaDon;
                         if (!string.IsNullOrEmpty(recipientEmail))
                         {
                             try
                             {
-                                var (emailBody, embeddedImages) = BuildVATEmailBody(hoaDonVAT, cart, _webHostEnvironment);
-                                var vatSubject = $"Hóa đơn GTGT #{hoaDonVAT.SoHoaDon} - Đơn hàng {donHang.MaHienThi}";
+                                var (emailBody, embeddedImages) = BuildVATEmailBody(hoaDon, cart, _webHostEnvironment);
+                                var vatSubject = $"Hóa đơn GTGT #{hoaDon.SoHoaDonVAT} - Đơn hàng {donHang.MaHienThi}";
 
                                 await _emailService.SendEmailWithEmbeddedImagesAsync(recipientEmail, vatSubject, emailBody, embeddedImages);
 
@@ -567,7 +574,7 @@ namespace QuanLyVatTu_ASP.Controllers
         /// <summary>
         /// Build HTML email body for VAT invoice
         /// </summary>
-        private static (string, Dictionary<string, byte[]>) BuildVATEmailBody(HoaDonVAT invoice, List<CartItem> items, IWebHostEnvironment env)
+        private static (string, Dictionary<string, byte[]>) BuildVATEmailBody(HoaDon invoice, List<CartItem> items, IWebHostEnvironment env)
         {
             var stt = 0;
             var itemRows = string.Join("", items.Select(item =>
@@ -583,7 +590,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 </tr>";
             }));
 
-            var soHoaDon = invoice.SoHoaDon ?? "(Đang cập nhật)";
+            var soHoaDon = invoice.SoHoaDonVAT ?? "(Đang cập nhật)";
             var ngayLap = invoice.NgayLap.ToString("dd/MM/yyyy");
             
             // Prepare embedded images
@@ -617,6 +624,11 @@ namespace QuanLyVatTu_ASP.Controllers
             var logoSrc = images.ContainsKey(logoCid) ? $"cid:{logoCid}" : "https://via.placeholder.com/80x80?text=Logo";
             var bidvQrUrl = "https://img.vietqr.io/image/BIDV-8861365240-compact.png";
             var bidvLogoUrl = "https://api.vietqr.io/img/BIDV.png";
+
+            var thueSuat = invoice.ThueSuat ?? 10;
+            var tienThue = invoice.TienThueGTGT ?? 0;
+            var tongTienTruocThue = invoice.TongTienTruocThue ?? 0;
+            var tongTienSauThue = invoice.TongTienSauThue ?? 0;
 
             var html = $@"
             <div style='font-family:""Segoe UI"",Inter,Arial,sans-serif;max-width:900px;margin:0 auto;background:#ffffff;'>
@@ -678,15 +690,15 @@ namespace QuanLyVatTu_ASP.Controllers
                                 <table style='width:100%;'>
                                     <tr>
                                         <td style='padding:6px 0;color:#6c757d;font-size:14px;'>Cộng tiền hàng:</td>
-                                        <td style='padding:6px 0;text-align:right;font-weight:700;font-size:14px;'>{invoice.TongTienTruocThue:N0} ₫</td>
+                                        <td style='padding:6px 0;text-align:right;font-weight:700;font-size:14px;'>{tongTienTruocThue:N0} ₫</td>
                                     </tr>
                                     <tr style='border-bottom:1px solid #dee2e6;'>
-                                        <td style='padding:6px 0 10px;color:#6c757d;font-size:14px;'>Thuế GTGT ({invoice.ThueSuat}%):</td>
-                                        <td style='padding:6px 0 10px;text-align:right;font-weight:700;font-size:14px;'>{invoice.TienThue:N0} ₫</td>
+                                        <td style='padding:6px 0 10px;color:#6c757d;font-size:14px;'>Thuế GTGT ({thueSuat}%):</td>
+                                        <td style='padding:6px 0 10px;text-align:right;font-weight:700;font-size:14px;'>{tienThue:N0} ₫</td>
                                     </tr>
                                     <tr>
                                         <td style='padding:12px 0 6px;font-weight:700;font-size:16px;color:#212529;'>Tổng thanh toán:</td>
-                                        <td style='padding:12px 0 6px;text-align:right;font-weight:700;font-size:20px;color:#f59f00;'>{invoice.TongTienSauThue:N0} ₫</td>
+                                        <td style='padding:12px 0 6px;text-align:right;font-weight:700;font-size:20px;color:#f59f00;'>{tongTienSauThue:N0} ₫</td>
                                     </tr>
                                 </table>
                             </td>

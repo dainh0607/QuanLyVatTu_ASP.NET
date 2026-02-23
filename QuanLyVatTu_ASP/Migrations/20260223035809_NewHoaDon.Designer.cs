@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260223035809_NewHoaDon")]
+    partial class NewHoaDon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,7 +88,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.HasIndex("MaVatTu");
 
-                    b.ToTable("ChiTietGioHang", (string)null);
+                    b.ToTable("ChiTietGioHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietHoaDon", b =>
@@ -286,7 +289,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.HasIndex("MaKhachHang");
 
-                    b.ToTable("GioHang", (string)null);
+                    b.ToTable("GioHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.HoaDon", b =>
@@ -802,7 +805,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.HasIndex("KhachHangId");
 
-                    b.ToTable("DiaChiNhanHang", (string)null);
+                    b.ToTable("DiaChiNhanHang");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.ChiTietDonHang", b =>
