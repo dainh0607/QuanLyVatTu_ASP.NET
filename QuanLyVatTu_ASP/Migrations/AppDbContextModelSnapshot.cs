@@ -412,7 +412,6 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("SoHoaDon")
-                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TenCongTy")
@@ -608,7 +607,7 @@ namespace QuanLyVatTu_ASP.Migrations
 
                     b.Property<string>("MatKhau")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("NgaySinh")
                         .HasColumnType("date");

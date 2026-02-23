@@ -52,7 +52,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     MaVatTu = c.MaVatTu,
                     TenVatTu = c.VatTu.TenVatTu,
                     SoLuong = c.SoLuong ?? 0,
-                    DonGia = c.DonGia ?? 0
+                    DonGia = c.DonGia ?? 0,
+                    SoLuongTon = c.VatTu.SoLuongTon ?? 0
                 })
                 .ToListAsync();
             var donHang = await _context.DonHang
@@ -85,11 +86,14 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var vatTu = await _context.VatTus.FindAsync(maVatTu);
             if (vatTu == null) return "Vật tư không tồn tại";
 
+            if (soLuong > (vatTu.SoLuongTon ?? 0)) return $"Số lượng không được vượt quá số lượng tồn ({vatTu.SoLuongTon ?? 0})";
+
             var exist = await _context.ChiTietDonHangs
                 .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
 
             if (exist != null)
             {
+                if (exist.SoLuong + soLuong > (vatTu.SoLuongTon ?? 0)) return $"Tổng số lượng ({exist.SoLuong + soLuong}) vượt quá số lượng tồn ({vatTu.SoLuongTon ?? 0})";
                 exist.SoLuong += soLuong;
             }
             else
@@ -115,9 +119,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (soLuong < 1) return "Số lượng phải ≥ 1";
 
             var ct = await _context.ChiTietDonHangs
+                .Include(c => c.VatTu)
                 .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
 
             if (ct == null) return "Chi tiết đơn hàng không tìm thấy";
+            
+            if (soLuong > (ct.VatTu?.SoLuongTon ?? 0)) return $"Số lượng không được vượt quá số lượng tồn ({ct.VatTu?.SoLuongTon ?? 0})";
 
             ct.SoLuong = soLuong;
             await _context.SaveChangesAsync();

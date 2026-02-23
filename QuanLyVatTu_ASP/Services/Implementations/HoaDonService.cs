@@ -179,5 +179,20 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             decimal calculatedTotal = (hoaDon.TongTienTruocThue ?? 0) + (hoaDon.TienThueGTGT ?? 0) - (hoaDon.ChietKhau ?? 0);
             hoaDon.TongTienSauThue = Math.Round(calculatedTotal, 2, MidpointRounding.AwayFromZero);
         }
+
+        public async Task<string?> DeleteInvoiceAsync(int id)
+        {
+            var invoice = await _context.HoaDons
+                .Include(h => h.ChiTietHoaDons)
+                .FirstOrDefaultAsync(h => h.ID == id);
+
+            if (invoice == null) return "Hóa đơn không tồn tại";
+
+            _context.ChiTietHoaDons.RemoveRange(invoice.ChiTietHoaDons);
+            _context.HoaDons.Remove(invoice);
+            await _context.SaveChangesAsync();
+
+            return null;
+        }
     }
 }

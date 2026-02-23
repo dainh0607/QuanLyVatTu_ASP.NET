@@ -41,5 +41,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
         public decimal ThanhTien => SoLuong * DonGia;
 
         public bool IsSelected { get; set; }
+        public int SoLuongTon { get; set; }
     }
 }

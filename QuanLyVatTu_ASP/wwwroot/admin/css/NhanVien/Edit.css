@@ -1,0 +1,14 @@
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f0ad4e, #ec971f) !important;
+}
+
+.form-control-lg, .form-select-lg {
+    border-radius: 12px;
+    padding: 0.8rem 1.3rem;
+    font-size: 1.1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #265077;
+}

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -17,177 +18,7 @@
     <link rel="stylesheet" href="~/admin/css/site.css" asp-append-version="true" />
 
     <!-- Material Variables & Style -->
-    <style>
-        :root {
-            /* Material 3 Color System (Admin Darker/Professional Theme) */
-            --md-sys-color-primary: #00639b; /* Darker Blue */
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #c2e7ff;
-            --md-sys-color-on-primary-container: #001d35;
-            
-            --md-sys-color-surface: #f8f9fa;
-            --md-sys-color-surface-container: #ffffff;
-            
-            --md-sys-color-outline: #747775;
-            --md-sys-color-outline-variant: #c4c7c5;
-            
-            /* Dimensions */
-            --sidebar-width: 280px;
-            --header-height: 70px;
-        }
-
-        body {
-            font-family: 'Google Sans', 'Roboto', sans-serif;
-            background-color: var(--md-sys-color-surface);
-            color: #1f1f1f;
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar Styling */
-        .admin-sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--md-sys-color-surface-container);
-            border-right: 1px solid #e0e2e5;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem 1rem;
-            transition: transform 0.3s ease;
-        }
-
-        .admin-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--md-sys-color-primary);
-            font-weight: 700;
-            font-size: 1.25rem;
-            padding: 0 1rem 2rem 1rem;
-        }
-
-        .admin-nav .nav-item {
-            margin-bottom: 0.25rem;
-        }
-
-        .admin-nav .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.85rem 1.5rem;
-            border-radius: 50px; /* Pillow shape */
-            color: #444746;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .admin-nav .nav-link:hover {
-            background-color: #f0f2f5;
-            color: #1f1f1f;
-        }
-
-        .admin-nav .nav-link.active {
-            background-color: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
-        }
-
-        .admin-nav .nav-link i {
-            width: 24px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .sub-menu {
-            margin-left: 1.5rem;
-            border-left: 2px solid #e0e2e5;
-            padding-left: 0.5rem;
-            margin-top: 0.25rem;
-        }
-
-        .sub-menu .nav-link {
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* Main Content Styling */
-        .admin-main {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            display: flex;
-            flex-direction: column;
-            min-width: 0; /* Prevent overflow */
-        }
-
-        /* Header Styling */
-        .admin-header {
-            height: var(--header-height);
-            background-color: var(--md-sys-color-surface-container);
-            border-bottom: 1px solid #e0e2e5;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .page-title {
-            font-family: 'Google Sans', sans-serif;
-            font-weight: 500;
-            font-size: 1.25rem;
-            margin: 0;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            transition: background 0.2s;
-        }
-        .user-profile:hover {
-            background-color: #f0f2f5;
-        }
-
-        .content-container {
-            padding: 2rem;
-            flex: 1;
-        }
-
-        /* Helper Classes */
-        .card-material {
-            background: white;
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        .btn-fab {
-            width: 56px; height: 56px;
-            border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        /* Mobile Toggle */
-        .sidebar-toggle { display: none; }
-        
-        @@media (max-width: 991.98px) {
-            :root { --sidebar-width: 0px; }
-            .admin-sidebar { transform: translateX(-100%); width: 280px; }
-            .admin-sidebar.show { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
-            .admin-main { margin-left: 0; }
-            .sidebar-toggle { display: block; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; }
-        }
-    </style>
+    <link rel="stylesheet" href="~/admin/css/Shared/_LayoutAdmin.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -217,21 +48,24 @@
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a class="nav-link collapsed" href="#collapseQLVT" data-bs-toggle="collapse" role="button" 
-                   aria-expanded="@(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "true" : "false")">
-                    <i class="fa-solid fa-box-open"></i>
-                    <span>Kho hàng & Vật tư</span>
-                    <i class="fas fa-chevron-down ms-auto small opacity-50"></i>
-                </a>
-                <div class="collapse @(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "show" : "")" id="collapseQLVT">
-                    <div class="sub-menu">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VatTu" ? "active" : "")" asp-area="Admin" asp-controller="VatTu" asp-action="Index">Vật tư</a>
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LoaiVatTu" ? "active" : "")" asp-area="Admin" asp-controller="LoaiVatTu" asp-action="Index">Loại vật tư</a>
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhaCungCap" ? "active" : "")" asp-area="Admin" asp-controller="NhaCungCap" asp-action="Index">Nhà cung cấp</a>
+            @if (Context.Session.GetString("Role") == "Admin")
+            {
+                <div class="nav-item">
+                    <a class="nav-link collapsed" href="#collapseQLVT" data-bs-toggle="collapse" role="button" 
+                       aria-expanded="@(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "true" : "false")">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Kho hàng & Vật tư</span>
+                        <i class="fas fa-chevron-down ms-auto small opacity-50"></i>
+                    </a>
+                    <div class="collapse @(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "show" : "")" id="collapseQLVT">
+                        <div class="sub-menu">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VatTu" ? "active" : "")" asp-area="Admin" asp-controller="VatTu" asp-action="Index">Vật tư</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LoaiVatTu" ? "active" : "")" asp-area="Admin" asp-controller="LoaiVatTu" asp-action="Index">Loại vật tư</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhaCungCap" ? "active" : "")" asp-area="Admin" asp-controller="NhaCungCap" asp-action="Index">Nhà cung cấp</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
 
             <div class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhachHang" ? "active" : "")"
@@ -241,21 +75,24 @@
                 </a>
             </div>
 
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhanVien" ? "active" : "")"
-                   asp-area="Admin" asp-controller="NhanVien" asp-action="Index">
-                    <i class="fa-solid fa-user-shield"></i>
-                    <span>Nhân viên</span>
-                </a>
-            </div>
+            @if (Context.Session.GetString("Role") == "Admin")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhanVien" ? "active" : "")"
+                       asp-area="Admin" asp-controller="NhanVien" asp-action="Index">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Nhân viên</span>
+                    </a>
+                </div>
 
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongKe" ? "active" : "")"
-                   asp-area="Admin" asp-controller="ThongKe" asp-action="Index">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Thống kê & Báo cáo</span>
-                </a>
-            </div>
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongKe" ? "active" : "")"
+                       asp-area="Admin" asp-controller="ThongKe" asp-action="Index">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Thống kê & Báo cáo</span>
+                    </a>
+                </div>
+            }
         </nav>
 
         <div class="mt-auto border-top pt-3">

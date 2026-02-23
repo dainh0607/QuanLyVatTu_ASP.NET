@@ -56,5 +56,29 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
             return View(model);
         }
+
+        // POST: /admin/hoa-don/xoa/5
+        [HttpPost("xoa/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (HttpContext.Session.GetString("Role") != "Admin")
+            {
+                TempData["Error"] = "Chỉ Admin mới có quyền xóa hóa đơn.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var error = await _hoaDonService.DeleteInvoiceAsync(id);
+            if (error != null)
+            {
+                TempData["Error"] = error;
+            }
+            else
+            {
+                TempData["Success"] = "Đã xóa hóa đơn thành công.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

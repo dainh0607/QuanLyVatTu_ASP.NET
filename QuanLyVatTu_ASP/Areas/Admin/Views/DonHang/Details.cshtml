@@ -101,7 +101,7 @@
                                                         <input type="hidden" name="maDonHang" value="@Model.MaDonHang" />
                                                         <input type="hidden" name="maVatTu" value="@vt.MaVatTu" />
 
-                                                        <input type="number" name="soLuong" min="1" value="1"
+                                                        <input type="number" name="soLuong" min="1" max="@vt.SoLuongTon" value="1"
                                                             class="form-control form-control-sm text-center px-1 rounded-3" style="width:50px" />
 
                                                         <button type="submit" class="btn btn-success btn-sm rounded-3" title="Thêm vào đơn">
@@ -174,7 +174,7 @@
                                                         @if (Model.TrangThai != "Đã hủy")
                                                         {
                                                             <input type="number" form="frmUpdate_@item.MaVatTu" name="soLuong"
-                                                                   value="@item.SoLuong" min="1" class="form-control text-center rounded-start-3" />
+                                                                   value="@item.SoLuong" min="1" max="@item.SoLuongTon" class="form-control text-center rounded-start-3" />
                                                             <button type="submit" form="frmUpdate_@item.MaVatTu" class="btn btn-outline-primary rounded-end-3" title="Lưu số lượng">
                                                                 <i class="bi bi-check-lg"></i>
                                                             </button>

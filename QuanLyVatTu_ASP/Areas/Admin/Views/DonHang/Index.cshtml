@@ -298,28 +298,5 @@
             }
         });
     </script>
-    <style>
-        .btn-action:hover { background-color: #f0f2f5; }
-        .action-dropdown .dropdown-menu {
-            min-width: 160px; /* Nhỏ gọn hơn */
-            right: 10px !important; /* Xích qua trái tránh mép màn hình */
-            left: auto !important;
-        }
-        .action-dropdown .dropdown-item {
-            font-size: 0.85rem; /* Giảm cỡ chữ */
-            padding: 6px 16px;
-        }
-        .action-dropdown:hover .dropdown-menu {
-            display: block;
-            margin-top: 0;
-            animation: fadeIn 0.2s ease-in-out;
-        }
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .bg-success-subtle { background-color: #e8f5e9 !important; color: #1b5e20 !important; }
-        .bg-warning-subtle { background-color: #fff8e1 !important; color: #f57f17 !important; }
-        .bg-danger-subtle { background-color: #ffebee !important; color: #c62828 !important; }
-    </style>
+    <link rel="stylesheet" href="~/admin/css/DonHang/Index.css" asp-append-version="true" />
 }

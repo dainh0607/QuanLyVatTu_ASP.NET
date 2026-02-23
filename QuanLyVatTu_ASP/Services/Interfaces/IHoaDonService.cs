@@ -8,5 +8,6 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<HoaDonViewModel> GetOrdersForIndexAsync(string keyword, int page, int pageSize);
         Task<(string? Error, int NewInvoiceId)> CreateInvoiceFromOrderAsync(int donHangId);
         Task<HoaDonDetailViewModel?> GetInvoiceDetailAsync(int id);
+        Task<string?> DeleteInvoiceAsync(int id);
     }
 }
