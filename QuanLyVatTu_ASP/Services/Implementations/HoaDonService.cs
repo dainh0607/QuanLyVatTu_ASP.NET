@@ -20,6 +20,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (page < 1) page = 1;
             
             var query = _context.DonHang
+                .AsNoTracking()
                 .Include(d => d.KhachHang)
                 .AsQueryable();
 
@@ -70,66 +71,78 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         public async Task<(string? Error, int NewInvoiceId)> CreateInvoiceFromOrderAsync(int donHangId)
         {
-            // 1. Lấy thông tin đơn hàng + chi tiết
-            var donHang = await _context.DonHang
-                .Include(d => d.ChiTietDonHangs)
-                .FirstOrDefaultAsync(d => d.ID == donHangId);
-
-            if (donHang == null) return ("Đơn hàng không tồn tại", 0);
-
-            // 2. Kiểm tra đã xuất hóa đơn chưa
-            if (await _context.HoaDons.AnyAsync(h => h.MaDonHang == donHangId))
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return ("Đơn hàng này đã được xuất hóa đơn!", 0);
+                // 1. Lấy thông tin đơn hàng + chi tiết
+                var donHang = await _context.DonHang
+                    .Include(d => d.ChiTietDonHangs)
+                    .FirstOrDefaultAsync(d => d.ID == donHangId);
+
+                if (donHang == null) return ("Đơn hàng không tồn tại", 0);
+
+                // 2. Kiểm tra đã xuất hóa đơn chưa
+                if (await _context.HoaDons.AnyAsync(h => h.MaDonHang == donHangId))
+                {
+                    return ("Đơn hàng này đã được xuất hóa đơn!", 0);
+                }
+
+                // 3. Kiểm tra tỷ lệ đặt cọc (Logic nghiệp vụ)
+                decimal tyLe = (donHang.TongTien ?? 0) > 0 ? ((donHang.SoTienDatCoc ?? 0) / (donHang.TongTien ?? 0)) : 0;
+                if (tyLe < 0.1m)
+                {
+                    return ($"Chưa đủ điều kiện! Khách mới cọc {tyLe:P0}. Cần tối thiểu 10%.", 0);
+                }
+
+                // 4. Tạo Header Hóa đơn
+                var hoaDon = new HoaDon
+                {
+                    MaDonHang = donHang.ID,
+                    MaNhanVien = donHang.NhanVienId ?? 1, // Mặc định 1 nếu null (cần cẩn thận chỗ này tùy data thật)
+                    MaKhachHang = donHang.KhachHangId,
+                    NgayLap = DateTime.Now,
+                    TongTienTruocThue = donHang.TongTien ?? 0,
+                    TyLeThueGTGT = 10,
+                    ChietKhau = 0,
+                    SoTienDatCoc = donHang.SoTienDatCoc ?? 0,
+                    PhuongThucThanhToan = donHang.PhuongThucDatCoc,
+                    TrangThai = "Đã xuất"
+                };
+
+                // Lưu lần 1 để lấy ID Hóa đơn
+                _context.HoaDons.Add(hoaDon);
+                await _context.SaveChangesAsync();
+
+                // 5. Tạo Chi tiết hóa đơn (Copy từ Chi tiết đơn hàng)
+                var chiTietHoaDons = donHang.ChiTietDonHangs.Select(ct => new ChiTietHoaDon
+                {
+                    MaHoaDon = hoaDon.ID, // ID vừa sinh ra ở trên
+                    MaVatTu = ct.MaVatTu,
+                    SoLuong = ct.SoLuong ?? 0,
+                    DonGia = ct.DonGia ?? 0,
+                    ThanhTien = (ct.DonGia ?? 0) * (ct.SoLuong ?? 0)
+                }).ToList();
+
+                // Lưu lần 2
+                _context.ChiTietHoaDons.AddRange(chiTietHoaDons);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                // Trả về thành công (Error = null) và ID mới
+                return (null, hoaDon.ID);
             }
-
-            // 3. Kiểm tra tỷ lệ đặt cọc (Logic nghiệp vụ)
-            decimal tyLe = (donHang.TongTien ?? 0) > 0 ? ((donHang.SoTienDatCoc ?? 0) / (donHang.TongTien ?? 0)) : 0;
-            if (tyLe < 0.1m)
+            catch (Exception ex)
             {
-                return ($"Chưa đủ điều kiện! Khách mới cọc {tyLe:P0}. Cần tối thiểu 10%.", 0);
+                await transaction.RollbackAsync();
+                return ($"Đã xảy ra lỗi nghiêm trọng khi ghi HD: {ex.Message}", 0);
             }
-
-            // 4. Tạo Header Hóa đơn
-            var hoaDon = new HoaDon
-            {
-                MaDonHang = donHang.ID,
-                MaNhanVien = donHang.NhanVienId ?? 1, // Mặc định 1 nếu null (cần cẩn thận chỗ này tùy data thật)
-                MaKhachHang = donHang.KhachHangId,
-                NgayLap = DateTime.Now,
-                TongTienTruocThue = donHang.TongTien ?? 0,
-                TyLeThueGTGT = 10,
-                ChietKhau = 0,
-                SoTienDatCoc = donHang.SoTienDatCoc ?? 0,
-                PhuongThucThanhToan = donHang.PhuongThucDatCoc,
-                TrangThai = "Đã xuất"
-            };
-
-            // Lưu lần 1 để lấy ID Hóa đơn
-            _context.HoaDons.Add(hoaDon);
-            await _context.SaveChangesAsync();
-
-            // 5. Tạo Chi tiết hóa đơn (Copy từ Chi tiết đơn hàng)
-            var chiTietHoaDons = donHang.ChiTietDonHangs.Select(ct => new ChiTietHoaDon
-            {
-                MaHoaDon = hoaDon.ID, // ID vừa sinh ra ở trên
-                MaVatTu = ct.MaVatTu,
-                SoLuong = ct.SoLuong ?? 0,
-                DonGia = ct.DonGia ?? 0,
-                ThanhTien = (ct.DonGia ?? 0) * (ct.SoLuong ?? 0)
-            }).ToList();
-
-            // Lưu lần 2
-            _context.ChiTietHoaDons.AddRange(chiTietHoaDons);
-            await _context.SaveChangesAsync();
-
-            // Trả về thành công (Error = null) và ID mới
-            return (null, hoaDon.ID);
         }
 
         public async Task<HoaDonDetailViewModel?> GetInvoiceDetailAsync(int id)
         {
             var hd = await _context.HoaDons
+                .AsNoTracking()
                 .Include(h => h.KhachHang)
                 .Include(h => h.ChiTietHoaDons)
                     .ThenInclude(ct => ct.VatTu)
@@ -182,17 +195,28 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         public async Task<string?> DeleteInvoiceAsync(int id)
         {
-            var invoice = await _context.HoaDons
-                .Include(h => h.ChiTietHoaDons)
-                .FirstOrDefaultAsync(h => h.ID == id);
+            // Transaction bảo vệ việc xóa
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var invoice = await _context.HoaDons
+                    .Include(h => h.ChiTietHoaDons)
+                    .FirstOrDefaultAsync(h => h.ID == id);
 
-            if (invoice == null) return "Hóa đơn không tồn tại";
+                if (invoice == null) return "Hóa đơn không tồn tại";
 
-            _context.ChiTietHoaDons.RemoveRange(invoice.ChiTietHoaDons);
-            _context.HoaDons.Remove(invoice);
-            await _context.SaveChangesAsync();
+                _context.ChiTietHoaDons.RemoveRange(invoice.ChiTietHoaDons);
+                _context.HoaDons.Remove(invoice);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-            return null;
+                return null;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return $"Lỗi hệ thống khi xóa: {ex.Message}";
+            }
         }
     }
 }

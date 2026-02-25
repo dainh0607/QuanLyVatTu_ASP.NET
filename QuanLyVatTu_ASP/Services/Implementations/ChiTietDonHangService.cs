@@ -83,74 +83,142 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         {
             if (maVatTu <= 0 || soLuong <= 0) return "Dữ liệu không hợp lệ";
 
-            var vatTu = await _context.VatTus.FindAsync(maVatTu);
-            if (vatTu == null) return "Vật tư không tồn tại";
+            var donHang = await _context.DonHang.FindAsync(maDonHang);
+            if(donHang == null) return "Đơn hàng không tồn tại";
 
-            if (soLuong > (vatTu.SoLuongTon ?? 0)) return $"Số lượng không được vượt quá số lượng tồn ({vatTu.SoLuongTon ?? 0})";
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+                return "Không thể thay đổi chi tiết khi Đơn hàng ở trạng thái này.";
 
-            var exist = await _context.ChiTietDonHangs
-                .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
-
-            if (exist != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                if (exist.SoLuong + soLuong > (vatTu.SoLuongTon ?? 0)) return $"Tổng số lượng ({exist.SoLuong + soLuong}) vượt quá số lượng tồn ({vatTu.SoLuongTon ?? 0})";
-                exist.SoLuong += soLuong;
-            }
-            else
-            {
-                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                var vatTu = await _context.VatTus.FindAsync(maVatTu);
+                if (vatTu == null) return "Vật tư không tồn tại";
+
+                if (soLuong > (vatTu.SoLuongTon ?? 0)) return $"Số lượng không được vượt quá số lượng tồn ({vatTu.SoLuongTon ?? 0})";
+
+                var exist = await _context.ChiTietDonHangs
+                    .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
+
+                if (exist != null)
                 {
-                    MaDonHang = maDonHang,
-                    MaVatTu = maVatTu,
-                    SoLuong = soLuong,
-                    DonGia = vatTu.GiaBan
-                });
+                    if (soLuong > (vatTu.SoLuongTon ?? 0)) return $"Số lượng bổ sung ({soLuong}) vượt tồn kho ({vatTu.SoLuongTon ?? 0})";
+                    exist.SoLuong += soLuong;
+                }
+                else
+                {
+                    _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                    {
+                        MaDonHang = maDonHang,
+                        MaVatTu = maVatTu,
+                        SoLuong = soLuong,
+                        DonGia = vatTu.GiaBan
+                    });
+                }
+
+                // [CRITICAL FIX] - Admin nhét thêm vật tư vào đơn -> Trừ kho
+                vatTu.SoLuongTon -= soLuong;
+                _context.VatTus.Update(vatTu);
+
+                await _context.SaveChangesAsync();
+                await CapNhatTongTienDonHang(maDonHang);
+                
+                await transaction.CommitAsync();
+                return null;
             }
-
-            await _context.SaveChangesAsync();
-
-            await CapNhatTongTienDonHang(maDonHang);
-
-            return null;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<string?> UpdateSoLuongAsync(int maDonHang, int maVatTu, int soLuong)
         {
             if (soLuong < 1) return "Số lượng phải ≥ 1";
+            var donHang = await _context.DonHang.FindAsync(maDonHang);
+            if (donHang == null) return "Đơn không tồn tại";
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+                return "Không thể thay đổi chi tiết đơn hàng lúc này.";
 
-            var ct = await _context.ChiTietDonHangs
-                .Include(c => c.VatTu)
-                .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var ct = await _context.ChiTietDonHangs
+                    .Include(c => c.VatTu)
+                    .FirstOrDefaultAsync(c => c.MaDonHang == maDonHang && c.MaVatTu == maVatTu);
 
-            if (ct == null) return "Chi tiết đơn hàng không tìm thấy";
-            
-            if (soLuong > (ct.VatTu?.SoLuongTon ?? 0)) return $"Số lượng không được vượt quá số lượng tồn ({ct.VatTu?.SoLuongTon ?? 0})";
+                if (ct == null) return "Chi tiết đơn hàng không tìm thấy";
+                
+                // Tính độ lệch (Delta) = Sl mới - Sl cũ
+                int delta = soLuong - (ct.SoLuong ?? 0);
+                
+                // Trừ thêm kho nếu tăng SL (delta > 0). Cộng lại kho nếu giảm SL (delta < 0)
+                if (delta > 0 && delta > (ct.VatTu?.SoLuongTon ?? 0)) 
+                    return $"Vật tư không đủ hàng (Delta={delta} > Tồn={ct.VatTu?.SoLuongTon ?? 0})";
 
-            ct.SoLuong = soLuong;
-            await _context.SaveChangesAsync();
+                ct.SoLuong = soLuong;
+                
+                if (ct.VatTu != null)
+                {
+                    ct.VatTu.SoLuongTon -= delta; // [FIX KHO]
+                    _context.VatTus.Update(ct.VatTu);
+                }
 
-            await CapNhatTongTienDonHang(maDonHang);
+                await _context.SaveChangesAsync();
+                await CapNhatTongTienDonHang(maDonHang);
+                await transaction.CommitAsync();
 
-            return null;
+                return null;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<string?> RemoveVatTuAsync(int maDonHang, List<int> selectedIds)
         {
             if (selectedIds == null || selectedIds.Count == 0) return "Chưa chọn vật tư nào để xóa";
+            var donHang = await _context.DonHang.FindAsync(maDonHang);
+            if (donHang == null) return "Đơn không tồn tại";
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+                return "Không thể xóa chi tiết đơn hàng ở trạng thái này.";
 
-            var items = await _context.ChiTietDonHangs
-                .Where(c => c.MaDonHang == maDonHang && selectedIds.Contains(c.MaVatTu))
-                .ToListAsync();
-
-            if (items.Any())
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.ChiTietDonHangs.RemoveRange(items);
-                await _context.SaveChangesAsync();
+                var items = await _context.ChiTietDonHangs
+                    .Include(c => c.VatTu)
+                    .Where(c => c.MaDonHang == maDonHang && selectedIds.Contains(c.MaVatTu))
+                    .ToListAsync();
 
-                await CapNhatTongTienDonHang(maDonHang);
+                if (items.Any())
+                {
+                    foreach (var item in items)
+                    {
+                        if (item.VatTu != null)
+                        {
+                            item.VatTu.SoLuongTon += (item.SoLuong ?? 0); // [FIX KHO] Cộng hoàn trả
+                            _context.VatTus.Update(item.VatTu);
+                        }
+                    }
+
+                    _context.ChiTietDonHangs.RemoveRange(items);
+                    await _context.SaveChangesAsync();
+
+                    await CapNhatTongTienDonHang(maDonHang);
+                }
+
+                await transaction.CommitAsync();
+                return null;
             }
-
-            return null;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         private async Task CapNhatTongTienDonHang(int maDonHang)

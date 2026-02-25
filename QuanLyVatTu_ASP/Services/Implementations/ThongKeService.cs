@@ -130,12 +130,16 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (khachHangId.HasValue && khachHangId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.KhachHangId == khachHangId);
 
             var topProductsData = await topProductsQuery
-                .GroupBy(x => x.MaVatTu)
+                .GroupBy(x => new { x.MaVatTu, x.VatTu.HinhAnh, x.VatTu.TenVatTu, x.VatTu.SoLuongTon, TenLoai = x.VatTu.LoaiVatTu.TenLoaiVatTu, TenNcc = x.VatTu.NhaCungCap.TenNhaCungCap })
                 .Select(g => new
                 {
-                    VatTuId = g.Key,
-                    VatTu = g.FirstOrDefault().VatTu,
-                    SoLuongBan = g.Sum(x => x.SoLuong),
+                    VatTuId = g.Key.MaVatTu,
+                    HinhAnh = g.Key.HinhAnh,
+                    TenVatTu = g.Key.TenVatTu,
+                    LoaiVatTu = g.Key.TenLoai,
+                    NhaCungCap = g.Key.TenNcc,
+                    SoLuongTon = g.Key.SoLuongTon,
+                    SoLuongBan = g.Sum(x => x.SoLuong ?? 0),
                     DoanhThu = g.Sum(x => x.ThanhTien)
                 })
                 .OrderByDescending(x => x.DoanhThu)
@@ -145,12 +149,12 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             model.TopProducts = topProductsData.Select(x => new ProductStatisticItem
             {
                 VatTuId = x.VatTuId,
-                HinhAnh = x.VatTu.HinhAnh ?? string.Empty,
-                LoaiVatTu = x.VatTu.LoaiVatTu?.TenLoaiVatTu ?? string.Empty,
-                TenVatTu = x.VatTu.TenVatTu ?? string.Empty,
-                SoLuongTon = x.VatTu.SoLuongTon ?? 0,
-                NhaCungCap = x.VatTu.NhaCungCap?.TenNhaCungCap ?? string.Empty,
-                SoLuongBan = x.SoLuongBan ?? 0,
+                HinhAnh = x.HinhAnh ?? string.Empty,
+                LoaiVatTu = x.LoaiVatTu ?? string.Empty,
+                TenVatTu = x.TenVatTu ?? string.Empty,
+                SoLuongTon = x.SoLuongTon ?? 0,
+                NhaCungCap = x.NhaCungCap ?? string.Empty,
+                SoLuongBan = x.SoLuongBan,
                 DoanhThu = x.DoanhThu
             }).ToList();
 

@@ -21,6 +21,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             // Include bảng KhachHang và NhanVien để lấy tên hiển thị
             var query = _context.DonHang
+                .AsNoTracking() // Tối ưu RAM cho View
                 .Include(d => d.KhachHang)
                 .Include(d => d.NhanVien)
                 .AsQueryable();
@@ -140,28 +141,44 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             string currentStatus = entity.TrangThai ?? "Chờ xác nhận";
             string newStatus = model.TrangThai ?? "Chờ xác nhận";
 
-            // Nếu trạng thái thay đổi
-            if (currentStatus != newStatus)
+            // Khởi tạo Transaction để bảo vệ việc cập nhật trạng thái và hoàn kho
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                int currentLevel = GetStatusLevel(currentStatus);
-                int newLevel = GetStatusLevel(newStatus);
-
-                // Đặc biệt: Nếu muốn Hủy đơn (level 0 hoặc -1) thì OK (trừ khi đã thanh toán/giao hàng?)
-                // Yêu cầu: "Đã giao" thì không sửa lại được "Đã hủy"?, "Đã thanh toán" thì không sửa lại được "Đã hủy"
-                if (newStatus == "Đã hủy")
+                // Nếu trạng thái thay đổi
+                if (currentStatus != newStatus)
                 {
-                    if (currentStatus == "Đã giao" || currentStatus == "Đã thanh toán")
+                    int currentLevel = GetStatusLevel(currentStatus);
+                    int newLevel = GetStatusLevel(newStatus);
+
+                    if (newStatus == "Đã hủy")
                     {
-                         // Không cho hủy khi đã giao/thanh toán (theo yêu cầu)
-                         return false; 
+                        if (currentStatus == "Đã giao" || currentStatus == "Đã thanh toán")
+                        {
+                             return false; 
+                        }
+                        
+                        // [CRITICAL FIX] Trả lại Tồn Kho khi Hủy Đơn Hàng
+                        var chiTietList = await _context.ChiTietDonHangs
+                            .Where(c => c.MaDonHang == id)
+                            .ToListAsync();
+                             
+                        foreach (var item in chiTietList)
+                        {
+                             var vatTu = await _context.VatTus.FindAsync(item.MaVatTu);
+                             if (vatTu != null)
+                             {
+                                  vatTu.SoLuongTon = (vatTu.SoLuongTon ?? 0) + (item.SoLuong ?? 0);
+                                  _context.VatTus.Update(vatTu);
+                             }
+                        }
+                    }
+                    else if (newLevel < currentLevel)
+                    {
+                        // Không cho phép quay lui trạng thái
+                        return false;
                     }
                 }
-                else if (newLevel < currentLevel)
-                {
-                    // Không cho phép quay lui trạng thái
-                    return false;
-                }
-            }
 
             decimal datCocCu = entity.SoTienDatCoc ?? 0;
             decimal datCocMoi = model.SoTienDatCoc ?? 0;
@@ -202,7 +219,14 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             entity.GhiChu = model.GhiChu;
 
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
             return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task DeleteAsync(int id)
@@ -213,8 +237,33 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 // Chỉ cho phép xóa đơn hàng Chờ xác nhận và Đã xác nhận
                 if (entity.TrangThai == "Chờ xác nhận" || entity.TrangThai == "Đã xác nhận")
                 {
-                    _context.DonHang.Remove(entity);
-                    await _context.SaveChangesAsync();
+                    using var transaction = await _context.Database.BeginTransactionAsync();
+                    try
+                    {
+                        // [CRITICAL FIX] Xóa mềm (Hard Delete) thì cũng phải hoàn kho
+                        var chiTietList = await _context.ChiTietDonHangs
+                            .Where(c => c.MaDonHang == id)
+                            .ToListAsync();
+                             
+                        foreach (var item in chiTietList)
+                        {
+                             var vatTu = await _context.VatTus.FindAsync(item.MaVatTu);
+                             if (vatTu != null)
+                             {
+                                  vatTu.SoLuongTon = (vatTu.SoLuongTon ?? 0) + (item.SoLuong ?? 0);
+                                  _context.VatTus.Update(vatTu);
+                             }
+                        }
+                        
+                        _context.DonHang.Remove(entity);
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
                 }
             }
         }
