@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseLazyLoadingProxies()
-                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                              .UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -38,6 +38,11 @@ namespace QuanLyVatTu_ASP.DataAccess
         // HoaDonVAT đã được gộp vào HoaDon
         public DbSet<YeuCauBaoGia> YeuCauBaoGia { get; set; }
         public DbSet<ChiTietYeuCauBaoGia> ChiTietYeuCauBaoGia { get; set; }
+        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<ViVoucherKhachHang> ViVoucherKhachHangs { get; set; }
+        public DbSet<LichSuSuDungVoucher> LichSuSuDungVouchers { get; set; }
+        public DbSet<HangThanhVien> HangThanhViens { get; set; }
+        public DbSet<LichSuTichDiem> LichSuTichDiems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -264,6 +269,160 @@ namespace QuanLyVatTu_ASP.DataAccess
                 entity.HasOne(d => d.VatTu)
                     .WithMany()
                     .HasForeignKey(d => d.VatTuId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- 15. Voucher ---
+            modelBuilder.Entity<Voucher>(entity =>
+            {
+                entity.ToTable("Voucher");
+
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                
+                // Unique index: mỗi MaVoucher là duy nhất trên toàn hệ thống
+                entity.HasIndex(e => e.MaVoucher).IsUnique();
+
+                // CHECK CONSTRAINTS - Ràng buộc nghiệp vụ chặt chẽ
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_TongSoLuong", "[TongSoLuong] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_SoLuongDaDung", "[SoLuongDaDung] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_SoLuong_HopLe", "[SoLuongDaDung] <= [TongSoLuong]"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_LoaiGiamGia", "[LoaiGiamGia] IN ('PERCENT', 'FIXED')"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_TrangThaiGoc", "[TrangThaiGoc] IN ('ACTIVE', 'EXPIRED', 'REVOKED')"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_GiaTriGiam", "([LoaiGiamGia] = 'FIXED' AND [GiaTriGiam] > 0) OR ([LoaiGiamGia] = 'PERCENT' AND [GiaTriGiam] > 0 AND [GiaTriGiam] <= 100)"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_ThoiGian_HopLe", "[ThoiGianBatDau] < [ThoiGianKetThuc]"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_GioiHanSuDung", "[GioiHanSuDungMoiUser] >= 1"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_Voucher_GiaTriDonHangToiThieu", "[GiaTriDonHangToiThieu] >= 0"));
+
+                // FK - Xóa NhanVien thì set null (không mất dữ liệu voucher)
+                entity.HasOne(d => d.NhanVienTao)
+                    .WithMany()
+                    .HasForeignKey(d => d.MaNhanVienTao)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            // --- 16. ViVoucherKhachHang (Ví Voucher khách hàng) ---
+            modelBuilder.Entity<ViVoucherKhachHang>(entity =>
+            {
+                entity.ToTable("ViVoucherKhachHang");
+
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.ThoiGianLuuMa).HasDefaultValueSql("GETDATE()");
+
+                // UNIQUE INDEX: Mỗi khách hàng chỉ được lưu 1 mã duy nhất 1 lần
+                // -> Đảm bảo Logic Thu thập: check cặp user_id + voucher_id
+                entity.HasIndex(e => new { e.MaKhachHang, e.MaVoucherGoc })
+                    .IsUnique()
+                    .HasDatabaseName("IX_ViVoucher_KhachHang_Voucher_Unique");
+
+                // CHECK: Trạng thái chỉ được là 1 trong 3 giá trị
+                entity.ToTable(t => t.HasCheckConstraint("CK_ViVoucherKhachHang_TrangThai", "[TrangThaiTrongVi] IN ('AVAILABLE', 'USED', 'EXPIRED')"));
+
+                // FK -> KhachHang: Xóa khách hàng -> xóa luôn ví voucher
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.ViVoucherKhachHangs)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // FK -> Voucher: Xóa voucher gốc -> xóa luôn trong ví
+                entity.HasOne(d => d.VoucherGoc)
+                    .WithMany(p => p.ViVoucherKhachHangs)
+                    .HasForeignKey(d => d.MaVoucherGoc)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // --- 17. LichSuSuDungVoucher (Lịch sử sử dụng & Snapshot) ---
+            modelBuilder.Entity<LichSuSuDungVoucher>(entity =>
+            {
+                entity.ToTable("LichSuSuDungVoucher");
+
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.ThoiGianSuDung).HasDefaultValueSql("GETDATE()");
+
+                // INDEX: Tra cứu nhanh lượt dùng của 1 khách hàng với 1 voucher cụ thể
+                // -> Phục vụ kiểm tra usage_limit_per_user khi checkout
+                entity.HasIndex(e => new { e.MaKhachHang, e.MaVoucherGoc })
+                    .HasDatabaseName("IX_LichSuSuDung_KhachHang_Voucher");
+
+                // INDEX: Tra cứu nhanh theo đơn hàng (phục vụ logic hủy đơn & hoàn mã)
+                entity.HasIndex(e => e.MaDonHang)
+                    .HasDatabaseName("IX_LichSuSuDung_DonHang");
+
+                // INDEX: Một đơn hàng chỉ áp dụng 1 voucher
+                entity.HasIndex(e => new { e.MaDonHang, e.MaVoucherGoc })
+                    .IsUnique()
+                    .HasDatabaseName("IX_LichSuSuDung_DonHang_Voucher_Unique");
+
+                // CHECK CONSTRAINTS
+                entity.ToTable(t => t.HasCheckConstraint("CK_LichSuSuDungVoucher_TrangThai", "[TrangThaiSuDung] IN ('APPLIED', 'REFUNDED', 'BURNED')"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_LichSuSuDungVoucher_SoTienGiam", "[SoTienGiamSnapshot] >= 0"));
+
+                // FK -> Voucher: RESTRICT - không cho xóa voucher gốc nếu đã có lịch sử
+                entity.HasOne(d => d.VoucherGoc)
+                    .WithMany(p => p.LichSuSuDungVouchers)
+                    .HasForeignKey(d => d.MaVoucherGoc)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // FK -> DonHang: RESTRICT - không cho xóa đơn hàng nếu đã có lịch sử voucher
+                entity.HasOne(d => d.DonHang)
+                    .WithMany(p => p.LichSuSuDungVouchers)
+                    .HasForeignKey(d => d.MaDonHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // FK -> KhachHang: RESTRICT - không cho xóa khách nếu đã có lịch sử
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.LichSuSuDungVouchers)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // --- 18. HangThanhVien (Tiers) ---
+            modelBuilder.Entity<HangThanhVien>(entity =>
+            {
+                entity.ToTable("HangThanhVien");
+                
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+
+                // Unique Name
+                entity.HasIndex(e => e.TenHang).IsUnique();
+
+                // Check Constraints
+                entity.ToTable(t => t.HasCheckConstraint("CK_HangThanhVien_ChiTieuToiThieu", "[ChiTieuToiThieu] >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("CK_HangThanhVien_PhanTramChietKhau", "[PhanTramChietKhau] >= 0 AND [PhanTramChietKhau] <= 100"));
+
+                // FK -> KhachHang: KhachHang.MaHangThanhVien SetNull khi xóa hạng
+                entity.HasMany(p => p.KhachHangs)
+                    .WithOne(d => d.HangThanhVien)
+                    .HasForeignKey(d => d.MaHangThanhVien)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            // --- 19. LichSuTichDiem (Point_History) ---
+            modelBuilder.Entity<LichSuTichDiem>(entity =>
+            {
+                entity.ToTable("LichSuTichDiem");
+
+                entity.Property(e => e.NgayTao).HasDefaultValueSql("GETDATE()");
+
+                // Idempotency: Không cho phép 1 Đơn Hàng sinh ra 2 giao dịch EARN (duplicate cộng điểm)
+                // Tuy nhiên, có thể sinh 1 EARN và 1 REDEEM. Vì vậy Unique Key là bộ đôi Mã Đơn Hàng + Loại Giao Dịch
+                entity.HasIndex(e => new { e.MaDonHang, e.LoaiGiaoDich })
+                    .IsUnique()
+                    .HasDatabaseName("IX_LichSuTichDiem_DonHang_LoaiGiaoDich_Unique");
+
+                // Check Constraints
+                entity.ToTable(t => t.HasCheckConstraint("CK_LichSuTichDiem_LoaiGiaoDich", "[LoaiGiaoDich] IN ('EARN', 'REDEEM', 'REFUND', 'CLAWBACK')"));
+                // Điểm EARN/REFUND là số dương, REDEEM/CLAWBACK là số dương nhưng khi tính toán thực tế quy luật là trừ đi. Ở mức DB có thể linh hoạt (để số nguyên chấp nhận âm dương tùy model bussiness), nhưng Log LoaiGiaoDich đã rõ ràng.
+
+                // FK -> KhachHang: Cascade xóa
+                entity.HasOne(d => d.KhachHang)
+                    .WithMany(p => p.LichSuTichDiems)
+                    .HasForeignKey(d => d.MaKhachHang)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // FK -> DonHang: Restrict xóa
+                entity.HasOne(d => d.DonHang)
+                    .WithMany(p => p.LichSuTichDiems)
+                    .HasForeignKey(d => d.MaDonHang)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }

@@ -45,9 +45,27 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         public bool DangNhapGoogle { get; set; } = false;
 
+        [Column("DiemTichLuy", TypeName = "int")]
+        public int DiemTichLuy { get; set; } = 0;
+
+        [Column("MaHangThanhVien")]
+        public int? MaHangThanhVien { get; set; }
+
+        [Column("NgayLenHang", TypeName = "datetime")]
+        public DateTime? NgayLenHang { get; set; }
+
+        [Column("NgayHetHanHang", TypeName = "datetime")]
+        public DateTime? NgayHetHanHang { get; set; }
+
+        [ForeignKey("MaHangThanhVien")]
+        public virtual HangThanhVien? HangThanhVien { get; set; }
+
         public virtual ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
         public virtual ICollection<TuongTacDanhGia> TuongTacDanhGias { get; set; } = new List<TuongTacDanhGia>();
         public virtual ICollection<YeuThich> YeuThichs { get; set; } = new List<YeuThich>();
         public virtual ICollection<DiaChiNhanHang> DiaChiNhanHangs { get; set; } = new List<DiaChiNhanHang>();
+        public virtual ICollection<ViVoucherKhachHang> ViVoucherKhachHangs { get; set; } = new List<ViVoucherKhachHang>();
+        public virtual ICollection<LichSuSuDungVoucher> LichSuSuDungVouchers { get; set; } = new List<LichSuSuDungVoucher>();
+        public virtual ICollection<LichSuTichDiem> LichSuTichDiems { get; set; } = new List<LichSuTichDiem>();
     }
 }

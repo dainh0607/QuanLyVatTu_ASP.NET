@@ -1,0 +1,174 @@
+@model QuanLyVatTu_ASP.Areas.Admin.Models.Voucher
+
+@{
+    ViewData["Title"] = "Chi Tiết Voucher";
+    var now = DateTime.Now;
+    var isExpired = Model.ThoiGianKetThuc < now;
+    int used = Model.SoLuongDaDung;
+    int total = Model.TongSoLuong;
+    int percent = total > 0 ? (int)Math.Round((double)used / total * 100) : 0;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/admin/css/voucher.css" asp-append-version="true" />
+    <style>
+        .stat-card {
+            border-radius: 12px;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+    </style>
+}
+
+<div class="row mt-4">
+    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-1 fw-bold text-dark">Voucher <span class="ds-voucher-code ms-2 text-primary fs-5">@Model.MaVoucher</span></h4>
+            <div class="text-muted small">
+                Tạo lúc: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm") 
+            </div>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary px-4 shadow-sm me-2">
+                <i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 shadow-sm">
+                <i class="fa-solid fa-arrow-left me-2"></i>Trở về
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary me-3">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h6 class="text-muted fw-bold mb-0">Tiến trình khả dụng</h6>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">@percent%</h3>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div class="progress-bar @(percent >= 90 ? "bg-danger" : "bg-primary")" role="progressbar" style="width: @percent%;"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-2 small text-muted">
+                    <span>Đã dùng: @used</span>
+                    <span>Tổng: @total</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box bg-success bg-opacity-10 text-success me-3">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h6 class="text-muted fw-bold mb-0">Phễu tương tác</h6>
+                </div>
+                <div class="d-flex justify-content-between border-bottom pb-2 mb-2 mt-3">
+                    <span class="text-muted small">Số người lưu mã vào Ví:</span>
+                    <span class="fw-bold">@ViewBag.NguoiLuuCount</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">Tổng lượt chốt đơn (Applied):</span>
+                    <span class="fw-bold text-success">@ViewBag.LichSuDungCount</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box bg-warning bg-opacity-10 text-warning me-3">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    <h6 class="text-muted fw-bold mb-0">Thời Gian</h6>
+                </div>
+                @if(isExpired)
+                {
+                    <h5 class="fw-bold text-danger mb-0 mt-3"><i class="fa-solid fa-calendar-xmark me-2"></i> Đã Hết Hạn</h5>
+                }
+                else
+                {
+                    var ts = Model.ThoiGianKetThuc - now;
+                    <h4 class="fw-bold text-dark mb-1 mt-3">@Math.Floor(ts.TotalDays) <span class="fs-6 text-muted fw-normal">Ngày</span> @ts.Hours <span class="fs-6 text-muted fw-normal">Giờ</span></h4>
+                }
+                <div class="small text-muted border-top pt-2 mt-3">Từ: @Model.ThoiGianBatDau.ToString("dd/MM/yy HH:mm")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box bg-info bg-opacity-10 text-info me-3">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                    </div>
+                    <h6 class="text-muted fw-bold mb-0">Giá trị thiết lập</h6>
+                </div>
+                <div class="mt-3">
+                    @if(Model.LoaiGiamGia == "PERCENT")
+                    {
+                        <div class="fw-bold text-primary fs-5 mb-1">- @Model.GiaTriGiam.ToString("0.##")%</div>
+                        <div class="small text-muted">Max: @string.Format("{0:N0}", Model.SoTienGiamToiDa)đ</div>
+                    }
+                    else
+                    {
+                        <div class="fw-bold text-success fs-5 mb-1">- @string.Format("{0:N0}", Model.GiaTriGiam)đ</div>
+                    }
+                </div>
+                <div class="small text-danger fw-bold border-top pt-2 mt-2">Đơn từ: @string.Format("{0:N0}", Model.GiaTriDonHangToiThieu)đ</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow border-0 mt-2">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h6 class="mb-0 fw-bold text-secondary"><i class="fa-solid fa-circle-info me-2"></i>Thông tin kiểm toán</h6>
+    </div>
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <p class="text-muted small mb-1">Trạng thái phát hành gốc (Master Status)</p>
+                @if(Model.TrangThaiGoc == "REVOKED")
+                {
+                    <span class="badge bg-secondary fs-6">ĐÃ THU HỒI</span>
+                }
+                else if(Model.TrangThaiGoc == "EXPIRED")
+                {
+                    <span class="badge bg-warning text-dark fs-6">TẠM ĐÓNG</span>
+                }
+                else
+                {
+                    <span class="badge bg-success fs-6">HOẠT ĐỘNG (ACTIVE)</span>
+                }
+            </div>
+            <div class="col-md-6 mb-3">
+                <p class="text-muted small mb-1">Giới hạn User</p>
+                <div class="fw-bold"><i class="fa-solid fa-user-lock text-info me-2"></i>Tối đa @Model.GioiHanSuDungMoiUser lượt / 1 khách hàng</div>
+            </div>
+        </div>
+    </div>
+</div>

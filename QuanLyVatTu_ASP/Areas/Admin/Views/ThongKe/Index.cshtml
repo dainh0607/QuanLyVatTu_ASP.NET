@@ -202,6 +202,81 @@
             </div>
         </div>
     </div>
+
+    <!-- Bảng xếp hạng Top 10 sản phẩm bán chạy -->
+    <div class="row mt-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-secondary">
+                        <i class="bi bi-trophy text-warning me-2 fs-5"></i>Top 10 Vật tư mang lại Doanh thu cao nhất
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="text-center text-secondary small fw-bold py-3" style="width: 5%">Hạng</th>
+                                    <th class="text-center text-secondary small fw-bold" style="width: 10%">Hình ảnh</th>
+                                    <th class="text-secondary small fw-bold" style="width: 15%">Loại vật tư</th>
+                                    <th class="text-secondary small fw-bold">Tên vật tư</th>
+                                    <th class="text-center text-secondary small fw-bold" style="width: 10%">SL tồn</th>
+                                    <th class="text-secondary small fw-bold" style="width: 15%">Nhà cung cấp</th>
+                                    <th class="text-end pe-4 text-secondary small fw-bold" style="width: 15%">Tổng doanh thu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.TopProducts != null && Model.TopProducts.Any())
+                                {
+                                    int rank = 1;
+                                    foreach (var item in Model.TopProducts)
+                                    {
+                                        <tr>
+                                            <td class="text-center fw-bold @(rank <= 3 ? "text-warning" : "text-secondary")">
+                                                @if (rank == 1) { <i class="bi bi-award-fill fs-5"></i> }
+                                                else if (rank == 2) { <i class="bi bi-award fs-5" style="color: silver;"></i> }
+                                                else if (rank == 3) { <i class="bi bi-award fs-5" style="color: #cd7f32;"></i> }
+                                                else { <span>@rank</span> }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (!string.IsNullOrEmpty(item.HinhAnh))
+                                                {
+                                                    <img src="@item.HinhAnh" alt="Ảnh" class="img-thumbnail rounded" style="width: 50px; height: 50px; object-fit: cover;"/>
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light text-muted d-flex align-items-center justify-content-center rounded mx-auto" style="width: 50px; height: 50px; font-size: 10px;">Trống</div>
+                                                }
+                                            </td>
+                                            <td class="text-secondary small">@item.LoaiVatTu</td>
+                                            <td class="fw-medium text-dark">
+                                                <a href="/admin/vattu/details/@item.VatTuId" class="text-decoration-none" style="color: #3b82f6;">
+                                                    @item.TenVatTu
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge @(item.SoLuongTon > 0 ? "bg-success" : "bg-danger") px-2 py-1">@item.SoLuongTon</span>
+                                            </td>
+                                            <td class="text-secondary small">@item.NhaCungCap</td>
+                                            <td class="text-end pe-4 fw-bold text-dark">@item.DoanhThu.ToString("N0") đ</td>
+                                        </tr>
+                                        rank++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted small">Không có dữ liệu thống kê sản phẩm bán chạy</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -237,15 +312,15 @@
                     datasets: [{
                         label: 'Doanh thu',
                         data: chartData,
-                        borderColor: '#3b82f6',       // Đường màu xanh dương chuẩn
-                        backgroundColor: gradient,    // Màu nền gradient
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradient,
                         borderWidth: 2,
                         pointBackgroundColor: '#fff',
                         pointBorderColor: '#3b82f6',
-                        pointRadius: 0,               // Ẩn điểm tròn (giống hình)
+                        pointRadius: 0,
                         pointHoverRadius: 6,
                         fill: true,
-                        tension: 0.4                  // Đường cong mềm
+                        tension: 0.4
                     }]
                 },
                 options: {

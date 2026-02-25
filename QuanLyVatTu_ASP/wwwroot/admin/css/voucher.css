@@ -1,0 +1,88 @@
+/* admin/css/voucher.css */
+
+.ds-voucher-code {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    background: #f0f7fe;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    border: 1px dashed #007bff;
+}
+
+.custom-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.anim-pulse {
+    animation: pulse 2s infinite;
+    display: inline-block;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+/* Create / Edit Form Styles */
+.voucher-form-card {
+    border: none;
+    border-radius: 12px;
+}
+
+.voucher-form-card .card-header {
+    border-radius: 12px 12px 0 0;
+}
+
+.required-star {
+    color: #dc3545;
+    margin-left: 3px;
+}
+
+.form-floating > label {
+    color: #6c757d;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    border-color: #8db5f5;
+}
+
+/* Input group icons */
+.input-group-text {
+    background-color: #f8f9fa;
+    color: #495057;
+    border-right: none;
+}
+.input-group .form-control {
+    border-left: none;
+}
+.input-group .form-control:focus {
+    border-color: #dee2e6; /* keep it matching */
+    box-shadow: none;
+}
+.input-group-focus-ring:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    border-radius: 0.375rem;
+}
+.input-group-focus-ring:focus-within .input-group-text,
+.input-group-focus-ring:focus-within .form-control {
+    border-color: #8db5f5;
+}

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuanLyVatTu_ASP.Migrations
 {
     /// <inheritdoc />
-    public partial class NewHoaDon : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -234,6 +234,46 @@ namespace QuanLyVatTu_ASP.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Voucher",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaVoucher = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    LoaiGiamGia = table.Column<string>(type: "varchar(20)", nullable: false),
+                    GiaTriGiam = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SoTienGiamToiDa = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    GiaTriDonHangToiThieu = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ThoiGianBatDau = table.Column<DateTime>(type: "datetime", nullable: false),
+                    ThoiGianKetThuc = table.Column<DateTime>(type: "datetime", nullable: false),
+                    TongSoLuong = table.Column<int>(type: "int", nullable: false),
+                    SoLuongDaDung = table.Column<int>(type: "int", nullable: false),
+                    GioiHanSuDungMoiUser = table.Column<int>(type: "int", nullable: false),
+                    MaNhanVienTao = table.Column<int>(type: "int", nullable: true),
+                    TrangThaiGoc = table.Column<string>(type: "varchar(20)", nullable: false),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Voucher", x => x.ID);
+                    table.CheckConstraint("CK_Voucher_GiaTriDonHangToiThieu", "[GiaTriDonHangToiThieu] >= 0");
+                    table.CheckConstraint("CK_Voucher_GiaTriGiam", "([LoaiGiamGia] = 'FIXED' AND [GiaTriGiam] > 0) OR ([LoaiGiamGia] = 'PERCENT' AND [GiaTriGiam] > 0 AND [GiaTriGiam] <= 100)");
+                    table.CheckConstraint("CK_Voucher_GioiHanSuDung", "[GioiHanSuDungMoiUser] >= 1");
+                    table.CheckConstraint("CK_Voucher_LoaiGiamGia", "[LoaiGiamGia] IN ('PERCENT', 'FIXED')");
+                    table.CheckConstraint("CK_Voucher_SoLuong_HopLe", "[SoLuongDaDung] <= [TongSoLuong]");
+                    table.CheckConstraint("CK_Voucher_SoLuongDaDung", "[SoLuongDaDung] >= 0");
+                    table.CheckConstraint("CK_Voucher_ThoiGian_HopLe", "[ThoiGianBatDau] < [ThoiGianKetThuc]");
+                    table.CheckConstraint("CK_Voucher_TongSoLuong", "[TongSoLuong] >= 0");
+                    table.CheckConstraint("CK_Voucher_TrangThaiGoc", "[TrangThaiGoc] IN ('ACTIVE', 'EXPIRED', 'REVOKED')");
+                    table.ForeignKey(
+                        name: "FK_Voucher_NhanVien_MaNhanVienTao",
+                        column: x => x.MaNhanVienTao,
+                        principalTable: "NhanVien",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChiTietGioHang",
                 columns: table => new
                 {
@@ -438,6 +478,76 @@ namespace QuanLyVatTu_ASP.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LichSuSuDungVoucher",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaVoucherGoc = table.Column<int>(type: "int", nullable: false),
+                    MaDonHang = table.Column<int>(type: "int", nullable: false),
+                    MaKhachHang = table.Column<int>(type: "int", nullable: false),
+                    TenKhachHangSnapshot = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    SoTienGiamSnapshot = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ThoiGianSuDung = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GETDATE()"),
+                    TrangThaiSuDung = table.Column<string>(type: "varchar(20)", nullable: false),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LichSuSuDungVoucher", x => x.ID);
+                    table.CheckConstraint("CK_LichSuSuDungVoucher_SoTienGiam", "[SoTienGiamSnapshot] >= 0");
+                    table.CheckConstraint("CK_LichSuSuDungVoucher_TrangThai", "[TrangThaiSuDung] IN ('APPLIED', 'REFUNDED', 'BURNED')");
+                    table.ForeignKey(
+                        name: "FK_LichSuSuDungVoucher_DonHang_MaDonHang",
+                        column: x => x.MaDonHang,
+                        principalTable: "DonHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LichSuSuDungVoucher_KhachHang_MaKhachHang",
+                        column: x => x.MaKhachHang,
+                        principalTable: "KhachHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LichSuSuDungVoucher_Voucher_MaVoucherGoc",
+                        column: x => x.MaVoucherGoc,
+                        principalTable: "Voucher",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ViVoucherKhachHang",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaKhachHang = table.Column<int>(type: "int", nullable: false),
+                    MaVoucherGoc = table.Column<int>(type: "int", nullable: false),
+                    ThoiGianLuuMa = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GETDATE()"),
+                    TrangThaiTrongVi = table.Column<string>(type: "varchar(20)", nullable: false),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ViVoucherKhachHang", x => x.ID);
+                    table.CheckConstraint("CK_ViVoucherKhachHang_TrangThai", "[TrangThaiTrongVi] IN ('AVAILABLE', 'USED', 'EXPIRED')");
+                    table.ForeignKey(
+                        name: "FK_ViVoucherKhachHang_KhachHang_MaKhachHang",
+                        column: x => x.MaKhachHang,
+                        principalTable: "KhachHang",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ViVoucherKhachHang_Voucher_MaVoucherGoc",
+                        column: x => x.MaVoucherGoc,
+                        principalTable: "Voucher",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TuongTacDanhGia",
                 columns: table => new
                 {
@@ -592,6 +702,27 @@ namespace QuanLyVatTu_ASP.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_LichSuSuDung_DonHang",
+                table: "LichSuSuDungVoucher",
+                column: "MaDonHang");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LichSuSuDung_DonHang_Voucher_Unique",
+                table: "LichSuSuDungVoucher",
+                columns: new[] { "MaDonHang", "MaVoucherGoc" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LichSuSuDung_KhachHang_Voucher",
+                table: "LichSuSuDungVoucher",
+                columns: new[] { "MaKhachHang", "MaVoucherGoc" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LichSuSuDungVoucher_MaVoucherGoc",
+                table: "LichSuSuDungVoucher",
+                column: "MaVoucherGoc");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NhanVien_NgaySinh_CCCD_SoDienThoai",
                 table: "NhanVien",
                 columns: new[] { "NgaySinh", "CCCD", "SoDienThoai" },
@@ -623,6 +754,28 @@ namespace QuanLyVatTu_ASP.Migrations
                 name: "IX_VatTu_MaNhaCungCap",
                 table: "VatTu",
                 column: "MaNhaCungCap");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViVoucher_KhachHang_Voucher_Unique",
+                table: "ViVoucherKhachHang",
+                columns: new[] { "MaKhachHang", "MaVoucherGoc" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViVoucherKhachHang_MaVoucherGoc",
+                table: "ViVoucherKhachHang",
+                column: "MaVoucherGoc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Voucher_MaNhanVienTao",
+                table: "Voucher",
+                column: "MaNhanVienTao");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Voucher_MaVoucher",
+                table: "Voucher",
+                column: "MaVoucher",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_YeuCauBaoGia_MaKhachHang",
@@ -660,7 +813,13 @@ namespace QuanLyVatTu_ASP.Migrations
                 name: "DiaChiNhanHang");
 
             migrationBuilder.DropTable(
+                name: "LichSuSuDungVoucher");
+
+            migrationBuilder.DropTable(
                 name: "TuongTacDanhGia");
+
+            migrationBuilder.DropTable(
+                name: "ViVoucherKhachHang");
 
             migrationBuilder.DropTable(
                 name: "YeuThich");
@@ -676,6 +835,9 @@ namespace QuanLyVatTu_ASP.Migrations
 
             migrationBuilder.DropTable(
                 name: "DanhGia");
+
+            migrationBuilder.DropTable(
+                name: "Voucher");
 
             migrationBuilder.DropTable(
                 name: "DonHang");

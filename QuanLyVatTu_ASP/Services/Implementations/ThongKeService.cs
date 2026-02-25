@@ -114,6 +114,46 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             model.ChartLabels = chartGrouping.Select(x => x.DateLabel).ToList();
             model.ChartData = chartGrouping.Select(x => x.DailyRevenue).ToList();
 
+            // 8. Lấy dữ liệu Top 10 sản phẩm bán chạy dựa theo Doanh Thu (từ ChiTietDonHang áp dụng chung bộ lọc)
+            var topProductsQuery = _context.ChiTietDonHangs
+                .Include(c => c.DonHang)
+                .Include(c => c.VatTu).ThenInclude(v => v.LoaiVatTu)
+                .Include(c => c.VatTu).ThenInclude(v => v.NhaCungCap)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (fromDate.HasValue) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NgayDat.Date >= fromDate.Value.Date);
+            if (toDate.HasValue) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NgayDat.Date <= toDate.Value.Date);
+            if (!string.IsNullOrEmpty(status) && status != "Tất cả") topProductsQuery = topProductsQuery.Where(x => x.DonHang.TrangThai == status);
+            if (!string.IsNullOrEmpty(paymentMethod) && paymentMethod != "Tất cả") topProductsQuery = topProductsQuery.Where(x => x.DonHang.PhuongThucDatCoc == paymentMethod);
+            if (nhanVienId.HasValue && nhanVienId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NhanVienId == nhanVienId);
+            if (khachHangId.HasValue && khachHangId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.KhachHangId == khachHangId);
+
+            var topProductsData = await topProductsQuery
+                .GroupBy(x => x.MaVatTu)
+                .Select(g => new
+                {
+                    VatTuId = g.Key,
+                    VatTu = g.FirstOrDefault().VatTu,
+                    SoLuongBan = g.Sum(x => x.SoLuong),
+                    DoanhThu = g.Sum(x => x.ThanhTien)
+                })
+                .OrderByDescending(x => x.DoanhThu)
+                .Take(10)
+                .ToListAsync();
+
+            model.TopProducts = topProductsData.Select(x => new ProductStatisticItem
+            {
+                VatTuId = x.VatTuId,
+                HinhAnh = x.VatTu.HinhAnh ?? string.Empty,
+                LoaiVatTu = x.VatTu.LoaiVatTu?.TenLoaiVatTu ?? string.Empty,
+                TenVatTu = x.VatTu.TenVatTu ?? string.Empty,
+                SoLuongTon = x.VatTu.SoLuongTon ?? 0,
+                NhaCungCap = x.VatTu.NhaCungCap?.TenNhaCungCap ?? string.Empty,
+                SoLuongBan = x.SoLuongBan ?? 0,
+                DoanhThu = x.DoanhThu
+            }).ToList();
+
             return model;
         }
 

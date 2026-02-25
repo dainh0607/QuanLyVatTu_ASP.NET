@@ -7,6 +7,7 @@
         public int PaidOrders { get; set; }
 
         public List<OrderStatisticItem> Orders { get; set; } = new List<OrderStatisticItem>();
+        public List<ProductStatisticItem> TopProducts { get; set; } = new List<ProductStatisticItem>();
 
         public List<string> ChartLabels { get; set; } = new List<string>();
         public List<decimal> ChartData { get; set; } = new List<decimal>();
@@ -29,5 +30,17 @@
         public string TrangThai { get; set; } = string.Empty;
 
         public bool DaThanhToan => TrangThai == "Hoàn thành" || TrangThai == "Đã thanh toán";
+    }
+
+    public class ProductStatisticItem
+    {
+        public int VatTuId { get; set; }
+        public string HinhAnh { get; set; } = string.Empty;
+        public string LoaiVatTu { get; set; } = string.Empty;
+        public string TenVatTu { get; set; } = string.Empty;
+        public int SoLuongTon { get; set; }
+        public string NhaCungCap { get; set; } = string.Empty;
+        public int SoLuongBan { get; set; }
+        public decimal DoanhThu { get; set; }
     }
 }

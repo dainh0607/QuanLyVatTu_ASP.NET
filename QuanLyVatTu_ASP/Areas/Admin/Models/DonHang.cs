@@ -44,5 +44,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public virtual NhanVien? NhanVien { get; set; }
 
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
+        public virtual ICollection<LichSuSuDungVoucher> LichSuSuDungVouchers { get; set; } = new List<LichSuSuDungVoucher>();
+        public virtual ICollection<LichSuTichDiem> LichSuTichDiems { get; set; } = new List<LichSuTichDiem>();
     }
 }

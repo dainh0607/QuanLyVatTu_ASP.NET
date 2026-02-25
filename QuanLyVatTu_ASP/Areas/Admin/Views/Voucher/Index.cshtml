@@ -1,0 +1,142 @@
+@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.Voucher>
+
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/admin/css/voucher.css" asp-append-version="true" />
+}
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-primary bg-gradient text-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fa-solid fa-ticket me-2"></i> Hệ thống Voucher & Tích Điểm</h5>
+        <a asp-action="Create" class="btn btn-light btn-sm fw-bold shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Tạo Voucher Mới
+        </a>
+    </div>
+    <div class="card-body p-4">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th style="width: 15%">Mã Voucher</th>
+                        <th style="width: 15%">Loại & Giá trị</th>
+                        <th style="width: 25%">Mức độ sử dụng</th>
+                        <th style="width: 20%">Thời hạn</th>
+                        <th style="width: 10%">Trạng thái</th>
+                        <th style="width: 15%" class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var now = DateTime.Now;
+                            int total = item.TongSoLuong;
+                            int used = item.SoLuongDaDung;
+                            int percent = total > 0 ? (int)Math.Round((double)used / total * 100) : 0;
+                            var ts = item.ThoiGianKetThuc - now;
+                            bool isExpiringSoon = ts.TotalDays > 0 && ts.TotalDays <= 3;
+                            bool isExpired = ts.TotalSeconds < 0;
+                            bool isBurnedOut = used >= total;
+
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-primary ds-voucher-code">@item.MaVoucher</div>
+                                    <div class="small text-muted mt-1"><i class="fa-solid fa-user-group me-1"></i> Giới hạn: @item.GioiHanSuDungMoiUser/user</div>
+                                </td>
+                                <td>
+                                    @if(item.LoaiGiamGia == "PERCENT")
+                                    {
+                                        <span class="badge bg-info text-dark rounded-pill px-3 py-2"> Giảm @item.GiaTriGiam.ToString("0.##")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"> Giảm @string.Format("{0:N0}", item.GiaTriGiam)đ</span>
+                                    }
+                                    <div class="small text-muted mt-2">Đơn từ: @string.Format("{0:N0}", item.GiaTriDonHangToiThieu)đ</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="fw-bold">@used / @total</span>
+                                        <span class="text-muted">@percent%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar @(percent >= 90 ? "bg-danger" : (percent >= 70 ? "bg-warning" : "bg-primary"))" 
+                                             role="progressbar" 
+                                             style="width: @percent%;" 
+                                             aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    @if(isBurnedOut)
+                                    {
+                                        <div class="small text-danger mt-1 fw-bold"><i class="fa-solid fa-fire me-1"></i> Đã cháy sạch</div>
+                                    }
+                                </td>
+                                <td>
+                                    @if(item.ThoiGianBatDau > now)
+                                    {
+                                        <span class="text-muted"><i class="fa-regular fa-clock me-1"></i> Bắt đầu: @item.ThoiGianBatDau.ToString("dd/MM/yyyy HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <div><i class="fa-regular fa-calendar-xmark text-danger me-1"></i> @item.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm")</div>
+                                        @if(isExpiringSoon && !isBurnedOut && item.TrangThaiGoc == "ACTIVE")
+                                        {
+                                            <span class="badge bg-warning text-dark mt-1 anim-pulse"><i class="fa-solid fa-triangle-exclamation me-1"></i> Sắp hết hạn (@Math.Floor(ts.TotalDays) ngày)</span>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @if(item.TrangThaiGoc == "REVOKED")
+                                    {
+                                        <span class="badge bg-secondary">Đã thu hồi</span>
+                                    }
+                                    else if(isExpired)
+                                    {
+                                        <span class="badge border border-danger text-danger">Hết hạn</span>
+                                    }
+                                    else if (item.ThoiGianBatDau > now)
+                                    {
+                                        <span class="badge border border-info text-info">Chưa bắt đầu</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Đang hoạt động</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-outline-info" title="Xem chi tiết & Thống kê">
+                                        <i class="fa-solid fa-chart-pie"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486771.png" style="width: 100px; opacity: 0.5" class="mb-3" />
+                                <h6 class="text-muted">Chưa có Voucher nào trong hệ thống</h6>
+                                <p class="small text-muted mb-0">Hãy bấm "Tạo Voucher Mới" để phát hành đợt giảm giá đầu tiên.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
