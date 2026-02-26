@@ -187,7 +187,7 @@ namespace QuanLyVatTu_ASP.Controllers
             var role = HttpContext.Session.GetString("Role");
             var userName = HttpContext.Session.GetString("UserName");
             
-            bool isAdmin = role == "Admin" || role == "Employee" || (userName?.Contains("Admin") ?? false);
+            bool isAdmin = role == "Quản trị" || role == "Nhân viên" || role == "Kế toán" || role == "Thủ kho";
             
             if (!isAdmin)
             {

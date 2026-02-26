@@ -44,5 +44,21 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
 
         // Đường dẫn ảnh hiện tại (dùng khi Edit)
         public string? AnhDaiDien { get; set; }
+
+        // Thông tin thành viên (read-only trên UI)
+        [Display(Name = "Đăng nhập Google")]
+        public bool DangNhapGoogle { get; set; }
+
+        [Display(Name = "Điểm tích lũy")]
+        public int DiemTichLuy { get; set; }
+
+        [Display(Name = "Hạng thành viên")]
+        public string? TenHangThanhVien { get; set; }
+
+        [Display(Name = "Ngày lên hạng")]
+        public DateTime? NgayLenHang { get; set; }
+
+        [Display(Name = "Ngày hết hạn hạng")]
+        public DateTime? NgayHetHanHang { get; set; }
     }
 }

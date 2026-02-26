@@ -99,6 +99,59 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Row 4: Thông tin thành viên (read-only) -->
+                            <div class="col-12">
+                                <hr class="my-2" />
+                                <h5 class="fw-bold text-muted mb-3"><i class="fa-solid fa-crown me-2 text-warning"></i>Thông tin thành viên</h5>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Đăng nhập Google</label>
+                                    <div class="form-control-plaintext">
+                                        @if (Model.DangNhapGoogle)
+                                        {
+                                            <span class="badge bg-info"><i class="bi bi-google me-1"></i>Có</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Không</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Điểm tích lũy</label>
+                                    <p class="form-control form-control-lg bg-light mb-0">@Model.DiemTichLuy.ToString("N0")</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Hạng thành viên</label>
+                                    <div class="form-control-plaintext">
+                                        @if (!string.IsNullOrEmpty(Model.TenHangThanhVien))
+                                        {
+                                            <span class="badge bg-warning text-dark fs-6">@Model.TenHangThanhVien</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Chưa có hạng</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Ngày lên hạng</label>
+                                    <p class="form-control form-control-lg bg-light mb-0">@(Model.NgayLenHang?.ToString("dd/MM/yyyy") ?? "—")</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Ngày hết hạn hạng</label>
+                                    <p class="form-control form-control-lg bg-light mb-0">@(Model.NgayHetHanHang?.ToString("dd/MM/yyyy") ?? "—")</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-4 mt-5 pt-4 border-top">

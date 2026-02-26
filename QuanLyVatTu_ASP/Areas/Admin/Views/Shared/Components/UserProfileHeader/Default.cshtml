@@ -5,11 +5,11 @@
     <div class="user-profile-header d-flex align-items-center gap-3">
         <div class="text-end d-none d-md-block text-white">
             <div class="fw-bold">
-                @if (new[] { "NhanVien", "Nhân viên", "Employee" }.Contains(Model.VaiTro))
+                @if (Model.VaiTro == "Nhân viên" || Model.VaiTro == "Kế toán" || Model.VaiTro == "Thủ kho")
                 {
                     <span>Nhân viên @Model.HoTen</span>
                 }
-                else if (new[] { "Admin", "QuanLy", "Quản lý", "Administrator" }.Contains(Model.VaiTro))
+                else if (Model.VaiTro == "Quản trị")
                 {
                      <span>Admin @Model.HoTen</span>
                 }

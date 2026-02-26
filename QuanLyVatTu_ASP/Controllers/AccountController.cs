@@ -24,7 +24,7 @@ namespace QuanLyVatTu_ASP.Controllers
         {
             // Nếu đã đăng nhập rồi thì chuyển hướng
             // Admin/Employee -> Vào trang Quản lý đơn hàng
-            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Employee")
+            if (HttpContext.Session.GetString("Role") == "Quản trị" || HttpContext.Session.GetString("Role") == "Nhân viên" || HttpContext.Session.GetString("Role") == "Kế toán" || HttpContext.Session.GetString("Role") == "Thủ kho")
                 return RedirectToRoute("AdminDonHang"); // <-- Dùng RedirectToRoute
 
             // Customer -> Vào trang chủ
@@ -73,7 +73,7 @@ namespace QuanLyVatTu_ASP.Controllers
              {
                  HttpContext.Session.SetString("UserName", nhanVien.HoTen);
                  HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
-                 HttpContext.Session.SetString("Role", nhanVien.VaiTro); // "Admin" hoặc "Employee"
+                 HttpContext.Session.SetString("Role", nhanVien.VaiTro); // "Quản trị", "Nhân viên", "Kế toán", "Thủ kho"
                  
                  // Chuyển hướng vào trang quản lý
                  return RedirectToRoute("AdminDonHang");

@@ -40,6 +40,9 @@
                             <th>Email</th>
                             <th>Số điện thoại</th>
                             <th>Địa chỉ</th>
+                            <th>Hạng TV</th>
+                            <th class="text-center">Điểm TL</th>
+                            <th class="text-center">Google</th>
                             <th>Ngày tạo</th>
                             <th width="120" class="text-center">Thao tác</th>
                         </tr>
@@ -56,6 +59,27 @@
                                     <td>@item.Email</td>
                                     <td>@(item.SoDienThoai ?? "—")</td>
                                     <td class="text-truncate" style="max-width: 150px;">@(item.DiaChi ?? "—")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.TenHangThanhVien))
+                                        {
+                                            <span class="badge bg-warning text-dark">@item.TenHangThanhVien</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td class="text-center"><strong>@item.DiemTichLuy</strong></td>
+                                    <td class="text-center">
+                                        @if (item.DangNhapGoogle)
+                                        {
+                                            <span class="badge bg-info"><i class="bi bi-google me-1"></i>Google</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
                                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                                     <td class="text-center">
                                         <div class="actions-wrapper">
@@ -84,7 +108,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="11" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox display-4 d-block mb-3"></i>
                                     Không tìm thấy dữ liệu phù hợp
                                 </td>

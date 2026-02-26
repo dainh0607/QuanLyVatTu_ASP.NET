@@ -22,6 +22,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
             public string? SoDienThoai { get; set; }
             public string? DiaChi { get; set; }
             public DateTime NgayTao { get; set; }
+            public bool DangNhapGoogle { get; set; }
+            public int DiemTichLuy { get; set; }
+            public string? TenHangThanhVien { get; set; }
         }
     }
 }

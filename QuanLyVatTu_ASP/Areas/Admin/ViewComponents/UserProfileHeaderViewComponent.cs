@@ -29,7 +29,7 @@ namespace QuanLyVatTu_ASP.ViewComponents
                      return View(new UserProfileViewModel
                      {
                          HoTen = sessionName,
-                         VaiTro = sessionRole ?? "NhanVien",
+                         VaiTro = sessionRole ?? "Nhân viên",
                          Avatar = string.Empty // Để View hiển thị icon mặc định
                      });
                  }
@@ -44,7 +44,7 @@ namespace QuanLyVatTu_ASP.ViewComponents
                  return View(new UserProfileViewModel
                  {
                      HoTen = sessionName ?? "Unknown",
-                     VaiTro = sessionRole ?? "NhanVien",
+                     VaiTro = sessionRole ?? "Nhân viên",
                      Avatar = string.Empty // Để View hiển thị icon mặc định
                  });
             }

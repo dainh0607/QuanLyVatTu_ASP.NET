@@ -89,7 +89,7 @@
                                                 </a>
 
                                                 <!-- Delete -->
-                                                @if (Context.Session.GetString("Role") == "Admin")
+                                                @if (Context.Session.GetString("Role") == "Quản trị")
                                                 {
                                                     <form asp-action="Delete" asp-route-id="@item.HoaDonId" method="post" class="d-inline"
                                                           onsubmit="return confirm('Xác nhận xóa hóa đơn này?');">

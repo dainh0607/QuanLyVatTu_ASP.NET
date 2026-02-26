@@ -31,38 +31,55 @@
             </a>
         </div>
 
+        @{
+            var currentRole = Context.Session.GetString("Role");
+        }
+
         <nav class="admin-nav flex-grow-1">
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DonHang" ? "active" : "")" 
-                   asp-area="Admin" asp-controller="DonHang" asp-action="Index">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>Đơn hàng</span>
-                </a>
-            </div>
+            @* === Đơn hàng: Quản trị, Nhân viên === *@
+            @if (currentRole == "Quản trị" || currentRole == "Nhân viên")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DonHang" ? "active" : "")" 
+                       asp-area="Admin" asp-controller="DonHang" asp-action="Index">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <span>Đơn hàng</span>
+                    </a>
+                </div>
+            }
 
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoaDon" ? "active" : "")" 
-                   asp-area="Admin" asp-controller="HoaDon" asp-action="Index">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Quản lý Hóa đơn</span>
-                </a>
-            </div>
+            @* === Hóa đơn: Quản trị, Kế toán === *@
+            @if (currentRole == "Quản trị" || currentRole == "Kế toán")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoaDon" ? "active" : "")" 
+                       asp-area="Admin" asp-controller="HoaDon" asp-action="Index">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Quản lý Hóa đơn</span>
+                    </a>
+                </div>
+            }
 
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Voucher" ? "active" : "")" 
-                   asp-area="Admin" asp-controller="Voucher" asp-action="Index">
-                    <i class="fa-solid fa-ticket"></i>
-                    <span>Tích điểm & Voucher</span>
-                </a>
-            </div>
+            @* === Tích điểm & Voucher: Quản trị, Nhân viên === *@
+            @if (currentRole == "Quản trị" || currentRole == "Nhân viên")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Voucher" ? "active" : "")" 
+                       asp-area="Admin" asp-controller="Voucher" asp-action="Index">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Tích điểm &amp; Voucher</span>
+                    </a>
+                </div>
+            }
 
-            @if (Context.Session.GetString("Role") == "Admin")
+            @* === Kho hàng & Vật tư: Quản trị, Thủ kho === *@
+            @if (currentRole == "Quản trị" || currentRole == "Thủ kho")
             {
                 <div class="nav-item">
                     <a class="nav-link collapsed" href="#collapseQLVT" data-bs-toggle="collapse" role="button" 
                        aria-expanded="@(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "true" : "false")">
                         <i class="fa-solid fa-box-open"></i>
-                        <span>Kho hàng & Vật tư</span>
+                        <span>Kho hàng &amp; Vật tư</span>
                         <i class="fas fa-chevron-down ms-auto small opacity-50"></i>
                     </a>
                     <div class="collapse @(new[]{"VatTu", "LoaiVatTu", "NhaCungCap"}.Contains(ViewContext.RouteData.Values["controller"]?.ToString()) ? "show" : "")" id="collapseQLVT">
@@ -75,15 +92,20 @@
                 </div>
             }
 
-            <div class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhachHang" ? "active" : "")"
-                   asp-area="Admin" asp-controller="KhachHang" asp-action="Index">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Khách hàng</span>
-                </a>
-            </div>
+            @* === Khách hàng: Quản trị, Nhân viên === *@
+            @if (currentRole == "Quản trị" || currentRole == "Nhân viên")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhachHang" ? "active" : "")"
+                       asp-area="Admin" asp-controller="KhachHang" asp-action="Index">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                </div>
+            }
 
-            @if (Context.Session.GetString("Role") == "Admin")
+            @* === Nhân viên: chỉ Quản trị === *@
+            @if (currentRole == "Quản trị")
             {
                 <div class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NhanVien" ? "active" : "")"
@@ -92,12 +114,16 @@
                         <span>Nhân viên</span>
                     </a>
                 </div>
+            }
 
+            @* === Thống kê: Quản trị, Kế toán === *@
+            @if (currentRole == "Quản trị" || currentRole == "Kế toán")
+            {
                 <div class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongKe" ? "active" : "")"
                        asp-area="Admin" asp-controller="ThongKe" asp-action="Index">
                         <i class="fa-solid fa-chart-pie"></i>
-                        <span>Thống kê & Báo cáo</span>
+                        <span>Thống kê &amp; Báo cáo</span>
                     </a>
                 </div>
             }

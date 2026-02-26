@@ -33,6 +33,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var total = await query.CountAsync();
             var items = await query
+                .Include(x => x.HangThanhVien)
                 .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -44,7 +45,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     Email = x.Email,
                     SoDienThoai = x.SoDienThoai,
                     DiaChi = x.DiaChi,
-                    NgayTao = x.NgayTao
+                    NgayTao = x.NgayTao,
+                    DangNhapGoogle = x.DangNhapGoogle,
+                    DiemTichLuy = x.DiemTichLuy,
+                    TenHangThanhVien = x.HangThanhVien != null ? x.HangThanhVien.TenHang : null
                 })
                 .ToListAsync();
 
@@ -60,7 +64,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         public async Task<KhachHangCreateEditViewModel?> GetByIdForEditAsync(int id)
         {
-            var kh = await _context.KhachHangs.FindAsync(id);
+            var kh = await _context.KhachHangs
+                .Include(x => x.HangThanhVien)
+                .FirstOrDefaultAsync(x => x.ID == id);
             if (kh == null) return null;
 
             return new KhachHangCreateEditViewModel
@@ -71,7 +77,13 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 SoDienThoai = kh.SoDienThoai,
                 DiaChi = kh.DiaChi,
                 TaiKhoan = kh.TaiKhoan,
-                AnhDaiDien = kh.AnhDaiDien
+                AnhDaiDien = kh.AnhDaiDien,
+                MaHienThi = kh.MaHienThi,
+                DangNhapGoogle = kh.DangNhapGoogle,
+                DiemTichLuy = kh.DiemTichLuy,
+                TenHangThanhVien = kh.HangThanhVien?.TenHang,
+                NgayLenHang = kh.NgayLenHang,
+                NgayHetHanHang = kh.NgayHetHanHang
             };
         }
 
@@ -190,7 +202,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         public async Task<KhachHang?> GetByIdAsync(int id)
         {
-            return await _context.KhachHangs.FindAsync(id);
+            return await _context.KhachHangs
+                .Include(x => x.HangThanhVien)
+                .FirstOrDefaultAsync(x => x.ID == id);
         }
     }
 }
