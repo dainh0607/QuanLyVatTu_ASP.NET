@@ -38,6 +38,13 @@ builder.Services.AddScoped<IVatTuService, VatTuService>();
 builder.Services.AddScoped<IThongKeService, ThongKeService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
+// Voucher & Points Services
+builder.Services.AddScoped<IVoucherService, VoucherService>();
+builder.Services.AddScoped<IDiemTichLuyService, DiemTichLuyService>();
+
+// Background Job - Quét rớt hạng hàng đêm
+builder.Services.AddHostedService<TierDowngradeJob>();
+
 
 // Cấu hình Authentication
 builder.Services.AddAuthentication(options =>
@@ -90,9 +97,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseSession();
-app.UseAuthentication();
-app.UseAuthorization(); // Thêm Authorization middleware
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",

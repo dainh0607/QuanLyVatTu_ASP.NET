@@ -16,7 +16,7 @@ namespace QuanLyVatTu_ASP.DataAccess
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseLazyLoadingProxies()
-                              .UseSqlServer("Server=NGUYEN-HOANG-DA\\NHD;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
+                              .UseSqlServer("Server=MSI\\SQLEXPRESS;Database=QuanLyVatTu;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
 
@@ -129,6 +129,14 @@ namespace QuanLyVatTu_ASP.DataAccess
 
                 entity.HasOne(d => d.KhachHang).WithMany().HasForeignKey(d => d.KhachHangId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(d => d.NhanVien).WithMany().HasForeignKey(d => d.NhanVienId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(d => d.VoucherApDung).WithMany().HasForeignKey(d => d.MaVoucherId).OnDelete(DeleteBehavior.SetNull);
+
+                // Checkout breakdown defaults
+                entity.Property(e => e.SoTienChietKhauHang).HasDefaultValue(0m);
+                entity.Property(e => e.SoTienGiamVoucher).HasDefaultValue(0m);
+                entity.Property(e => e.SoDiemSuDung).HasDefaultValue(0);
+                entity.Property(e => e.SoTienGiamDiem).HasDefaultValue(0m);
+                entity.Property(e => e.TongTienThucTra).HasDefaultValue(0m);
             });
 
             // --- 7. ChiTietDonHang ---

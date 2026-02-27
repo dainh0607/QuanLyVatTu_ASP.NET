@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260226014508_NewDB")]
+    partial class NewDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,10 +230,6 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("varchar(20)")
                         .HasComputedColumnSql("'DH' + CONVERT(VARCHAR(4), YEAR([NgayDat])) + '-' + RIGHT('000' + CAST([ID] AS VARCHAR(3)), 3)");
 
-                    b.Property<int?>("MaVoucherId")
-                        .HasColumnType("int")
-                        .HasColumnName("MaVoucherId");
-
                     b.Property<DateTime>("NgayDat")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -252,43 +251,13 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SoDiemSuDung")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("SoDiemSuDung");
-
-                    b.Property<decimal?>("SoTienChietKhauHang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("SoTienChietKhauHang");
-
                     b.Property<decimal?>("SoTienDatCoc")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("SoTienGiamDiem")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("SoTienGiamDiem");
-
-                    b.Property<decimal?>("SoTienGiamVoucher")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("SoTienGiamVoucher");
 
                     b.Property<decimal?>("TongTien")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
-
-                    b.Property<decimal?>("TongTienThucTra")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("TongTienThucTra");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
@@ -299,8 +268,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("KhachHangId");
-
-                    b.HasIndex("MaVoucherId");
 
                     b.HasIndex("NhanVienId");
 
@@ -1252,11 +1219,6 @@ namespace QuanLyVatTu_ASP.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.Voucher", "VoucherApDung")
-                        .WithMany()
-                        .HasForeignKey("MaVoucherId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("QuanLyVatTu_ASP.Areas.Admin.Models.NhanVien", "NhanVien")
                         .WithMany()
                         .HasForeignKey("NhanVienId")
@@ -1265,8 +1227,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Navigation("KhachHang");
 
                     b.Navigation("NhanVien");
-
-                    b.Navigation("VoucherApDung");
                 });
 
             modelBuilder.Entity("QuanLyVatTu_ASP.Areas.Admin.Models.GioHang", b =>

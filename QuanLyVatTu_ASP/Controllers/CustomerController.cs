@@ -5,6 +5,7 @@ using QuanLyVatTu_ASP.Repositories;
 using QuanLyVatTu_ASP.Repositories.Implementations;
 using QuanLyVatTu_ASP.Repositories.Interfaces;
 using QuanLyVatTu_ASP.Models;
+using QuanLyVatTu_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyVatTu_ASP.Controllers
@@ -13,11 +14,18 @@ namespace QuanLyVatTu_ASP.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DataAccess.AppDbContext _context;
+        private readonly IVoucherService _voucherService;
+        private readonly IDiemTichLuyService _diemService;
+        private readonly IDonHangService _donHangService;
 
-        public CustomerController(IUnitOfWork unitOfWork, DataAccess.AppDbContext context)
+        public CustomerController(IUnitOfWork unitOfWork, DataAccess.AppDbContext context,
+            IVoucherService voucherService, IDiemTichLuyService diemService, IDonHangService donHangService)
         {
             _unitOfWork = unitOfWork;
             _context = context;
+            _voucherService = voucherService;
+            _diemService = diemService;
+            _donHangService = donHangService;
         }
         public async Task<IActionResult> Profile()
         {
@@ -677,11 +685,6 @@ namespace QuanLyVatTu_ASP.Controllers
 
             if (donHang.ChiTietDonHangs != null)
             {
-                // Clear existing cart? 
-                // Requirement implies "Edit Order" context, usually we want to isolate this order's items.
-                // But generally safe to just add/merge or warn.
-                // Let's MERGE for now to avoid accidental data loss of existing cart items.
-
                 foreach (var detail in donHang.ChiTietDonHangs)
                 {
                     var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(detail.MaVatTu);
@@ -690,11 +693,6 @@ namespace QuanLyVatTu_ASP.Controllers
                     var existingItem = gioHang.ChiTietGioHangs?.FirstOrDefault(x => x.MaVatTu == detail.MaVatTu);
                     if (existingItem != null)
                     {
-                        // Optimization: Maybe don't double count if it's already there? 
-                        // But for "Edit", user expects these specific items. 
-                        // Let's just update quantity to match order if it's less, or add?
-                        // "Edit" usually means "Load these items". 
-                        // Simplest: Add quantity.
                          existingItem.SoLuong += detail.SoLuong ?? 0;
                          _unitOfWork.ChiTietGioHangRepository.Update(existingItem);
                     }
@@ -711,18 +709,13 @@ namespace QuanLyVatTu_ASP.Controllers
                 }
             }
             
-            // Set Session to track we are editing THIS order
             HttpContext.Session.SetInt32("EditingOrderId", orderId);
 
-            // --- END NEW LOGIC ---
-
-            // Remove all order details
             if (donHang.ChiTietDonHangs != null && donHang.ChiTietDonHangs.Any())
             {
                 _context.Set<ChiTietDonHang>().RemoveRange(donHang.ChiTietDonHangs);
             }
 
-            // Reset status
             donHang.TrangThai = "Chờ xác nhận";
             donHang.TongTien = 0;
             donHang.SoTienDatCoc = null;
@@ -731,8 +724,173 @@ namespace QuanLyVatTu_ASP.Controllers
             donHang.GhiChu = null;
 
             await _context.SaveChangesAsync();
-
             return Json(new { success = true, message = "Đang chuyển đến giỏ hàng để chỉnh sửa..." });
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> CancelOrder([FromBody] int orderId)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Json(new { success = false, message = "Vui lòng đăng nhập." });
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return Json(new { success = false, message = "Không tìm thấy tài khoản." });
+
+            var donHang = await _context.DonHang.FirstOrDefaultAsync(d => d.ID == orderId && d.KhachHangId == khachHang.ID);
+            if (donHang == null)
+                return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+
+            // Only allow cancellation for early statuses
+            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán" };
+            if (!allowedStatuses.Contains(donHang.TrangThai))
+            {
+                return Json(new { success = false, message = "Không thể hủy đơn hàng ở trạng thái hiện tại. Vui lòng liên hệ CSKH." });
+            }
+
+            var result = await _donHangService.UpdateAsync(orderId, "Đã hủy");
+            if (result)
+            {
+                return Json(new { success = true, message = "Đã hủy đơn hàng thành công!" });
+            }
+
+            return Json(new { success = false, message = "Đã xảy ra lỗi khi hủy đơn." });
+        }
+
+        // ==========================================
+        // VOUCHER WALLET APIs
+        // ==========================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetVoucherWallet()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            var wallet = await _voucherService.GetWalletAsync(khachHang.ID);
+            var data = wallet.Select(v => new
+            {
+                v.ID,
+                v.MaVoucherGoc,
+                MaVoucher = v.VoucherGoc?.MaVoucher ?? "",
+                LoaiGiamGia = v.VoucherGoc?.LoaiGiamGia ?? "",
+                GiaTriGiam = v.VoucherGoc?.GiaTriGiam ?? 0,
+                SoTienGiamToiDa = v.VoucherGoc?.SoTienGiamToiDa,
+                GiaTriDonHangToiThieu = v.VoucherGoc?.GiaTriDonHangToiThieu ?? 0,
+                ThoiGianKetThuc = v.VoucherGoc?.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm"),
+                v.TrangThaiTrongVi,
+                v.ThoiGianLuuMa,
+                SoLuongDaDung = v.VoucherGoc?.SoLuongDaDung ?? 0,
+                TongSoLuong = v.VoucherGoc?.TongSoLuong ?? 0,
+                SapHetHan = v.VoucherGoc != null && (v.VoucherGoc.ThoiGianKetThuc - DateTime.Now).TotalDays <= 3,
+                DaHetLuot = v.VoucherGoc != null && v.VoucherGoc.SoLuongDaDung >= v.VoucherGoc.TongSoLuong
+            });
+
+            return Json(new { success = true, data });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableVouchers()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            var activeVouchers = await _unitOfWork.VoucherRepository.GetActiveVouchersAsync();
+            var data = new List<object>();
+            foreach (var v in activeVouchers)
+            {
+                var alreadySaved = await _unitOfWork.ViVoucherRepository.ExistsAsync(khachHang.ID, v.ID);
+                data.Add(new
+                {
+                    v.ID,
+                    v.MaVoucher,
+                    v.LoaiGiamGia,
+                    v.GiaTriGiam,
+                    v.SoTienGiamToiDa,
+                    v.GiaTriDonHangToiThieu,
+                    ThoiGianKetThuc = v.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm"),
+                    v.SoLuongDaDung,
+                    v.TongSoLuong,
+                    DaLuu = alreadySaved,
+                    SapHetHan = (v.ThoiGianKetThuc - DateTime.Now).TotalDays <= 3
+                });
+            }
+
+            return Json(new { success = true, data });
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> SaveVoucher([FromBody] int voucherId)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Json(new { success = false, message = "Vui lòng đăng nhập." });
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return Json(new { success = false, message = "Không tìm thấy tài khoản." });
+
+            var result = await _voucherService.SaveVoucherToWalletAsync(khachHang.ID, voucherId);
+            return Json(new { result.Success, result.Message });
+        }
+
+        // ==========================================
+        // POINTS HISTORY APIs
+        // ==========================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetPointsHistory()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            // Load tier info
+            var tier = khachHang.MaHangThanhVien.HasValue
+                ? await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value)
+                : null;
+
+            // Get next tier
+            var allTiers = await _unitOfWork.HangThanhVienRepository.GetAllOrderedAsync();
+            var nextTier = allTiers.FirstOrDefault(t => t.ChiTieuToiThieu > (tier?.ChiTieuToiThieu ?? 0));
+
+            // Calculate 365-day spending
+            var oneYearAgo = DateTime.Now.AddDays(-365);
+            var totalSpent = await _context.DonHang
+                .Where(d => d.KhachHangId == khachHang.ID
+                         && d.TrangThai == "Đã giao"
+                         && d.NgayDat >= oneYearAgo)
+                .SumAsync(d => d.TongTienThucTra ?? d.TongTien ?? 0);
+
+            var history = await _diemService.GetHistoryAsync(khachHang.ID);
+            var historyData = history.Select(h => new
+            {
+                h.ID,
+                h.SoDiem,
+                h.LoaiGiaoDich,
+                NgayTao = h.NgayTao.ToString("dd/MM/yyyy HH:mm"),
+                MaDonHang = h.MaDonHang
+            });
+
+            return Json(new
+            {
+                success = true,
+                diemHienTai = khachHang.DiemTichLuy,
+                hangHienTai = tier?.TenHang ?? "Chưa có hạng",
+                phanTramChietKhau = tier?.PhanTramChietKhau ?? 0,
+                ngayHetHanHang = khachHang.NgayHetHanHang?.ToString("dd/MM/yyyy"),
+                hangTiepTheo = nextTier?.TenHang,
+                chiTieuCanThiet = nextTier?.ChiTieuToiThieu ?? 0,
+                tongChiTieu365Ngay = totalSpent,
+                history = historyData
+            });
         }
 
     }

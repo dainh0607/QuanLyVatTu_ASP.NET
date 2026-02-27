@@ -19,15 +19,19 @@ namespace QuanLyVatTu_ASP.Controllers
         private readonly AppDbContext _context;
         private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IVoucherService _voucherService;
+        private readonly IDiemTichLuyService _diemTichLuyService;
         private const string CART_KEY = "MY_CART";
         private const string DIRECT_CART_KEY = "DIRECT_CART";
 
-        public ThanhToanController(IUnitOfWork unitOfWork, AppDbContext context, IEmailService emailService, IWebHostEnvironment webHostEnvironment)
+        public ThanhToanController(IUnitOfWork unitOfWork, AppDbContext context, IEmailService emailService, IWebHostEnvironment webHostEnvironment, IVoucherService voucherService, IDiemTichLuyService diemTichLuyService)
         {
             _unitOfWork = unitOfWork;
             _context = context;
             _emailService = emailService;
             _webHostEnvironment = webHostEnvironment;
+            _voucherService = voucherService;
+            _diemTichLuyService = diemTichLuyService;
         }
 
         private async Task<List<CartItem>> GetCartItemsSecureAsync(bool isBuyNow)
@@ -103,6 +107,17 @@ namespace QuanLyVatTu_ASP.Controllers
             ViewBag.IsBuyNow = isBuyNow;
             ViewBag.Total = cart.Sum(x => x.ThanhTien);
 
+            // === VOUCHER & POINTS DATA (Script D + Section 4) ===
+            var availableVouchers = await _unitOfWork.ViVoucherRepository.GetAvailableAsync(khachHang.ID);
+            ViewBag.AvailableVouchers = availableVouchers?.ToList() ?? new List<Areas.Admin.Models.ViVoucherKhachHang>();
+
+            Areas.Admin.Models.HangThanhVien? tier = null;
+            if (khachHang.MaHangThanhVien.HasValue)
+                tier = await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value);
+            ViewBag.TierName = tier?.TenHang ?? "Chưa có hạng";
+            ViewBag.TierDiscountPercent = tier?.PhanTramChietKhau ?? 0;
+            ViewBag.DiemHienTai = khachHang.DiemTichLuy;
+
             return View(khachHang);
         }
 
@@ -114,6 +129,9 @@ namespace QuanLyVatTu_ASP.Controllers
             string paymentMethod = "cod",
             string shippingMethod = "delivery",
             bool isBuyNow = false,
+            // Voucher & Points
+            int selectedVoucherId = 0,
+            int soDiemSuDung = 0,
             // VAT Invoice fields
             bool xuatVAT = false,
             string? tenCongTy = null,
@@ -297,22 +315,85 @@ namespace QuanLyVatTu_ASP.Controllers
                     await _unitOfWork.ChiTietDonHangRepository.AddAsync(chiTiet);
                 }
 
-                // ===== BƯỚC 4: CẬP NHẬT TỔNG TIỀN & LOGIC ĐẶT CỌC =====
+                // ===== BƯỚC 4: TÍNH TOÁN CHECKOUT BREAKDOWN (Script Section 4) =====
+                // Thứ tự ưu tiên: TongTien gốc → Chiết khấu Hạng → Voucher → Điểm → Thực trả
                 donHang.TongTien = tongTien;
+                decimal afterDiscount = tongTien;
 
-                if (tongTien >= 5000000)
+                // --- 4a: Chiết khấu Hạng thành viên ---
+                decimal chietKhauHang = 0;
+                if (khachHang.MaHangThanhVien.HasValue)
                 {
-                    // Over 5M -> Require 10% Deposit via Bank Transfer (QR)
-                    donHang.SoTienDatCoc = tongTien * 0.1m; 
+                    var tier = await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value);
+                    if (tier != null && tier.PhanTramChietKhau > 0)
+                    {
+                        chietKhauHang = Math.Floor(tongTien * tier.PhanTramChietKhau / 100);
+                        afterDiscount -= chietKhauHang;
+                    }
+                }
+                donHang.SoTienChietKhauHang = chietKhauHang;
+
+                // --- 4b: Áp dụng Voucher ---
+                decimal soTienGiamVoucher = 0;
+                if (selectedVoucherId > 0)
+                {
+                    var voucherResult = await _voucherService.ApplyVoucherAsync(
+                        khachHang.ID, selectedVoucherId, donHang.ID, afterDiscount);
+                    if (voucherResult.Success)
+                    {
+                        soTienGiamVoucher = voucherResult.Data;
+                        afterDiscount -= soTienGiamVoucher;
+                        donHang.MaVoucherId = selectedVoucherId;
+                    }
+                    else
+                    {
+                        // Voucher không hợp lệ → bỏ qua, không block đơn hàng
+                        TempData["Warning"] = voucherResult.Message;
+                    }
+                }
+                donHang.SoTienGiamVoucher = soTienGiamVoucher;
+
+                // --- 4c: Trừ Điểm tích lũy ---
+                decimal soTienGiamDiem = 0;
+                int diemThucDung = 0;
+                if (soDiemSuDung > 0)
+                {
+                    // Không cho trừ quá số tiền còn lại
+                    diemThucDung = (int)Math.Min(soDiemSuDung, afterDiscount);
+                    if (diemThucDung > 0)
+                    {
+                        var redeemResult = await _diemTichLuyService.RedeemPointsAsync(
+                            khachHang.ID, donHang.ID, diemThucDung);
+                        if (redeemResult.Success)
+                        {
+                            soTienGiamDiem = diemThucDung; // 1 điểm = 1 VNĐ
+                            afterDiscount -= soTienGiamDiem;
+                        }
+                        else
+                        {
+                            TempData["Warning"] = (TempData["Warning"]?.ToString() ?? "") + " | " + redeemResult.Message;
+                            diemThucDung = 0;
+                        }
+                    }
+                }
+                donHang.SoDiemSuDung = diemThucDung;
+                donHang.SoTienGiamDiem = soTienGiamDiem;
+
+                // --- 4d: Tổng thực trả ---
+                decimal tongTienThucTra = Math.Max(afterDiscount, 0);
+                donHang.TongTienThucTra = tongTienThucTra;
+                donHang.TongTien = tongTienThucTra; // BUG FIX: Lưu giá đã giảm vào cột TongTien để UI hiển thị đúng
+
+                // ===== BƯỚC 4e: LOGIC ĐẶT CỌC (dựa trên TongTienThucTra) =====
+                if (tongTienThucTra >= 5000000)
+                {
+                    donHang.SoTienDatCoc = tongTienThucTra * 0.1m; 
                     donHang.TrangThai = "Chờ đặt cọc";
                     donHang.PhuongThucDatCoc = "Chuyển khoản (QR)";
                     donHang.GhiChu += " | Đơn hàng >= 5tr, bắt buộc cọc 10%.";
                 }
                 else
                 {
-                    // Under 5M -> Keep original choice (COD or Bank)
-                    // If COD was chosen, it remains "COD" and Status "Chờ xử lý"
-                    // If Bank was chosen, it remains "Chuyển khoản" and Status "Chờ thanh toán"
                     donHang.SoTienDatCoc = 0;
                 }
 

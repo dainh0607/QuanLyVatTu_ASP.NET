@@ -9,10 +9,14 @@ namespace QuanLyVatTu_ASP.Services.Implementations
     public class DonHangService : IDonHangService
     {
         private readonly AppDbContext _context;
+        private readonly IVoucherService _voucherService;
+        private readonly IDiemTichLuyService _diemTichLuyService;
 
-        public DonHangService(AppDbContext context)
+        public DonHangService(AppDbContext context, IVoucherService voucherService, IDiemTichLuyService diemTichLuyService)
         {
             _context = context;
+            _voucherService = voucherService;
+            _diemTichLuyService = diemTichLuyService;
         }
 
         public async Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, string status, int page, int pageSize)
@@ -172,6 +176,19 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                                   _context.VatTus.Update(vatTu);
                              }
                         }
+
+                        // [NEW] Hoàn Voucher + Điểm khi Hủy đơn
+                        await _voucherService.HandleOrderCancelVoucherAsync(id, currentStatus);
+                        await _diemTichLuyService.RefundPointsAsync(id);
+                    }
+                    else if (newStatus == "Đã giao")
+                    {
+                        if (newLevel < currentLevel) return false;
+
+                        // [NEW] Tích điểm + Xét nâng hạng khi giao thành công
+                        decimal finalAmount = entity.TongTienThucTra ?? entity.TongTien ?? 0;
+                        await _diemTichLuyService.EarnPointsAsync(entity.KhachHangId, id, finalAmount);
+                        await _diemTichLuyService.EvaluateTierUpgradeAsync(entity.KhachHangId);
                     }
                     else if (newLevel < currentLevel)
                     {
