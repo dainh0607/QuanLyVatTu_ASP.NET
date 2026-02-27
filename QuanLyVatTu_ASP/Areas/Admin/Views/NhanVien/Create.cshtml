@@ -43,9 +43,9 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="Số điện thoại..." required />
-                                    <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+                                     <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                                     <input asp-for="SoDienThoai" class="form-control form-control-lg rounded-3" placeholder="VD: 0901234567" pattern="^0\d{9}$" title="Số điện thoại phải đúng 10 số và bắt đầu bằng 0" maxlength="10" required />
+                                     <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
                                 </div>
                             </div>
 

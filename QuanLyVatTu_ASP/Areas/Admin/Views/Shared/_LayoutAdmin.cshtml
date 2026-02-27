@@ -116,6 +116,18 @@
                 </div>
             }
 
+            @* === Xếp hạng & Đánh giá: chỉ Quản trị === *@
+            @if (currentRole == "Quản trị")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DanhGia" ? "active" : "")"
+                       asp-area="Admin" asp-controller="DanhGia" asp-action="Index">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>Đánh giá &amp; Phản hồi</span>
+                    </a>
+                </div>
+            }
+
             @* === Thống kê: Quản trị, Kế toán === *@
             @if (currentRole == "Quản trị" || currentRole == "Kế toán")
             {

@@ -8,7 +8,7 @@ namespace QuanLyVatTu_ASP.Attributes
         // Định nghĩa controller nào vai trò nào được truy cập
         private static readonly Dictionary<string, string[]> RolePermissions = new()
         {
-            ["Quản trị"] = new[] { "DonHang", "HoaDon", "Voucher", "VatTu", "LoaiVatTu", "NhaCungCap", "KhachHang", "NhanVien", "ThongKe" },
+            ["Quản trị"] = new[] { "DonHang", "HoaDon", "Voucher", "VatTu", "LoaiVatTu", "NhaCungCap", "KhachHang", "NhanVien", "ThongKe", "DanhGia" },
             ["Nhân viên"] = new[] { "DonHang", "Voucher", "KhachHang" },
             ["Kế toán"] = new[] { "HoaDon", "ThongKe" },
             ["Thủ kho"] = new[] { "VatTu", "LoaiVatTu", "NhaCungCap" },

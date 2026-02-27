@@ -24,8 +24,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.NhanVien
         public string CCCD { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
-        [StringLength(15, ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải đúng 10 số và bắt đầu bằng 0")]
         [Display(Name = "Số điện thoại")]
         public string SoDienThoai { get; set; } = null!;
 

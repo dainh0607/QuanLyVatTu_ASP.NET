@@ -1,0 +1,164 @@
+@model IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.DanhGia>
+@{
+    ViewData["Title"] = "Quản lý Đánh giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <p class="text-muted mb-0">Xem và quản lý phản hồi của khách hàng về sản phẩm</p>
+    </div>
+    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <form asp-action="Index" method="get" class="d-flex justify-content-md-end align-items-center gap-2">
+            <label class="fw-bold mb-0">Lọc theo sao:</label>
+            <select name="filterSao" class="form-select w-auto form-select-sm" onchange="this.form.submit()">
+                <option value="">-- Tất cả --</option>
+                <!option value="5" @(ViewBag.FilterSao == 5 ? "selected" : "")>5 Sao</!option>
+                <!option value="4" @(ViewBag.FilterSao == 4 ? "selected" : "")>4 Sao</!option>
+                <!option value="3" @(ViewBag.FilterSao == 3 ? "selected" : "")>3 Sao</!option>
+                <!option value="2" @(ViewBag.FilterSao == 2 ? "selected" : "")>2 Sao</!option>
+                <!option value="1" @(ViewBag.FilterSao == 1 ? "selected" : "")>1 Sao</!option>
+            </select>
+        </form>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3 border-bottom-0">Khách hàng</th>
+                    <th class="border-bottom-0">Vật tư</th>
+                    <th class="text-center border-bottom-0">Số sao</th>
+                    <th width="30%" class="border-bottom-0">Bình luận & Phản hồi</th>
+                    <th class="border-bottom-0">Thời gian</th>
+                    <th class="text-center border-bottom-0">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-3 fw-medium">
+                                @(item.KhachHang?.HoTen ?? "Unknown")
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">@(item.VatTu?.TenVatTu ?? "Sản phẩm đã xóa")</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-warning text-nowrap">
+                                    @for(int i=1; i<=5; i++)
+                                    {
+                                        if (i <= item.SoSao) { <i class="fa-solid fa-star"></i> }
+                                        else { <i class="fa-regular fa-star"></i> }
+                                    }
+                                </span>
+                            </td>
+                            <td>
+                                <div><strong>Khách:</strong> <span class="fst-italic text-secondary">@(string.IsNullOrEmpty(item.BinhLuan) ? "(Không có bình luận)" : item.BinhLuan)</span></div>
+                                @if(!string.IsNullOrEmpty(item.PhanHoi))
+                                {
+                                    <div class="text-success mt-1 small bg-success bg-opacity-10 p-2 rounded">
+                                        <strong>Bạn (Admin):</strong> @item.PhanHoi
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <div class="small text-muted">@item.NgayDanhGia.ToString("dd/MM/yyyy HH:mm")</div>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#replyModal-@item.ID" title="Trả lời">
+                                    <i class="fa-solid fa-reply"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@item.ID" title="Xóa">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+
+                                <!-- Reply Modal -->
+                                <div class="modal fade text-start" id="replyModal-@item.ID" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content border-0 shadow">
+                                      <div class="modal-header bg-light">
+                                        <h5 class="modal-title">Trả lời phản hồi của @(item.KhachHang?.HoTen)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                       <form asp-area="Admin" asp-controller="DanhGia" asp-action="Reply" method="post">
+                                          <div class="modal-body">
+                                              <input type="hidden" name="id" value="@item.ID" />
+                                              <div class="mb-3 p-3 bg-light rounded text-dark">
+                                                  <strong>Đánh giá:</strong>
+                                                  <span class="text-warning">@item.SoSao <i class="fa-solid fa-star"></i></span><br/>
+                                                  <strong>Nội dung:</strong> "@(string.IsNullOrEmpty(item.BinhLuan) ? "..." : item.BinhLuan)"
+                                              </div>
+                                              <div class="mb-3">
+                                                  <label class="form-label fw-bold">Nội dung phản hồi <span class="text-danger">*</span></label>
+                                                  <textarea name="phanHoi" class="form-control" rows="4" required placeholder="Nhập câu trả lời cho đánh giá này...">@item.PhanHoi</textarea>
+                                              </div>
+                                          </div>
+                                          <div class="modal-footer border-top-0">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Gửi phản hồi</button>
+                                          </div>
+                                      </form>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade text-start" id="deleteModal-@item.ID" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content border-0 shadow">
+                                      <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title"><i class="fa-solid fa-triangle-exclamation me-2"></i> Xác nhận xóa đánh giá</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body fs-6">
+                                          Bạn có thực sự muốn xóa đánh giá của <strong>@(item.KhachHang?.HoTen)</strong> cho sản phẩm <strong class="text-primary">@(item.VatTu?.TenVatTu)</strong>?<br/>
+                                          <span class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</span>
+                                      </div>
+                                      <div class="modal-footer border-top-0">
+                                        <form asp-area="Admin" asp-controller="DanhGia" asp-action="Delete" asp-route-id="@item.ID" method="post">
+                                            <input type="hidden" name="id" value="@item.ID" />
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                                            <button type="submit" class="btn btn-danger d-flex align-items-center gap-2"><i class="fa-solid fa-trash-can"></i> Xác nhận xóa</button>
+                                        </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fa-regular fa-folder-open display-4 mb-3 d-block mx-auto text-secondary opacity-50"></i>
+                            <h5 class="fw-normal">Không có đánh giá nào phù hợp.</h5>
+                            <p class="mb-0 small">Thử chọn khoảng sao khác để lọc.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
