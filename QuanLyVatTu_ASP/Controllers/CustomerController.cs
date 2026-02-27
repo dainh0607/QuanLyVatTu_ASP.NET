@@ -748,7 +748,16 @@ namespace QuanLyVatTu_ASP.Controllers
                 return Json(new { success = false, message = "Không thể hủy đơn hàng ở trạng thái hiện tại. Vui lòng liên hệ CSKH." });
             }
 
-            var result = await _donHangService.UpdateAsync(orderId, "Đã hủy");
+            // Get ViewModel to update
+            var updateModel = await _donHangService.GetByIdForEditAsync(orderId);
+            if (updateModel == null) 
+            {
+                 return Json(new { success = false, message = "Không tìm thấy dữ liệu để hủy đơn." });
+            }
+
+            updateModel.TrangThai = "Đã hủy";
+            var result = await _donHangService.UpdateAsync(orderId, updateModel);
+            
             if (result)
             {
                 return Json(new { success = true, message = "Đã hủy đơn hàng thành công!" });
