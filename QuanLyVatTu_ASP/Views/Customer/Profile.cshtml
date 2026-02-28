@@ -111,6 +111,14 @@
                             <i class="fas fa-wallet"></i>
                             Tài chính
                         </div>
+                        <a href="#voucher" class="nav-item" data-tab="voucher">
+                            <i class="fas fa-ticket-alt"></i>
+                            Ví Voucher
+                        </a>
+                        <a href="#points" class="nav-item" data-tab="points">
+                            <i class="fas fa-coins"></i>
+                            Điểm & Hạng
+                        </a>
                         <a href="#debt" class="nav-item" data-tab="debt">
                             <i class="fas fa-money-bill-wave"></i>
                             Công nợ
@@ -444,6 +452,12 @@
                                                     <button onclick="editOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #f59e0b; border-radius: 8px; color: #92400e; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                                         <i class="fas fa-edit"></i> Chỉnh sửa
                                                     </button>
+                                                    @if (statusLower == "chờ xác nhận" || statusLower == "chờ đặt cọc" || statusLower == "chờ thanh toán" || statusLower == "đã xác nhận")
+                                                    {
+                                                        <button onclick="cancelUserOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #ef4444; border-radius: 8px; color: #b91c1c; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-times"></i> Hủy đơn
+                                                        </button>
+                                                    }
                                                 }
                                                 @if (pReorderStatuses.Contains(statusLower))
                                                 {
@@ -623,6 +637,115 @@
                         <div class="card-body" style="text-align: center; padding: 60px;">
                             <i class="fas fa-tags" style="font-size: 4rem; color: #e5e7eb;"></i>
                             <p style="color: #6b7280; margin-top: 16px;">Chưa có ưu đãi nào</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: VÍ VOUCHER -->
+                <section class="tab-panel" id="tab-voucher" style="display: none;">
+                    <div class="content-card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 class="card-title">🎟️ Ví Voucher của tôi</h2>
+                                <p class="card-subtitle">Quản lý và sử dụng mã giảm giá</p>
+                            </div>
+                            <button class="btn-primary" onclick="loadAvailableVouchers()" style="padding: 8px 16px; font-size: 0.9rem;">
+                                <i class="fas fa-plus"></i> Lưu mã mới
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="walletLoading" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <p style="color: #6b7280; margin-top: 12px;">Đang tải ví voucher...</p>
+                            </div>
+                            <div id="walletContent" style="display: none;">
+                                <div id="voucherGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;"></div>
+                                <div id="noVoucherMsg" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
+                                    <i class="fas fa-ticket-alt" style="font-size: 3rem; color: #e5e7eb; margin-bottom: 12px;"></i>
+                                    <p>Bạn chưa có mã giảm giá nào. Hãy lưu mã từ danh sách voucher!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Vouchers (hidden by default, shown when click "Lưu mã mới") -->
+                    <div id="availableVouchersSection" class="content-card" style="margin-top: 24px; display: none;">
+                        <div class="card-header">
+                            <div>
+                                <h2 class="card-title">📋 Mã giảm giá khả dụng</h2>
+                                <p class="card-subtitle">Lưu mã vào ví để sử dụng khi checkout</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="availableVoucherGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: ĐIỂM & HẠNG THÀNH VIÊN -->
+                <section class="tab-panel" id="tab-points" style="display: none;">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h2 class="card-title">⭐ Điểm tích lũy & Hạng thành viên</h2>
+                            <p class="card-subtitle">Theo dõi điểm thưởng và cấp bậc của bạn</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="pointsLoading" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <p style="color: #6b7280; margin-top: 12px;">Đang tải thông tin điểm...</p>
+                            </div>
+                            <div id="pointsContent" style="display: none;">
+                                <!-- Points & Tier Summary Cards -->
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px;">
+                                        <div style="font-size: 0.85rem; opacity: 0.85;">Điểm hiện tại</div>
+                                        <div id="currentPoints" style="font-size: 1.8rem; font-weight: 700; margin-top: 4px;">0</div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">1 điểm = 1₫</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px;">
+                                        <div style="font-size: 0.85rem; opacity: 0.85;">Hạng thành viên</div>
+                                        <div id="currentTier" style="font-size: 1.8rem; font-weight: 700; margin-top: 4px;">—</div>
+                                        <div id="tierDiscount" style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">0% chiết khấu</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 12px;">
+                                        <div style="font-size: 0.85rem; opacity: 0.85;">Chi tiêu 365 ngày</div>
+                                        <div id="totalSpent365" style="font-size: 1.5rem; font-weight: 700; margin-top: 4px;">0₫</div>
+                                        <div id="tierExpiry" style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">—</div>
+                                    </div>
+                                </div>
+
+                                <!-- Tier Progress -->
+                                <div id="tierProgressSection" style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e5e7eb;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-weight: 600; color: #374151;">Tiến trình lên hạng</span>
+                                        <span id="nextTierLabel" style="font-weight: 600; color: #6366f1;"></span>
+                                    </div>
+                                    <div style="height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 8px;">
+                                        <div id="tierProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.5s ease;"></div>
+                                    </div>
+                                    <div id="tierProgressText" style="font-size: 0.85rem; color: #6b7280;"></div>
+                                </div>
+
+                                <!-- Points History Table -->
+                                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: #111827;">📒 Lịch sử giao dịch điểm</h3>
+                                <div class="table-responsive">
+                                    <table class="table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: #f3f4f6;">
+                                                <th style="padding: 12px; text-align: left;">Loại</th>
+                                                <th style="padding: 12px; text-align: center;">Số điểm</th>
+                                                <th style="padding: 12px; text-align: center;">Đơn hàng</th>
+                                                <th style="padding: 12px; text-align: right;">Thời gian</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pointsTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <div id="noPointsMsg" style="display: none; text-align: center; padding: 30px; color: #6b7280;">
+                                    <i class="fas fa-coins" style="font-size: 3rem; color: #e5e7eb; margin-bottom: 12px;"></i>
+                                    <p>Chưa có giao dịch điểm nào.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1582,6 +1705,268 @@
             setTimeout(loadDebtSummary, 100);
         });
     });
+
+    // Hook into tab switching for Voucher
+    document.querySelectorAll('[data-tab="voucher"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadVoucherWallet, 100);
+        });
+    });
+
+    // Hook into tab switching for Points
+    document.querySelectorAll('[data-tab="points"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadPointsHistory, 100);
+        });
+    });
+
+    // ==========================================
+    // VOUCHER WALLET FUNCTIONS
+    // ==========================================
+    function loadVoucherWallet() {
+        document.getElementById('walletLoading').style.display = 'block';
+        document.getElementById('walletContent').style.display = 'none';
+
+        fetch('/Customer/GetVoucherWallet')
+            .then(r => r.json())
+            .then(res => {
+                document.getElementById('walletLoading').style.display = 'none';
+                document.getElementById('walletContent').style.display = 'block';
+
+                if (!res.success || !res.data || res.data.length === 0) {
+                    document.getElementById('noVoucherMsg').style.display = 'block';
+                    document.getElementById('voucherGrid').innerHTML = '';
+                    return;
+                }
+
+                document.getElementById('noVoucherMsg').style.display = 'none';
+                let html = '';
+                res.data.forEach(v => {
+                    const isDisabled = v.trangThaiTrongVi !== 'AVAILABLE' || v.daHetLuot;
+                    const opacity = isDisabled ? 'opacity: 0.5;' : '';
+                    const statusBadge = v.sapHetHan
+                        ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⏰ Sắp hết hạn</span>'
+                        : '';
+                    const statusText = v.trangThaiTrongVi === 'AVAILABLE' ? '✅ Khả dụng'
+                        : v.trangThaiTrongVi === 'USED' ? '🔒 Đã dùng'
+                        : '⏳ Hết hạn';
+
+                    const discountText = v.loaiGiamGia === 'PERCENT'
+                        ? `Giảm ${v.giaTriGiam}%` + (v.soTienGiamToiDa ? ` (tối đa ${Number(v.soTienGiamToiDa).toLocaleString('vi-VN')}₫)` : '')
+                        : `Giảm ${Number(v.giaTriGiam).toLocaleString('vi-VN')}₫`;
+
+                    html += `
+                        <div style="border: 1.5px solid ${isDisabled ? '#e5e7eb' : '#6366f1'}; border-radius: 12px; padding: 16px; ${opacity} transition: all 0.2s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 700; color: #6366f1; font-size: 1rem;">${v.maVoucher}</span>
+                                ${statusBadge}
+                            </div>
+                            <div style="font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 6px;">${discountText}</div>
+                            <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 4px;">${v.moTa || ''}</div>
+                            <div style="font-size: 0.8rem; color: #9ca3af;">Đơn tối thiểu: ${Number(v.giaTriDonHangToiThieu).toLocaleString('vi-VN')}₫</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <span style="font-size: 0.8rem; color: ${isDisabled ? '#ef4444' : '#10b981'}; font-weight: 500;">${statusText}</span>
+                                <span style="font-size: 0.75rem; color: #9ca3af;">HSD: ${v.thoiGianKetThuc}</span>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('voucherGrid').innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById('walletLoading').style.display = 'none';
+                document.getElementById('walletContent').style.display = 'block';
+                document.getElementById('noVoucherMsg').style.display = 'block';
+            });
+    }
+
+    function loadAvailableVouchers() {
+        const section = document.getElementById('availableVouchersSection');
+        section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        if (section.style.display === 'none') return;
+
+        fetch('/Customer/GetAvailableVouchers')
+            .then(r => r.json())
+            .then(res => {
+                if (!res.success || !res.data || res.data.length === 0) {
+                    document.getElementById('availableVoucherGrid').innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">Không có mã giảm giá nào khả dụng.</p>';
+                    return;
+                }
+
+                let html = '';
+                res.data.forEach(v => {
+                    const discountText = v.loaiGiamGia === 'PERCENT'
+                        ? `Giảm ${v.giaTriGiam}%` + (v.soTienGiamToiDa ? ` (tối đa ${Number(v.soTienGiamToiDa).toLocaleString('vi-VN')}₫)` : '')
+                        : `Giảm ${Number(v.giaTriGiam).toLocaleString('vi-VN')}₫`;
+
+                    const btnHtml = v.daLuu
+                        ? '<button disabled style="padding: 6px 14px; background: #e5e7eb; border: none; border-radius: 8px; color: #6b7280; font-size: 0.85rem; cursor: not-allowed;">✓ Đã lưu</button>'
+                        : `<button onclick="saveVoucher(${v.id})" style="padding: 6px 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Lưu mã</button>`;
+
+                    html += `
+                        <div style="border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 700; color: #6366f1;">${v.maVoucher}</span>
+                                ${v.sapHetHan ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">⏰ Sắp hết hạn</span>' : ''}
+                            </div>
+                            <div style="font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 6px;">${discountText}</div>
+                            <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 8px;">Đơn tối thiểu: ${Number(v.giaTriDonHangToiThieu).toLocaleString('vi-VN')}₫ | Còn ${v.tongSoLuong - v.soLuongDaDung} lượt</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.75rem; color: #9ca3af;">HSD: ${v.thoiGianKetThuc}</span>
+                                ${btnHtml}
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('availableVoucherGrid').innerHTML = html;
+            });
+    }
+
+    function saveVoucher(voucherId) {
+        fetch('/Customer/SaveVoucher', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(voucherId)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                Swal.fire({ icon: 'success', title: 'Thành công!', text: res.message, timer: 2000, showConfirmButton: false });
+                loadVoucherWallet();
+                loadAvailableVouchers();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message });
+            }
+        });
+    }
+
+    function editOrder(orderId) {
+        if (!confirm('Hệ thống sẽ chuyển lại các sản phẩm vào giỏ hàng và thiết lập lại đơn này. Bạn có chắc chắn muốn sửa?')) {
+            return;
+        }
+        
+        // Disable button visually
+        document.body.style.cursor = 'wait';
+        
+        fetch('/Customer/EditOrder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderId)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.body.style.cursor = 'default';
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/GioHang';
+                });
+            } else {
+                Swal.fire('Lỗi', data.message, 'error');
+            }
+        });
+    }
+
+    function cancelUserOrder(orderId) {
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Quá trình này không thể hoàn tác.')) {
+            return;
+        }
+
+        fetch('/Customer/CancelOrder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderId)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire('Lỗi', data.message, 'error');
+            }
+        });
+    }
+
+    // ==========================================
+    // POINTS & TIER FUNCTIONS
+    // ==========================================
+    function loadPointsHistory() {
+        document.getElementById('pointsLoading').style.display = 'block';
+        document.getElementById('pointsContent').style.display = 'none';
+
+        fetch('/Customer/GetPointsHistory')
+            .then(r => r.json())
+            .then(res => {
+                document.getElementById('pointsLoading').style.display = 'none';
+                document.getElementById('pointsContent').style.display = 'block';
+
+                if (!res.success) return;
+
+                // Summary cards
+                document.getElementById('currentPoints').textContent = Number(res.diemHienTai).toLocaleString('vi-VN');
+                document.getElementById('currentTier').textContent = res.hangHienTai;
+                document.getElementById('tierDiscount').textContent = res.phanTramChietKhau + '% chiết khấu';
+                document.getElementById('totalSpent365').textContent = Number(res.tongChiTieu365Ngay).toLocaleString('vi-VN') + '₫';
+                document.getElementById('tierExpiry').textContent = res.ngayHetHanHang ? 'HH: ' + res.ngayHetHanHang : '—';
+
+                // Tier progress
+                if (res.hangTiepTheo) {
+                    document.getElementById('nextTierLabel').textContent = '→ ' + res.hangTiepTheo;
+                    const progress = Math.min(100, (res.tongChiTieu365Ngay / res.chiTieuCanThiet) * 100);
+                    document.getElementById('tierProgressBar').style.width = progress + '%';
+                    const remaining = Math.max(0, res.chiTieuCanThiet - res.tongChiTieu365Ngay);
+                    document.getElementById('tierProgressText').textContent = `Cần thêm ${Number(remaining).toLocaleString('vi-VN')}₫ để lên hạng ${res.hangTiepTheo}`;
+                } else {
+                    document.getElementById('tierProgressSection').style.display = 'none';
+                }
+
+                // History table
+                if (!res.history || res.history.length === 0) {
+                    document.getElementById('noPointsMsg').style.display = 'block';
+                    document.getElementById('pointsTableBody').innerHTML = '';
+                    return;
+                }
+
+                document.getElementById('noPointsMsg').style.display = 'none';
+                const typeLabels = {
+                    'EARN': { text: '+ Tích điểm', color: '#10b981', prefix: '+' },
+                    'REDEEM': { text: '- Tiêu điểm', color: '#ef4444', prefix: '-' },
+                    'REFUND': { text: '+ Hoàn điểm', color: '#3b82f6', prefix: '+' },
+                    'CLAWBACK': { text: '- Thu hồi', color: '#f59e0b', prefix: '-' }
+                };
+
+                let rows = '';
+                res.history.forEach(h => {
+                    const t = typeLabels[h.loaiGiaoDich] || { text: h.loaiGiaoDich, color: '#6b7280', prefix: '' };
+                    rows += `
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 12px;">
+                                <span style="background: ${t.color}20; color: ${t.color}; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">${t.text}</span>
+                            </td>
+                            <td style="padding: 12px; text-align: center; font-weight: 600; color: ${t.color};">${t.prefix}${Number(h.soDiem).toLocaleString('vi-VN')}</td>
+                            <td style="padding: 12px; text-align: center; color: #6b7280;">#${h.maDonHang}</td>
+                            <td style="padding: 12px; text-align: right; color: #9ca3af; font-size: 0.85rem;">${h.ngayTao}</td>
+                        </tr>`;
+                });
+                document.getElementById('pointsTableBody').innerHTML = rows;
+            })
+            .catch(() => {
+                document.getElementById('pointsLoading').style.display = 'none';
+                document.getElementById('pointsContent').style.display = 'block';
+                document.getElementById('noPointsMsg').style.display = 'block';
+            });
+    }
 </script>
 
 @functions {

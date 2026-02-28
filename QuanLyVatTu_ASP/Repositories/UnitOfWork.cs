@@ -20,6 +20,11 @@ namespace QuanLyVatTu_ASP.Repositories
         public IYeuThichRepository YeuThichRepository { get; private set; }
         public IGioHangRepository GioHangRepository { get; private set; }
         public IChiTietGioHangRepository ChiTietGioHangRepository { get; private set; }
+        public IVoucherRepository VoucherRepository { get; private set; }
+        public IViVoucherRepository ViVoucherRepository { get; private set; }
+        public ILichSuSuDungVoucherRepository LichSuSuDungVoucherRepository { get; private set; }
+        public ILichSuTichDiemRepository LichSuTichDiemRepository { get; private set; }
+        public IHangThanhVienRepository HangThanhVienRepository { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -38,6 +43,11 @@ namespace QuanLyVatTu_ASP.Repositories
             YeuThichRepository = new YeuThichRepository(_context);
             GioHangRepository = new GioHangRepository(_context);
             ChiTietGioHangRepository = new ChiTietGioHangRepository(_context);
+            VoucherRepository = new VoucherRepository(_context);
+            ViVoucherRepository = new ViVoucherRepository(_context);
+            LichSuSuDungVoucherRepository = new LichSuSuDungVoucherRepository(_context);
+            LichSuTichDiemRepository = new LichSuTichDiemRepository(_context);
+            HangThanhVienRepository = new HangThanhVienRepository(_context);
         }
 
         public int Save()

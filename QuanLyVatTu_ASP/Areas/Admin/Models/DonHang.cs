@@ -46,5 +46,34 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
         public virtual ICollection<LichSuSuDungVoucher> LichSuSuDungVouchers { get; set; } = new List<LichSuSuDungVoucher>();
         public virtual ICollection<LichSuTichDiem> LichSuTichDiems { get; set; } = new List<LichSuTichDiem>();
+
+        // === Các trường mới cho Checkout breakdown ===
+
+        /// <summary>Tiền giảm từ hạng thành viên</summary>
+        [Column("SoTienChietKhauHang", TypeName = "decimal(18,2)")]
+        public decimal? SoTienChietKhauHang { get; set; }
+
+        /// <summary>Tiền giảm từ voucher</summary>
+        [Column("SoTienGiamVoucher", TypeName = "decimal(18,2)")]
+        public decimal? SoTienGiamVoucher { get; set; }
+
+        /// <summary>Số điểm đã dùng</summary>
+        [Column("SoDiemSuDung", TypeName = "int")]
+        public int? SoDiemSuDung { get; set; }
+
+        /// <summary>Tiền giảm từ điểm (1 điểm = 1 VNĐ)</summary>
+        [Column("SoTienGiamDiem", TypeName = "decimal(18,2)")]
+        public decimal? SoTienGiamDiem { get; set; }
+
+        /// <summary>Tổng tiền thực trả cuối cùng (sau tất cả giảm giá)</summary>
+        [Column("TongTienThucTra", TypeName = "decimal(18,2)")]
+        public decimal? TongTienThucTra { get; set; }
+
+        /// <summary>FK đến Voucher đã áp dụng</summary>
+        [Column("MaVoucherId")]
+        public int? MaVoucherId { get; set; }
+
+        [ForeignKey("MaVoucherId")]
+        public virtual Voucher? VoucherApDung { get; set; }
     }
 }

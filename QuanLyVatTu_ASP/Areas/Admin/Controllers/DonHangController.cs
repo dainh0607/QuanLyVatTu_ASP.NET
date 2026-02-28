@@ -12,11 +12,15 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     {
         private readonly IDonHangService _donHangService;
         private readonly INhanVienService _nhanVienService;
+        private readonly IVoucherService _voucherService;
+        private readonly IDiemTichLuyService _diemTichLuyService;
 
-        public DonHangController(IDonHangService donHangService, INhanVienService nhanVienService)
+        public DonHangController(IDonHangService donHangService, INhanVienService nhanVienService, IVoucherService voucherService, IDiemTichLuyService diemTichLuyService)
         {
             _donHangService = donHangService;
             _nhanVienService = nhanVienService;
+            _voucherService = voucherService;
+            _diemTichLuyService = diemTichLuyService;
         }
 
         private async Task LoadDropdownData(int? selectedKhachHangId = null, int? selectedNhanVienId = null)

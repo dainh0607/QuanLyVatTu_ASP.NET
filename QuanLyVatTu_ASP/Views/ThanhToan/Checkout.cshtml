@@ -317,7 +317,106 @@
                         <!-- 5. Deposit Options REMOVED as per user request -->
                         <!-- Logic for high value orders handles deposit automatically in controller -->
 
-                        <!-- 6. Notes -->
+                        <!-- 5. VOUCHER SELECTOR (Kịch bản D) -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-solid fa-ticket"></i>
+                                </div>
+                                <h2 class="section-title">Mã giảm giá</h2>
+                            </div>
+                            @{
+                                var vouchers = ViewBag.AvailableVouchers as List<QuanLyVatTu_ASP.Areas.Admin.Models.ViVoucherKhachHang> ?? new List<QuanLyVatTu_ASP.Areas.Admin.Models.ViVoucherKhachHang>();
+                            }
+                            @if (vouchers.Any())
+                            {
+                                <div class="voucher-selector" style="display: flex; flex-direction: column; gap: 10px;">
+                                    @foreach (var v in vouchers)
+                                    {
+                                        var vg = v.VoucherGoc;
+                                        if (vg == null) continue;
+                                        var isExpiringSoon = (vg.ThoiGianKetThuc - DateTime.Now).TotalDays <= 3;
+                                        var isOutOfUsage = vg.SoLuongDaDung >= vg.TongSoLuong;
+                                        var isDisabled = isOutOfUsage || vg.ThoiGianKetThuc <= DateTime.Now;
+                                        var minOrderMet = total >= vg.GiaTriDonHangToiThieu;
+                                        var finalDisabled = isDisabled || !minOrderMet;
+
+                                        var discountText = vg.LoaiGiamGia == "PERCENT"
+                                            ? $"Giảm {vg.GiaTriGiam}%" + (vg.SoTienGiamToiDa.HasValue ? $" (tối đa {vg.SoTienGiamToiDa.Value:N0}₫)" : "")
+                                            : $"Giảm {vg.GiaTriGiam:N0}₫";
+
+                                        <label class="custom-radio-card" style="@(finalDisabled ? "opacity: 0.45; pointer-events: none;" : "")">
+                                            <input type="radio" name="selectedVoucherId" value="@v.MaVoucherGoc"
+                                                   data-loai="@vg.LoaiGiamGia" data-giatri="@vg.GiaTriGiam"
+                                                   data-max="@(vg.SoTienGiamToiDa?.ToString() ?? "0")"
+                                                   data-min-order="@vg.GiaTriDonHangToiThieu"
+                                                   @(finalDisabled ? "disabled" : "")>
+                                            <div class="radio-content">
+                                                <div class="radio-circle"></div>
+                                                <div class="radio-info">
+                                                    <span class="radio-title">
+                                                        <strong style="color: #6366f1;">@vg.MaVoucher</strong> — @discountText
+                                                        @if (isExpiringSoon)
+                                                        {
+                                                            <span style="background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-left: 6px;">⏰ Sắp hết hạn</span>
+                                                        }
+                                                    </span>
+                                                    <span class="radio-desc">
+                                                        @if (isOutOfUsage)
+                                                        {
+                                                            <span style="color: #ef4444; font-weight: 600;">🚫 Đã hết lượt sử dụng</span>
+                                                        }
+                                                        else if (!minOrderMet)
+                                                        {
+                                                            <span style="color: #f59e0b;">Đơn tối thiểu @vg.GiaTriDonHangToiThieu.ToString("N0")₫</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>Đơn tối thiểu @vg.GiaTriDonHangToiThieu.ToString("N0")₫ | HSD: @vg.ThoiGianKetThuc.ToString("dd/MM/yyyy")</span>
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    }
+                                    <!-- Không dùng mã -->
+                                    <label class="custom-radio-card">
+                                        <input type="radio" name="selectedVoucherId" value="0" checked>
+                                        <div class="radio-content">
+                                            <div class="radio-circle"></div>
+                                            <div class="radio-info">
+                                                <span class="radio-title">Không sử dụng mã giảm giá</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            }
+                            else
+                            {
+                                <p style="color: #9ca3af; font-size: 0.9rem; margin: 8px 0;"><i class="fas fa-info-circle"></i> Bạn chưa có mã giảm giá nào. <a href="/Customer/Profile#voucher" style="color: #6366f1;">Lưu mã tại đây</a></p>
+                            }
+                        </div>
+
+                        <!-- 6. ĐIỂM TÍCH LŨY (Script Section 4) -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                                <h2 class="section-title">Sử dụng điểm tích lũy</h2>
+                                <label class="toggle-switch ms-auto">
+                                    <input type="checkbox" name="useDiem" value="true" id="pointsToggle" @(((int)(ViewBag.DiemHienTai ?? 0)) <= 0 ? "disabled" : "")>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div style="font-size: 0.9rem; color: #6b7280; margin-top: 4px;">
+                                Số dư: <strong style="color: @(((int)(ViewBag.DiemHienTai ?? 0)) < 0 ? "#ef4444" : "#10b981");">@(((int)(ViewBag.DiemHienTai ?? 0)).ToString("N0")) điểm</strong>
+                                <span style="font-size: 0.8rem; color: #9ca3af;"> (1 điểm = 1₫)</span>
+                            </div>
+                            <input type="hidden" name="soDiemSuDung" id="soDiemSuDung" value="0" />
+                        </div>
+
+                        <!-- 7. Notes -->
                         <div class="form-section">
                             <div class="section-header">
                                 <div class="section-icon">
@@ -384,19 +483,46 @@
                                 }
                             </div>
                             
-                            <div class="summary-totals">
+                            <div class="summary-totals" id="checkoutBreakdown">
+                                <!-- Tổng gốc -->
                                 <div class="total-row">
-                                    <span>Tạm tính</span>
-                                    <span style="font-weight: 600; color: #111827;">@total.ToString("N0")₫</span>
+                                    <span>Tổng tiền hàng</span>
+                                    <span style="font-weight: 600; color: #111827;" id="rowTongGoc">@total.ToString("N0")₫</span>
                                 </div>
+                                <!-- Chiết khấu hạng (Script Section 4 Step 2) -->
+                                <div class="total-row" id="rowChietKhauHang" style="@(((decimal)(ViewBag.TierDiscountPercent ?? 0m)) == 0 ? "display:none;" : "")">
+                                    <span style="color: #10b981;">🏅 CK Hạng @ViewBag.TierName (@ViewBag.TierDiscountPercent%)</span>
+                                    <span style="font-weight: 600; color: #10b981;" id="valChietKhauHang">-0₫</span>
+                                </div>
+                                <!-- Voucher (Script Section 4 Step 3) -->
+                                <div class="total-row" id="rowVoucher" style="display:none;">
+                                    <span style="color: #6366f1;">🎟️ Voucher</span>
+                                    <span style="font-weight: 600; color: #6366f1;" id="valVoucher">-0₫</span>
+                                </div>
+                                <!-- Phí vận chuyển -->
                                 <div class="total-row">
                                     <span>Phí vận chuyển</span>
                                     <span id="shippingFee" style="font-weight: 600;">47.000₫</span>
                                 </div>
-                                
+                                <!-- Tạm tính -->
+                                <div class="total-row" style="border-top: 1px dashed #e5e7eb; padding-top: 8px; margin-top: 4px;">
+                                    <span style="font-weight: 600;">Tạm tính</span>
+                                    <span style="font-weight: 600;" id="valTamTinh">@total.ToString("N0")₫</span>
+                                </div>
+                                <!-- Điểm quy đổi (Script Section 4 Step 5) -->
+                                <div class="total-row" id="rowDiem" style="display:none;">
+                                    <span style="color: #f59e0b;">⭐ Điểm tích lũy</span>
+                                    <span style="font-weight: 600; color: #f59e0b;" id="valDiem">-0₫</span>
+                                </div>
+                                <!-- Tổng thực trả -->
                                 <div class="total-row final">
-                                    <span>Tổng cộng</span>
+                                    <span>Tổng thanh toán</span>
                                     <span class="value" id="finalTotal">@((total + 47000).ToString("N0"))₫</span>
+                                </div>
+                                <!-- Điểm sẽ nhận -->
+                                <div class="total-row" style="border-top: 1px dashed #e5e7eb; padding-top: 8px;">
+                                    <span style="color: #10b981; font-size: 0.85rem;">✨ Điểm sẽ nhận (1%)</span>
+                                    <span style="font-weight: 600; color: #10b981; font-size: 0.85rem;" id="valDiemNhan">+0 điểm</span>
                                 </div>
                             </div>
                             
@@ -431,48 +557,47 @@
     <script src="~/user/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Data from server
-        // Data from server
         const totalAmount = @Json.Serialize(total);
         const depositThreshold = 5000000;
+        const tierDiscountPercent = @Json.Serialize((decimal)(ViewBag.TierDiscountPercent ?? 0m));
+        const diemHienTai = @Json.Serialize((int)(ViewBag.DiemHienTai ?? 0));
         
         // Shipping Fee Logic
         document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                updateTotal();
+                recalculateCheckout();
             });
         });
+
+        // Voucher selection change
+        document.querySelectorAll('input[name="selectedVoucherId"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                recalculateCheckout();
+            });
+        });
+
+        // Points toggle change
+        const pointsToggle = document.getElementById('pointsToggle');
+        if (pointsToggle) {
+            pointsToggle.addEventListener('change', function() {
+                recalculateCheckout();
+            });
+        }
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             handleDepositLogic();
-            updateTotal();
+            recalculateCheckout();
         });
 
         function handleDepositLogic() {
             const isHighValue = totalAmount >= depositThreshold;
-            const pmRadios = document.querySelectorAll('input[name="paymentMethod"]');
-            const depositSection = document.querySelector('.deposit-section');
-            const depositOptions = document.querySelector('.deposit-options');
             const depositInfoBox = document.querySelector('.deposit-info-box');
             
             if (isHighValue) {
-                // 1. Force Bank Transfer
-                // Find and check 'bank' option
                 const bankRadio = document.querySelector('input[name="paymentMethod"][value="bank"]');
                 if(bankRadio) bankRadio.checked = true;
-                
-                // Disable 'cod' option
-                const codRadio = document.querySelector('input[name="paymentMethod"][value="cod"]');
-                if(codRadio) {
-                    // codRadio.disabled = true; // Enabled COD for all
-                    // codRadio.closest('.custom-radio-card').style.opacity = '0.5';
-                    // codRadio.closest('.custom-radio-card').title = "Đơn hàng trên 5 triệu bắt buộc cọc qua chuyển khoản";
-                }
 
-                // 2. Hide Deposit Options (0, 30, 50, 100)
-                // Removed from UI
-
-                // 3. Show Mandatory Deposit Message
                 if(depositInfoBox) {
                      depositInfoBox.innerHTML = `
                         <div class="alert alert-warning border-warning d-flex align-items-center mb-0">
@@ -486,20 +611,61 @@
                     `;
                 }
                 
-                // Update Button Text
                 const btn = document.querySelector('.btn-place-order span');
                 if(btn) btn.textContent = "Đặt hàng & Thanh toán cọc";
             }
         }
 
-        function updateTotal() {
-            const shippingMethod = document.querySelector('input[name="shippingMethod"]:checked').value;
+        // === CHECKOUT RECALCULATION (Script Section 4 Priority) ===
+        // Tổng gốc → Chiết khấu hạng → Voucher → Phí VC → Tạm tính → Điểm → Thực trả
+        function recalculateCheckout() {
+            // Step 1: Tổng gốc
+            let tongGoc = totalAmount;
+            document.getElementById('rowTongGoc').textContent = formatCurrency(tongGoc) + '₫';
+
+            // Step 2: Chiết khấu hạng thành viên
+            let chietKhauHang = 0;
+            if (tierDiscountPercent > 0) {
+                chietKhauHang = Math.floor(tongGoc * tierDiscountPercent / 100);
+                document.getElementById('rowChietKhauHang').style.display = '';
+                document.getElementById('valChietKhauHang').textContent = '-' + formatCurrency(chietKhauHang) + '₫';
+            }
+
+            let afterTier = tongGoc - chietKhauHang;
+
+            // Step 3: Voucher
+            let voucherDiscount = 0;
+            const selectedVoucher = document.querySelector('input[name="selectedVoucherId"]:checked');
+            if (selectedVoucher && selectedVoucher.value !== '0') {
+                const loai = selectedVoucher.getAttribute('data-loai');
+                const giatri = parseFloat(selectedVoucher.getAttribute('data-giatri'));
+                const maxDiscount = parseFloat(selectedVoucher.getAttribute('data-max')) || 0;
+
+                if (loai === 'PERCENT') {
+                    voucherDiscount = Math.floor(afterTier * giatri / 100);
+                    if (maxDiscount > 0 && voucherDiscount > maxDiscount) {
+                        voucherDiscount = maxDiscount;
+                    }
+                } else {
+                    voucherDiscount = giatri;
+                }
+                // Không cho giảm quá số tiền sau CK hạng
+                if (voucherDiscount > afterTier) voucherDiscount = afterTier;
+
+                document.getElementById('rowVoucher').style.display = '';
+                document.getElementById('valVoucher').textContent = '-' + formatCurrency(voucherDiscount) + '₫';
+            } else {
+                document.getElementById('rowVoucher').style.display = 'none';
+            }
+
+            let afterVoucher = afterTier - voucherDiscount;
+
+            // Step 4: Phí vận chuyển
+            const shippingMethod = document.querySelector('input[name="shippingMethod"]:checked')?.value;
             const shippingFeeEl = document.getElementById('shippingFee');
-            const finalTotalEl = document.getElementById('finalTotal');
-            
             let shippingFee = 0;
             if (shippingMethod === 'delivery' || shippingMethod === 'delivery_unload') {
-                shippingFee = 47000; // Mock fee, adjust as needed
+                shippingFee = 47000;
                 shippingFeeEl.textContent = '47.000₫';
                 shippingFeeEl.classList.remove('text-success');
                 shippingFeeEl.style.color = '#111827';
@@ -508,18 +674,43 @@
                 shippingFeeEl.textContent = 'Miễn phí';
                 shippingFeeEl.classList.add('text-success');
             }
-            
-            // Check high value logic for display
-             const isHighValue = totalAmount >= depositThreshold;
-             if(isHighValue) {
-                  // Show total but imply deposit is separate step
-                  finalTotalEl.innerHTML = `
-                    <div>${formatCurrency(totalAmount + shippingFee)}₫</div>
-                    <div style="font-size: 0.8rem; color: #ef4444; font-weight: normal;">(Cọc trước: ${formatCurrency(totalAmount * 0.1)}₫)</div>
-                  `;
-             } else {
-                  finalTotalEl.textContent = formatCurrency(totalAmount + shippingFee) + '₫';
-             }
+
+            // Tạm tính (sau CK hạng + voucher + shipping)
+            let tamTinh = afterVoucher + shippingFee;
+            document.getElementById('valTamTinh').textContent = formatCurrency(tamTinh) + '₫';
+
+            // Step 5: Điểm tích lũy
+            let diemUsed = 0;
+            const ptToggle = document.getElementById('pointsToggle');
+            if (ptToggle && ptToggle.checked && diemHienTai > 0) {
+                // Số điểm tối đa = min(số dư, tạm tính) — Script: "không vượt quá tổng tiền"
+                diemUsed = Math.min(diemHienTai, tamTinh);
+                document.getElementById('rowDiem').style.display = '';
+                document.getElementById('valDiem').textContent = '-' + formatCurrency(diemUsed) + '₫';
+                document.getElementById('soDiemSuDung').value = diemUsed;
+            } else {
+                document.getElementById('rowDiem').style.display = 'none';
+                document.getElementById('soDiemSuDung').value = 0;
+            }
+
+            // Step 6: Tổng thực trả (Final)
+            let thucTra = tamTinh - diemUsed;
+            if (thucTra < 0) thucTra = 0;
+
+            const finalTotalEl = document.getElementById('finalTotal');
+            const isHighValue = thucTra >= depositThreshold;
+            if (isHighValue) {
+                finalTotalEl.innerHTML = `
+                    <div>${formatCurrency(thucTra)}₫</div>
+                    <div style="font-size: 0.8rem; color: #ef4444; font-weight: normal;">(Cọc trước: ${formatCurrency(thucTra * 0.1)}₫)</div>
+                `;
+            } else {
+                finalTotalEl.textContent = formatCurrency(thucTra) + '₫';
+            }
+
+            // Điểm sẽ nhận (1% trên thực trả — Script: "con số dùng để Tích điểm cho đơn này")
+            let diemNhan = Math.floor(thucTra * 0.01);
+            document.getElementById('valDiemNhan').textContent = '+' + formatCurrency(diemNhan) + ' điểm';
         }
 
         function copyToClipboard(elementId) {
