@@ -186,7 +186,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var oneYearAgo = DateTime.Now.AddDays(-365);
             var totalSpent = await _context.DonHang
                 .Where(d => d.KhachHangId == khachHangId
-                         && d.TrangThai == "Đã giao"
+                         && (d.TrangThai == "Đã giao" || d.TrangThai == "Đã thanh toán" || d.TrangThai == "Hoàn thành")
                          && d.NgayDat >= oneYearAgo)
                 .SumAsync(d => d.TongTienThucTra ?? d.TongTien ?? 0);
 
@@ -196,21 +196,17 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             var khachHang = await _context.KhachHangs.FindAsync(khachHangId);
             if (khachHang == null) return;
+            // Chỉ nâng hạng nếu khách chưa có hạng, hoặc hạng mới cao hơn hạng hiện tại
+            var currentTier = khachHang.MaHangThanhVien.HasValue
+                ? await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value)
+                : null;
 
-            // Chỉ nâng hạng nếu hạng mới cao hơn hiện tại
-            if (khachHang.MaHangThanhVien == null || tier.ChiTieuToiThieu > 0)
+            if (currentTier == null || tier.ChiTieuToiThieu > currentTier.ChiTieuToiThieu)
             {
-                var currentTier = khachHang.MaHangThanhVien.HasValue
-                    ? await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value)
-                    : null;
-
-                if (currentTier == null || tier.ChiTieuToiThieu > currentTier.ChiTieuToiThieu)
-                {
-                    khachHang.MaHangThanhVien = tier.ID;
-                    khachHang.NgayLenHang = DateTime.Now;
-                    khachHang.NgayHetHanHang = DateTime.Now.AddYears(1);
-                    await _unitOfWork.SaveAsync();
-                }
+                khachHang.MaHangThanhVien = tier.ID;
+                khachHang.NgayLenHang = DateTime.Now;
+                khachHang.NgayHetHanHang = DateTime.Now.AddYears(1);
+                await _unitOfWork.SaveAsync();
             }
         }
 

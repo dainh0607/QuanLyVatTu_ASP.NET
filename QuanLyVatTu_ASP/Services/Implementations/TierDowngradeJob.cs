@@ -82,7 +82,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 // Tính tổng chi tiêu 365 ngày qua
                 var totalSpent = await context.DonHang
                     .Where(d => d.KhachHangId == khachHang.ID
-                             && d.TrangThai == "Đã giao"
+                             && (d.TrangThai == "Đã giao" || d.TrangThai == "Đã thanh toán" || d.TrangThai == "Hoàn thành")
                              && d.NgayDat >= oneYearAgo)
                     .SumAsync(d => d.TongTienThucTra ?? d.TongTien ?? 0, stoppingToken);
 

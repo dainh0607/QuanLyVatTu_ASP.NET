@@ -861,6 +861,12 @@ namespace QuanLyVatTu_ASP.Controllers
             var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
             if (khachHang == null) return NotFound();
 
+            // Ensure tier is evaluated correctly before fetching
+            await _diemService.EvaluateTierUpgradeAsync(khachHang.ID);
+            
+            // Reload user tier stats
+            khachHang = await _unitOfWork.KhachHangRepository.GetByIdAsync(khachHang.ID);
+
             // Load tier info
             var tier = khachHang.MaHangThanhVien.HasValue
                 ? await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value)
@@ -868,15 +874,19 @@ namespace QuanLyVatTu_ASP.Controllers
 
             // Get next tier
             var allTiers = await _unitOfWork.HangThanhVienRepository.GetAllOrderedAsync();
-            var nextTier = allTiers.FirstOrDefault(t => t.ChiTieuToiThieu > (tier?.ChiTieuToiThieu ?? 0));
-
-            // Calculate 365-day spending
+            
+            // Calculate 365-day spending first so we can use it to determine the exact next tier
             var oneYearAgo = DateTime.Now.AddDays(-365);
             var totalSpent = await _context.DonHang
                 .Where(d => d.KhachHangId == khachHang.ID
-                         && d.TrangThai == "Đã giao"
+                         && (d.TrangThai == "Đã giao" || d.TrangThai == "Đã thanh toán" || d.TrangThai == "Hoàn thành")
                          && d.NgayDat >= oneYearAgo)
                 .SumAsync(d => d.TongTienThucTra ?? d.TongTien ?? 0);
+
+            var minRequired = Math.Max(totalSpent, tier?.ChiTieuToiThieu ?? 0);
+            var nextTier = allTiers.FirstOrDefault(t => t.ChiTieuToiThieu > minRequired);
+
+            // Already calculated above
 
             var history = await _diemService.GetHistoryAsync(khachHang.ID);
             var historyData = history.Select(h => new
