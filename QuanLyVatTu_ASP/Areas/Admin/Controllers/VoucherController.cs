@@ -4,11 +4,12 @@ using QuanLyVatTu_ASP.Areas.Admin.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using QuanLyVatTu.Areas.Admin.Controllers;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class VoucherController : Controller
+    public class VoucherController : AdminBaseController
     {
         private readonly AppDbContext _context;
 

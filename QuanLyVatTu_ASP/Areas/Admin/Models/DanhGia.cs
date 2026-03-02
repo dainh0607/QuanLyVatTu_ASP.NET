@@ -23,9 +23,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Range(1, 5, ErrorMessage = "Số sao phải từ 1 đến 5")]
         public int SoSao { get; set; }
 
-        [Required]
-        [Range(1, 5, ErrorMessage = "Chất lượng sản phẩm phải từ 1 đến 5")]
-        public int ChatLuongSanPham { get; set; }
+        // Chất lượng sản phẩm (tùy chọn, nếu hệ thống hỗ trợ đánh giá nhiều tiêu chí)
+        public int? ChatLuongSanPham { get; set; }
 
         public string? BinhLuan { get; set; }
 
