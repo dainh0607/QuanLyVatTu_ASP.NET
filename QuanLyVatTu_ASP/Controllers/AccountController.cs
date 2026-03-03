@@ -154,7 +154,6 @@ namespace QuanLyVatTu_ASP.Controllers
                     HoTen = hoTen,
                     Email = email,
                     MatKhau = BCrypt.Net.BCrypt.HashPassword(password), // Mã hóa BCrypt
-                    DiaChi = "", // Set to empty string for safety (model allows null, but DB might not if old)
                     SoDienThoai = null, // Keep null to pass regex
                     TaiKhoan = taiKhoanTuDong,
                     NgayTao = DateTime.Now,
@@ -275,7 +274,6 @@ namespace QuanLyVatTu_ASP.Controllers
                     HoTen = name ?? email.Split('@')[0],
                     Email = email,
                     MatKhau = "", // Không cần mật khẩu cho Google login
-                    DiaChi = "",  // Change to "" for safety like Register
                     SoDienThoai = null,
                     TaiKhoan = taiKhoan,
                     NgayTao = DateTime.Now,

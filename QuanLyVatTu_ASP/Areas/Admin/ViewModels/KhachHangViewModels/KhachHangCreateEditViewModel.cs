@@ -22,9 +22,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
         [Display(Name = "Số điện thoại")]
         public string? SoDienThoai { get; set; }
 
-        [MaxLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 ký tự")]
-        [Display(Name = "Địa chỉ")]
-        public string? DiaChi { get; set; }
+        [MaxLength(150, ErrorMessage = "Số nhà/Tên đường không được vượt quá 150 ký tự")]
+        [Display(Name = "Số nhà / Tên đường / Khu phố")]
+        public string? SoNhaTenDuong { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Phường/Xã không được vượt quá 100 ký tự")]
+        [Display(Name = "Phường / Xã / Thị trấn")]
+        public string? PhuongXa { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Tỉnh/Thành phố không được vượt quá 100 ký tự")]
+        [Display(Name = "Tỉnh / Thành phố")]
+        public string? TinhThanhPho { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập tài khoản")]
         [Display(Name = "Tài khoản")]

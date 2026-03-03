@@ -28,9 +28,17 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "varchar(10)")]
         public string? SoDienThoai { get; set; }
 
-        [MaxLength(255, ErrorMessage = "Địa chỉ không được vượt quá 255 ký tự")]
-        [Column(TypeName = "nvarchar(255)")]
-        public string? DiaChi { get; set; }
+        [MaxLength(150, ErrorMessage = "Số nhà/Tên đường không được vượt quá 150 ký tự")]
+        [Column(TypeName = "nvarchar(150)")]
+        public string? SoNhaTenDuong { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Phường/Xã không được vượt quá 100 ký tự")]
+        [Column(TypeName = "nvarchar(100)")]
+        public string? PhuongXa { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Tỉnh/Thành phố không được vượt quá 100 ký tự")]
+        [Column(TypeName = "nvarchar(100)")]
+        public string? TinhThanhPho { get; set; }
 
         [Column(TypeName = "varchar(255)")]
         public string? AnhDaiDien { get; set; }

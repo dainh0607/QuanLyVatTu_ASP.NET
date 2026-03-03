@@ -58,7 +58,14 @@
                                     <td>@item.HoTen</td>
                                     <td>@item.Email</td>
                                     <td>@(item.SoDienThoai ?? "—")</td>
-                                    <td class="text-truncate" style="max-width: 150px;">@(item.DiaChi ?? "—")</td>
+                                    <td class="text-truncate" style="max-width: 200px;">
+                                        @{
+                                            var diaChiDayDu = string.Join(", ",
+                                                new[] { item.SoNhaTenDuong, item.PhuongXa, item.TinhThanhPho }
+                                                .Where(s => !string.IsNullOrWhiteSpace(s)));
+                                        }
+                                        @(string.IsNullOrEmpty(diaChiDayDu) ? "—" : diaChiDayDu)
+                                    </td>
                                     <td>
                                         @if (!string.IsNullOrEmpty(item.TenHangThanhVien))
                                         {

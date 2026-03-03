@@ -214,8 +214,18 @@
 
                                     <!-- Address -->
                                     <div class="form-group">
-                                        <label class="form-label">Địa chỉ</label>
-                                        <input type="text" class="form-input" id="diaChi" value="@Model.KhachHang.DiaChi" placeholder="Nhập địa chỉ">
+                                        <label class="form-label">Số nhà / Tên đường / Khu phố</label>
+                                        <input type="text" class="form-input" id="soNhaTenDuong" value="@Model.KhachHang.SoNhaTenDuong" placeholder="VD: 123 Đường Lê Lợi">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Phường / Xã / Thị trấn</label>
+                                            <input type="text" class="form-input" id="phuongXa" value="@Model.KhachHang.PhuongXa" placeholder="VD: Phường Bến Nghé">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Tỉnh / Thành phố</label>
+                                            <input type="text" class="form-input" id="tinhThanhPho" value="@Model.KhachHang.TinhThanhPho" placeholder="VD: TP. Hồ Chí Minh">
+                                        </div>
                                     </div>
 
                                     <button type="button" class="btn-primary" onclick="saveProfile()">
@@ -1012,7 +1022,9 @@
         formData.append('id', @Model.KhachHang.ID);
         formData.append('hoTen', document.getElementById('hoTen')?.value || '');
         formData.append('soDienThoai', document.getElementById('soDienThoai')?.value || '');
-        formData.append('diaChi', document.getElementById('diaChi')?.value || '');
+        formData.append('soNhaTenDuong', document.getElementById('soNhaTenDuong')?.value || '');
+        formData.append('phuongXa', document.getElementById('phuongXa')?.value || '');
+        formData.append('tinhThanhPho', document.getElementById('tinhThanhPho')?.value || '');
 
         // Lấy file ảnh nếu có (input file có id="avatarInput")
         // Lấy file ảnh từ input duy nhất (avatarUpload)

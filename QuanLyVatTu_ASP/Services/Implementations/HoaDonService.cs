@@ -156,7 +156,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 MaHoaDon = $"HD{hd.ID:0000}",
                 NgayLap = hd.NgayLap,
                 TenKhachHang = hd.KhachHang?.HoTen ?? "",
-                DiaChiKhachHang = hd.KhachHang?.DiaChi,
+                DiaChiKhachHang = hd.KhachHang == null ? null :
+                    string.Join(", ", new[] { hd.KhachHang.SoNhaTenDuong, hd.KhachHang.PhuongXa, hd.KhachHang.TinhThanhPho }
+                        .Where(s => !string.IsNullOrWhiteSpace(s))),
                 PhuongThucThanhToan = hd.PhuongThucThanhToan,
                 TongTienHang = hd.TongTienTruocThue ?? 0,
                 ThueGTGT = hd.TienThueGTGT ?? 0, // Trigger DB tính

@@ -75,7 +75,9 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             {
                 existingUser.HoTen = khachHang.HoTen;
                 existingUser.SoDienThoai = khachHang.SoDienThoai;
-                existingUser.DiaChi = khachHang.DiaChi;
+                existingUser.SoNhaTenDuong = khachHang.SoNhaTenDuong;
+                existingUser.PhuongXa = khachHang.PhuongXa;
+                existingUser.TinhThanhPho = khachHang.TinhThanhPho;
                 if (!string.IsNullOrEmpty(khachHang.AnhDaiDien))
                 {
                     existingUser.AnhDaiDien = khachHang.AnhDaiDien;

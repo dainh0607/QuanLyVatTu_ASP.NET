@@ -44,7 +44,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     HoTen = x.HoTen,
                     Email = x.Email,
                     SoDienThoai = x.SoDienThoai,
-                    DiaChi = x.DiaChi,
+                    SoNhaTenDuong = x.SoNhaTenDuong,
+                    PhuongXa = x.PhuongXa,
+                    TinhThanhPho = x.TinhThanhPho,
                     NgayTao = x.NgayTao,
                     DangNhapGoogle = x.DangNhapGoogle,
                     DiemTichLuy = x.DiemTichLuy,
@@ -75,7 +77,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 HoTen = kh.HoTen,
                 Email = kh.Email,
                 SoDienThoai = kh.SoDienThoai,
-                DiaChi = kh.DiaChi,
+                SoNhaTenDuong = kh.SoNhaTenDuong,
+                PhuongXa = kh.PhuongXa,
+                TinhThanhPho = kh.TinhThanhPho,
                 TaiKhoan = kh.TaiKhoan,
                 AnhDaiDien = kh.AnhDaiDien,
                 MaHienThi = kh.MaHienThi,
@@ -106,7 +110,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 HoTen = model.HoTen,
                 Email = model.Email ?? "",
                 SoDienThoai = model.SoDienThoai ?? "",
-                DiaChi = model.DiaChi ?? "",
+                SoNhaTenDuong = model.SoNhaTenDuong,
+                PhuongXa = model.PhuongXa,
+                TinhThanhPho = model.TinhThanhPho,
                 TaiKhoan = model.TaiKhoan,
                 AnhDaiDien = model.AnhDaiDien,
 
@@ -140,7 +146,9 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             kh.HoTen = model.HoTen;
             kh.Email = model.Email ?? "";
             kh.SoDienThoai = model.SoDienThoai ?? "";
-            kh.DiaChi = model.DiaChi ?? "";
+            kh.SoNhaTenDuong = model.SoNhaTenDuong;
+            kh.PhuongXa = model.PhuongXa;
+            kh.TinhThanhPho = model.TinhThanhPho;
             kh.TaiKhoan = model.TaiKhoan;
             
             // Cập nhật ảnh nếu có

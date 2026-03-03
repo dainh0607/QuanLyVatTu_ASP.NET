@@ -20,7 +20,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels.KhachHangViewModels
             public string HoTen { get; set; } = string.Empty;
             public string Email { get; set; } = string.Empty;
             public string? SoDienThoai { get; set; }
-            public string? DiaChi { get; set; }
+            public string? SoNhaTenDuong { get; set; }
+            public string? PhuongXa { get; set; }
+            public string? TinhThanhPho { get; set; }
             public DateTime NgayTao { get; set; }
             public bool DangNhapGoogle { get; set; }
             public int DiemTichLuy { get; set; }

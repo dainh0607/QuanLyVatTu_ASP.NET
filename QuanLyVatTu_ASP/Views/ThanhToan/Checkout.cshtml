@@ -141,8 +141,18 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                                <input type="text" class="form-input w-100" name="diaChi" value="@Model?.DiaChi" required placeholder="Số nhà, tên đường, phường/xã...">
+                                <label class="form-label">Số nhà / Tên đường / Khu phố <span class="text-danger">*</span></label>
+                                <input type="text" class="form-input w-100" name="soNhaTenDuong" value="@Model?.SoNhaTenDuong" required placeholder="VD: 123 Đường Lê Lợi">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Phường / Xã / Thị trấn <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-input w-100" name="phuongXa" value="@Model?.PhuongXa" required placeholder="VD: Phường Bến Nghé">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-input w-100" name="tinhThanhPho" value="@Model?.TinhThanhPho" required placeholder="VD: TP. Hồ Chí Minh">
+                                </div>
                             </div>
                         </div>
 

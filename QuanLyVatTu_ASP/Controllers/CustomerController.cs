@@ -178,8 +178,12 @@ namespace QuanLyVatTu_ASP.Controllers
                 if (!string.IsNullOrWhiteSpace(request.SoDienThoai))
                     khachHang.SoDienThoai = request.SoDienThoai.Trim();
                 
-                if (!string.IsNullOrWhiteSpace(request.DiaChi))
-                    khachHang.DiaChi = request.DiaChi.Trim();
+                if (!string.IsNullOrWhiteSpace(request.SoNhaTenDuong))
+                    khachHang.SoNhaTenDuong = request.SoNhaTenDuong.Trim();
+                if (!string.IsNullOrWhiteSpace(request.PhuongXa))
+                    khachHang.PhuongXa = request.PhuongXa.Trim();
+                if (!string.IsNullOrWhiteSpace(request.TinhThanhPho))
+                    khachHang.TinhThanhPho = request.TinhThanhPho.Trim();
 
                 // Xử lý upload ảnh
                 if (request.AnhDaiDienFile != null)
@@ -339,10 +343,7 @@ namespace QuanLyVatTu_ASP.Controllers
                         item.MacDinh = false;
                     }
                     
-                    // Update main profile address
-                    khachHang.DiaChi = model.DiaChi;
-                    // Also update phone/name if user desires? (Requirement says "Textbox address in profile also changes")
-                    // Let's assume just updating the DiaChi field is enough based on requirement.
+                    // Địa chỉ mặc định thay đổi → không cần sync sang profile nữa (đã tách 3 trường)
                     _context.KhachHangs.Update(khachHang);
                 }
 
@@ -363,7 +364,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 if (count == 0)
                 {
                     newAddress.MacDinh = true;
-                    khachHang.DiaChi = model.DiaChi; // Sync to profile
+                    // DiaChi profile đã tách thành 3 trường, không cần sync
                 }
 
                 _context.DiaChiNhanHangs.Add(newAddress);
@@ -400,8 +401,7 @@ namespace QuanLyVatTu_ASP.Controllers
             // Set new default
             address.MacDinh = true;
             
-            // Update Profile Address
-            khachHang.DiaChi = address.DiaChi;
+            // Profile address đã tách 3 trường riêng, không cần sync
             _context.KhachHangs.Update(khachHang);
 
             await _context.SaveChangesAsync();

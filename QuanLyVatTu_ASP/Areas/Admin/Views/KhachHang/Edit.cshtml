@@ -68,14 +68,28 @@
                             </div>
 
                             <!-- Row 3: Address & Avatar -->
-                            <div class="col-md-6">
-                                <div class="mb-4 h-100">
-                                    <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ</label>
-                                    <textarea asp-for="DiaChi" class="form-control rounded-3 h-100" rows="5"></textarea>
-                                    <span asp-validation-for="DiaChi" class="text-danger"></span>
+                            <div class="col-md-4">
+                                <div class="mb-4">
+                                    <label asp-for="SoNhaTenDuong" class="form-label fw-semibold">Số nhà / Tên đường / Khu phố</label>
+                                    <input asp-for="SoNhaTenDuong" class="form-control form-control-lg rounded-3" placeholder="VD: 123 Đường Lê Lợi" />
+                                    <span asp-validation-for="SoNhaTenDuong" class="text-danger small"></span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="mb-4">
+                                    <label asp-for="PhuongXa" class="form-label fw-semibold">Phường / Xã / Thị trấn</label>
+                                    <input asp-for="PhuongXa" class="form-control form-control-lg rounded-3" placeholder="VD: Phường Bến Nghé" />
+                                    <span asp-validation-for="PhuongXa" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-4">
+                                    <label asp-for="TinhThanhPho" class="form-label fw-semibold">Tỉnh / Thành phố</label>
+                                    <input asp-for="TinhThanhPho" class="form-control form-control-lg rounded-3" placeholder="VD: TP. Hồ Chí Minh" />
+                                    <span asp-validation-for="TinhThanhPho" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <label asp-for="AnhDaiDienFile" class="form-label fw-semibold">Ảnh đại diện</label>

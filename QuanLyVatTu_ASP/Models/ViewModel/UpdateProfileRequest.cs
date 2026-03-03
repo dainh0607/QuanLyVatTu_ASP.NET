@@ -10,7 +10,9 @@ namespace QuanLyVatTu_ASP.Models.ViewModels
         public int Id { get; set; }
         public string? HoTen { get; set; }
         public string? SoDienThoai { get; set; }
-        public string? DiaChi { get; set; }
+        public string? SoNhaTenDuong { get; set; }
+        public string? PhuongXa { get; set; }
+        public string? TinhThanhPho { get; set; }
         public IFormFile? AnhDaiDienFile { get; set; }
     }
 }

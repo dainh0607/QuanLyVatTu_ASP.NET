@@ -97,7 +97,12 @@
                                 </p>
                                 <p class="mb-2">
                                     <strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
-                                    @Model.KhachHang?.DiaChi
+                                    @{
+                                        var diaChiKH = string.Join(", ",
+                                            new[] { Model.KhachHang?.SoNhaTenDuong, Model.KhachHang?.PhuongXa, Model.KhachHang?.TinhThanhPho }
+                                            .Where(s => !string.IsNullOrWhiteSpace(s)));
+                                    }
+                                    @(string.IsNullOrEmpty(diaChiKH) ? "—" : diaChiKH)
                                 </p>
                             </div>
                         </div>

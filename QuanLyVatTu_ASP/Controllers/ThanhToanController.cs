@@ -123,7 +123,9 @@ namespace QuanLyVatTu_ASP.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ProcessCheckout(
-            string diaChi, 
+            string soNhaTenDuong,
+            string phuongXa,
+            string tinhThanhPho,
             string soDienThoai, 
             string ghiChu,
             string paymentMethod = "cod",
@@ -277,9 +279,16 @@ namespace QuanLyVatTu_ASP.Controllers
                     await _unitOfWork.DonHangRepository.AddAsync(donHang);
                 }
 
-                if (khachHang.DiaChi != diaChi || khachHang.SoDienThoai != soDienThoai)
+                // Cập nhật thông tin địa chỉ và SĐT nếu thay đổi
+                bool addressChanged = khachHang.SoNhaTenDuong != soNhaTenDuong
+                    || khachHang.PhuongXa != phuongXa
+                    || khachHang.TinhThanhPho != tinhThanhPho
+                    || khachHang.SoDienThoai != soDienThoai;
+                if (addressChanged)
                 {
-                    khachHang.DiaChi = diaChi;
+                    khachHang.SoNhaTenDuong = soNhaTenDuong;
+                    khachHang.PhuongXa = phuongXa;
+                    khachHang.TinhThanhPho = tinhThanhPho;
                     khachHang.SoDienThoai = soDienThoai;
                     await _unitOfWork.KhachHangRepository.UpdateAsync(khachHang);
                 }
@@ -449,7 +458,9 @@ namespace QuanLyVatTu_ASP.Controllers
                             IsVATInvoice = true,
                             TenCongTy = tenCongTy,
                             MaSoThue = maSoThue,
-                            DiaChiDKKD = diaChiDKKD ?? diaChi,
+                            DiaChiDKKD = diaChiDKKD ?? string.Join(", ",
+                                new[] { soNhaTenDuong, phuongXa, tinhThanhPho }
+                                .Where(s => !string.IsNullOrWhiteSpace(s))),
                             EmailNhanHoaDon = emailVAT ?? email,
                             TenNguoiBan = "CTY MÁY THIẾT BỊ KIM LONG",
                             MaSoThueBan = "0123456789",

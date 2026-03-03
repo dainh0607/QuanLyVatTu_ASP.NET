@@ -56,9 +56,17 @@
                             <label class="form-label fw-bold text-muted">Số điện thoại</label>
                              <p class="form-control-plaintext border-bottom">@Model.SoDienThoai</p>
                         </div>
-                         <div class="col-12">
-                            <label class="form-label fw-bold text-muted">Địa chỉ</label>
-                             <p class="form-control-plaintext border-bottom">@(Model.DiaChi ?? "—")</p>
+                         <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted">Số nhà / Tên đường</label>
+                             <p class="form-control-plaintext border-bottom">@(Model.SoNhaTenDuong ?? "—")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted">Phường / Xã</label>
+                            <p class="form-control-plaintext border-bottom">@(Model.PhuongXa ?? "—")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted">Tỉnh / Thành phố</label>
+                            <p class="form-control-plaintext border-bottom">@(Model.TinhThanhPho ?? "—")</p>
                         </div>
 
                         <!-- Thông tin thành viên -->
