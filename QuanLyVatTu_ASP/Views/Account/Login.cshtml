@@ -306,34 +306,47 @@
             } else {
                 errorDiv.style.display = 'none';
                 this.classList.remove('error');
-                this.closest('.password-container').classList.remove('error');
+                if (this.closest('.password-container')) {
+                    this.closest('.password-container').classList.remove('error');
+                }
             }
         });
 
         // Real-time password length validation
         document.getElementById('regPassword').addEventListener('input', function() {
             const errorDiv = document.getElementById('passwordError');
-            const confirmPassword = document.getElementById('regConfirmPassword');
+            const confirmPasswordInput = document.getElementById('regConfirmPassword');
             const confirmErrorDiv = document.getElementById('confirmPasswordError');
 
             if (this.value.length > 0 && this.value.length < 6) {
                 errorDiv.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
                 errorDiv.style.display = 'block';
                 this.classList.add('error');
-                this.closest('.password-container').classList.add('error');
+                if (this.closest('.password-container')) {
+                     this.closest('.password-container').classList.add('error');
+                }
             } else {
                 errorDiv.style.display = 'none';
                 this.classList.remove('error');
+                if (this.closest('.password-container')) {
+                     this.closest('.password-container').classList.remove('error');
+                }
             }
 
             // Also check confirm password match when password changes
-            if (confirmPassword.value && this.value !== confirmPassword.value) {
+            if (confirmPasswordInput.value && this.value !== confirmPasswordInput.value) {
                 confirmErrorDiv.textContent = 'Mật khẩu xác nhận không khớp';
                 confirmErrorDiv.style.display = 'block';
-                confirmPassword.classList.add('error');
-            } else if (confirmPassword.value) {
+                confirmPasswordInput.classList.add('error');
+                if (confirmPasswordInput.closest('.password-container')) {
+                    confirmPasswordInput.closest('.password-container').classList.add('error');
+                }
+            } else if (confirmPasswordInput.value) {
                 confirmErrorDiv.style.display = 'none';
-                confirmPassword.classList.remove('error');
+                confirmPasswordInput.classList.remove('error');
+                if (confirmPasswordInput.closest('.password-container')) {
+                    confirmPasswordInput.closest('.password-container').classList.remove('error');
+                }
             }
         });
     </script>
