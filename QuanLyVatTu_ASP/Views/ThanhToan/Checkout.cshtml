@@ -573,6 +573,7 @@
     <script>
         // Data from server
         const totalAmount = @Json.Serialize(total);
+        const maxDiemDuocPhep = @Json.Serialize((decimal)(ViewBag.MaxDiemDuocPhep ?? 0m));
         const depositThreshold = 5000000;
         const tierDiscountPercent = @Json.Serialize((decimal)(ViewBag.TierDiscountPercent ?? 0m));
         const diemHienTai = @Json.Serialize((int)(ViewBag.DiemHienTai ?? 0));
@@ -698,10 +699,16 @@
             let diemUsed = 0;
             const ptToggle = document.getElementById('pointsToggle');
             if (ptToggle && ptToggle.checked && diemHienTai > 0) {
-                // Số điểm tối đa = min(số dư, tạm tính) — Script: "không vượt quá tổng tiền"
-                diemUsed = Math.min(diemHienTai, tamTinh);
+                // Số điểm tối đa = min(số dư, tạm tính và giới hạn 50% đơn hàng)
+                diemUsed = Math.min(diemHienTai, Math.min(tamTinh, maxDiemDuocPhep));
                 document.getElementById('rowDiem').style.display = '';
-                document.getElementById('valDiem').textContent = '-' + formatCurrency(diemUsed) + '₫';
+                
+                let diemText = '-' + formatCurrency(diemUsed) + '₫';
+                if (diemHienTai > maxDiemDuocPhep && diemUsed === maxDiemDuocPhep) {
+                    diemText = '-' + formatCurrency(diemUsed) + '₫ <span style="font-size: 0.75rem; color: #f59e0b; display: block; font-weight: normal; margin-top: 2px;">(Tối đa 50% đơn hàng)</span>';
+                }
+                
+                document.getElementById('valDiem').innerHTML = diemText;
                 document.getElementById('soDiemSuDung').value = diemUsed;
             } else {
                 document.getElementById('rowDiem').style.display = 'none';

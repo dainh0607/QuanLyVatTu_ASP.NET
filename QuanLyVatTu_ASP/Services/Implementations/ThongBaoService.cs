@@ -136,5 +136,48 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             await _unitOfWork.ThongBaoRepository.AddAsync(notification);
             await _unitOfWork.SaveAsync();
         }
+        public async Task BroadcastNotificationAsync(string tieuDe, string noiDung, string? linkDich, string doiTuongNhan)
+        {
+            var query = _unitOfWork.KhachHangRepository.GetAll();
+
+            // Nếu không phải là "ALL" (Gửi tất cả) thì phải lọc theo ID hạng thành viên
+            if (doiTuongNhan != "ALL")
+            {
+                if (int.TryParse(doiTuongNhan, out int hangId))
+                {
+                    query = query.Where(x => x.MaHangThanhVien == hangId);
+                }
+            }
+
+            // Lấy danh sách khách hàng hợp lệ (Chưa xóa và đồng ý nhận thông báo Khuyến mãi)
+            var targetUsers = await query
+                .Where(x => x.NhanThongBaoKhuyenMai == true)
+                .Select(x => x.ID)
+                .ToListAsync();
+
+            if (!targetUsers.Any()) return; // Không có ai thỏa mãn
+
+            var notifications = new List<ThongBao>();
+            var now = DateTime.Now;
+
+            foreach (var userId in targetUsers)
+            {
+                notifications.Add(new ThongBao
+                {
+                    KhachHangId = userId,
+                    TieuDe = tieuDe,
+                    NoiDung = noiDung,
+                    LoaiThongBao = "KhuyenMai", // Thông báo từ Admin thường là Khuyến mãi / Tin tức
+                    LinkDich = linkDich,
+                    DaDoc = false,
+                    DaXoa = false,
+                    NgayTao = now
+                });
+            }
+
+            // Không có BulkInsert trong UnitOfWork hiện tại, ta AddRange thông thường
+            await _unitOfWork.ThongBaoRepository.AddRangeAsync(notifications);
+            await _unitOfWork.SaveAsync();
+        }
     }
 }

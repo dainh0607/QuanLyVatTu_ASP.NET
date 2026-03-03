@@ -762,10 +762,12 @@ namespace QuanLyVatTu_ASP.Controllers
             }
 
             // Only allow cancellation for early statuses
-            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán", "Chờ xử lý", "Đang xử lý" };
+            // Khách hàng chỉ được hủy sớm → mã voucher sẽ được HOÀN LẠI (REFUNDED)
+            // Đơn ở "Đang xử lý" trở đi chỉ Admin mới được hủy muộn (phạt mã BURNED)
+            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán", "Chờ xử lý" };
             if (!allowedStatuses.Any(s => s.Equals(donHang.TrangThai, StringComparison.OrdinalIgnoreCase)))
             {
-                TempData["Error"] = "Không thể hủy đơn hàng ở trạng thái hiện tại.";
+                TempData["Error"] = "Không thể hủy đơn hàng ở trạng thái này. Nếu cần hủy đơn đang xử lý, vui lòng liên hệ với chúng tôi.";
                 return Redirect(referer);
             }
 
@@ -782,7 +784,7 @@ namespace QuanLyVatTu_ASP.Controllers
             
             if (result)
             {
-                TempData["Success"] = "Đã hủy đơn hàng thành công!";
+                TempData["Success"] = "Đã hủy đơn hàng thành công! Mã voucher (nếu có) đã được hoàn lại vào ví.";
             }
             else
             {

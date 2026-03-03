@@ -234,9 +234,108 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _donHangService.DeleteAsync(id);
-            TempData["Success"] = "Đã xóa đơn hàng";
+            try
+            {
+                var result = await _donHangService.DeleteAsync(id);
+                if (result)
+                    TempData["Success"] = "Đã xóa đơn hàng thành công";
+                else
+                    TempData["Error"] = "Không thể xóa đơn hàng. Chỉ được phép xóa đơn ở trạng thái 'Chờ xác nhận' hoặc 'Đã xác nhận'.";
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Đã xảy ra lỗi khi xóa đơn hàng. Vui lòng thử lại.";
+            }
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost("huy/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> HuyDonHang(int id)
+        {
+            try
+            {
+                var donHang = await _donHangService.GetByIdForEditAsync(id);
+                if (donHang == null)
+                {
+                    TempData["Error"] = "Không tìm thấy đơn hàng.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Không được hủy đơn đã hoàn thành hoặc đã hủy
+                if (donHang.TrangThai == "Hoàn thành" || donHang.TrangThai == "Đã hủy")
+                {
+                    TempData["Error"] = $"Không thể hủy đơn hàng đang ở trạng thái '{donHang.TrangThai}'.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Cập nhật trạng thái sang "Đã hủy"
+                // DonHangService.UpdateAsync sẽ tự xử lý:
+                // - Trạng thái sớm (Chờ xác nhận, Đã xác nhận) → REFUNDED (trả mã về ví)
+                // - Trạng thái muộn (Đang xử lý, Đang giao hàng) → BURNED (phạt mã)
+                var cancelModel = new QuanLyVatTu_ASP.Areas.Admin.ViewModels.DonHangCreateEditViewModel
+                {
+                    Id = donHang.Id,
+                    MaHienThi = donHang.MaHienThi,
+                    KhachHangId = donHang.KhachHangId,
+                    NhanVienId = donHang.NhanVienId,
+                    NgayDat = donHang.NgayDat,
+                    TongTien = donHang.TongTien,
+                    SoTienDatCoc = donHang.SoTienDatCoc,
+                    PhuongThucDatCoc = donHang.PhuongThucDatCoc,
+                    NgayDatCoc = donHang.NgayDatCoc,
+                    TrangThai = "Đã hủy",
+                    GhiChu = donHang.GhiChu
+                };
+
+                var success = await _donHangService.UpdateAsync(id, cancelModel);
+                if (success)
+                {
+                    // Xác định thông báo dựa theo loại hủy
+                    bool isLateCancellation = donHang.TrangThai == "Đang xử lý" || donHang.TrangThai == "Đang giao hàng";
+                    TempData["Success"] = isLateCancellation
+                        ? "Đã hủy đơn hàng. Mã voucher đã bị tiêu hủy (hủy muộn)."
+                        : "Đã hủy đơn hàng. Mã voucher đã được hoàn lại cho khách.";
+                }
+                else
+                {
+                    TempData["Error"] = "Không thể hủy đơn hàng. Vui lòng thử lại.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Đã xảy ra lỗi khi hủy đơn hàng.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("xoa-nhieu")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+                return Json(new { success = false, message = "Không có đơn hàng nào được chọn." });
+
+            int successCount = 0;
+            int failCount = 0;
+
+            foreach (var id in ids)
+            {
+                try
+                {
+                    var result = await _donHangService.DeleteAsync(id);
+                    if (result) successCount++;
+                    else failCount++;
+                }
+                catch
+                {
+                    failCount++;
+                }
+            }
+
+            if (failCount == 0)
+                return Json(new { success = true, message = $"Đã xóa thành công {successCount} đơn hàng." });
+
+            return Json(new { success = true, message = $"Xóa thành công {successCount}/{ids.Count} đơn. {failCount} đơn không thể xóa (trạng thái không cho phép)." });
         }
     }
 }

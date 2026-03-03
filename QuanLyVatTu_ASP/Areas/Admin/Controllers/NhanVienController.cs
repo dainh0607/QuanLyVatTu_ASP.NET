@@ -116,6 +116,16 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 return View(model);
             }
 
+            // Cập nhật session nếu đang sửa chính mình
+            var sessionEmail = HttpContext.Session.GetString("Email");
+            if (!string.IsNullOrEmpty(sessionEmail) && 
+                sessionEmail.Equals(model.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrEmpty(model.AnhDaiDien))
+                    HttpContext.Session.SetString("AvatarUrl", model.AnhDaiDien);
+                HttpContext.Session.SetString("UserName", model.HoTen);
+            }
+
             TempData["Success"] = "Cập nhật thông tin thành công";
             return RedirectToAction(nameof(Index));
         }

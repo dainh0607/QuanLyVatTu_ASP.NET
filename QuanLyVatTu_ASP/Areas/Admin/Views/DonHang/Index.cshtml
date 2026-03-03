@@ -212,8 +212,8 @@
                                     {
                                         <li><hr class="dropdown-divider my-0"></li>
                                         <li>
-                                            <form asp-action="Delete" asp-route-id="@item.ID" method="post" 
-                                                  onsubmit="return confirm('Xóa đơn hàng này?');" class="d-inline">
+                                            <form action="/admin/don-hang/xoa/@item.ID" method="post" 
+                                                  onsubmit="return confirm('Xóa đơn hàng này? Mã voucher sẽ được hoàn lại cho khách.');" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="dropdown-item py-2 text-danger">
                                                     <i class="fas fa-trash-alt me-2"></i> Xóa đơn hàng
@@ -221,6 +221,20 @@
                                             </form>
                                         </li>
                                     }
+                                    @if (item.TrangThai == "Đang xử lý" || item.TrangThai == "Đang giao hàng")
+                                    {
+                                        <li><hr class="dropdown-divider my-0"></li>
+                                        <li>
+                                            <form action="/admin/don-hang/huy/@item.ID" method="post" 
+                                                  onsubmit="return confirm('⚠️ Hủy đơn hàng này?\n\nĐây là hủy MUỘN - mã voucher sẽ bị TIÊU HỦY và khách KHÔNG được hoàn lại mã.\nTồn kho sẽ được hoàn trả.\n\nBạn có chắc chắn muốn tiếp tục?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-item py-2 text-warning">
+                                                    <i class="fas fa-ban me-2"></i> Hủy đơn hàng
+                                                </button>
+                                            </form>
+                                        </li>
+                                    }
+
                                 </ul>
                             </div>
                         </td>
@@ -285,14 +299,31 @@
         });
 
         $("#btnDeleteSelected").on("click", function () {
-            var selectedIds = $(".chk-item:checked").map(function () { return this.value; }).get();
+            var selectedIds = $(".chk-item:checked").map(function () { return parseInt(this.value); }).get();
             if (selectedIds.length === 0) {
                 alert("Vui lòng chọn đơn hàng!");
                 return;
             }
-            if (confirm(`Xóa ${selectedIds.length} đơn hàng đã chọn?`)) {
-                // Post form logic...
-                alert("Tính năng xóa nhiều đang phát triển.");
+            if (confirm(`Xóa ${selectedIds.length} đơn hàng đã chọn? Chỉ đơn ở trạng thái 'Chờ xác nhận' hoặc 'Đã xác nhận' mới được xóa.`)) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                fetch('/admin/don-hang/xoa-nhieu', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(selectedIds)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Đã xảy ra lỗi.');
+                    }
+                })
+                .catch(() => alert('Lỗi kết nối server.'));
             }
         });
     </script>

@@ -13,7 +13,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
 
         Task<bool> UpdateAsync(int id, DonHangCreateEditViewModel model);
 
-        Task DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
 
         Task<List<KhachHang>> GetKhachHangLookupAsync();
         Task<List<NhanVien>> GetNhanVienLookupAsync();

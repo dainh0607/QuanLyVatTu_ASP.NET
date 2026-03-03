@@ -140,5 +140,22 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost("dieu-chinh-diem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DieuChinhDiem(int KhachHangId, int SoDiemThayDoi, string LyDo)
+        {
+            var errorMessage = await _khachHangService.DieuChinhDiemAsync(KhachHangId, SoDiemThayDoi, LyDo);
+            if (errorMessage != null)
+            {
+                TempData["Error"] = errorMessage;
+            }
+            else
+            {
+                TempData["Success"] = $"Đăng ký điều chỉnh {SoDiemThayDoi:N0} điểm thành công.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id = KhachHangId });
+        }
     }
 }

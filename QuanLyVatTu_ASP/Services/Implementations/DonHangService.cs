@@ -159,9 +159,15 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
                     if (newStatus == "Đã hủy")
                     {
-                        if (currentStatus == "Đang giao hàng" || currentStatus == "Hoàn thành")
+                        // Không cho phép hủy đơn đã hoàn thành
+                        if (currentStatus == "Hoàn thành")
                         {
                              return false; 
+                        }
+                        // Đã hủy rồi thì bỏ qua
+                        if (currentStatus == "Đã hủy")
+                        {
+                             return false;
                         }
                         
                         // [CRITICAL FIX] Trả lại Tồn Kho khi Hủy Đơn Hàng
@@ -258,42 +264,88 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _context.DonHang.FindAsync(id);
-            if (entity != null)
+            var entity = await _context.DonHang
+                .Include(d => d.ChiTietDonHangs)
+                .FirstOrDefaultAsync(d => d.ID == id);
+
+            if (entity == null) return false;
+
+            // Chỉ cho phép xóa đơn hàng Chờ xác nhận và Đã xác nhận
+            if (entity.TrangThai != "Chờ xác nhận" && entity.TrangThai != "Đã xác nhận")
+                return false;
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                // Chỉ cho phép xóa đơn hàng Chờ xác nhận và Đã xác nhận
-                if (entity.TrangThai == "Chờ xác nhận" || entity.TrangThai == "Đã xác nhận")
+                // 1. Xóa LichSuSuDungVoucher liên quan (FK Restrict)
+                var lichSuVoucher = await _context.LichSuSuDungVouchers
+                    .Where(l => l.MaDonHang == id)
+                    .ToListAsync();
+                if (lichSuVoucher.Any())
                 {
-                    using var transaction = await _context.Database.BeginTransactionAsync();
-                    try
+                    foreach (var ls in lichSuVoucher)
                     {
-                        // [CRITICAL FIX] Xóa mềm (Hard Delete) thì cũng phải hoàn kho
-                        var chiTietList = await _context.ChiTietDonHangs
-                            .Where(c => c.MaDonHang == id)
-                            .ToListAsync();
-                             
-                        foreach (var item in chiTietList)
-                        {
-                             var vatTu = await _context.VatTus.FindAsync(item.MaVatTu);
-                             if (vatTu != null)
-                             {
-                                  vatTu.SoLuongTon = (vatTu.SoLuongTon ?? 0) + (item.SoLuong ?? 0);
-                                  _context.VatTus.Update(vatTu);
-                             }
-                        }
-                        
-                        _context.DonHang.Remove(entity);
-                        await _context.SaveChangesAsync();
-                        await transaction.CommitAsync();
+                        var voucher = await _context.Vouchers.FindAsync(ls.MaVoucherGoc);
+                        if (voucher != null && voucher.SoLuongDaDung > 0)
+                            voucher.SoLuongDaDung--;
+
+                        var viVoucher = await _context.ViVoucherKhachHangs
+                            .FirstOrDefaultAsync(v => v.MaKhachHang == ls.MaKhachHang && v.MaVoucherGoc == ls.MaVoucherGoc);
+                        if (viVoucher != null)
+                            viVoucher.TrangThaiTrongVi = "AVAILABLE";
                     }
-                    catch
-                    {
-                        await transaction.RollbackAsync();
-                        throw;
-                    }
+                    _context.LichSuSuDungVouchers.RemoveRange(lichSuVoucher);
                 }
+
+                // 2. Xóa LichSuTichDiem liên quan (FK Restrict)
+                var lichSuDiem = await _context.LichSuTichDiems
+                    .Where(l => l.MaDonHang == id)
+                    .ToListAsync();
+                if (lichSuDiem.Any())
+                    _context.LichSuTichDiems.RemoveRange(lichSuDiem);
+
+                // 3. Xóa HoaDon + ChiTietHoaDon liên quan (FK Restrict)
+                var hoaDons = await _context.HoaDons
+                    .Where(h => h.MaDonHang == id)
+                    .ToListAsync();
+                foreach (var hd in hoaDons)
+                {
+                    var chiTietHD = await _context.ChiTietHoaDons
+                        .Where(c => c.MaHoaDon == hd.ID)
+                        .ToListAsync();
+                    if (chiTietHD.Any())
+                        _context.ChiTietHoaDons.RemoveRange(chiTietHD);
+                }
+                if (hoaDons.Any())
+                    _context.HoaDons.RemoveRange(hoaDons);
+
+                // 4. Hoàn kho + Xóa chi tiết đơn hàng
+                if (entity.ChiTietDonHangs != null && entity.ChiTietDonHangs.Any())
+                {
+                    foreach (var item in entity.ChiTietDonHangs)
+                    {
+                        var vatTu = await _context.VatTus.FindAsync(item.MaVatTu);
+                        if (vatTu != null)
+                        {
+                            vatTu.SoLuongTon = (vatTu.SoLuongTon ?? 0) + (item.SoLuong ?? 0);
+                            _context.VatTus.Update(vatTu);
+                        }
+                    }
+                    _context.ChiTietDonHangs.RemoveRange(entity.ChiTietDonHangs);
+                }
+
+                // 5. Xóa đơn hàng
+                _context.DonHang.Remove(entity);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 

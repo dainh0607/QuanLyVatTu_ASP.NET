@@ -88,7 +88,12 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold text-muted">Điểm tích lũy</label>
-                            <p class="form-control-plaintext border-bottom fw-bold text-success">@Model.DiemTichLuy.ToString("N0")</p>
+                            <div class="d-flex align-items-center border-bottom pb-1">
+                                <p class="form-control-plaintext mb-0 fw-bold text-success me-2" style="width: auto;">@Model.DiemTichLuy.ToString("N0")</p>
+                                <button type="button" class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2" data-bs-toggle="modal" data-bs-target="#modalDieuChinhDiem" title="Điều chỉnh điểm tự do">
+                                    <i class="fas fa-edit"></i> Chỉnh
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold text-muted">Hạng thành viên</label>
@@ -118,6 +123,50 @@
         <div class="card-footer bg-light d-flex justify-content-between py-3">
              <a asp-action="Index" class="btn btn-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
              <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary rounded-pill px-4"><i class="fas fa-edit me-2"></i>Chỉnh sửa</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Điều Chỉnh Điểm -->
+<div class="modal fade" id="modalDieuChinhDiem" tabindex="-1" aria-labelledby="modalDieuChinhDiemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-warning text-dark rounded-top-4 border-0">
+                <h5 class="modal-title fw-bold" id="modalDieuChinhDiemLabel">
+                    <i class="fas fa-coins me-2"></i>Chỉnh sửa điểm thủ công
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="DieuChinhDiem" asp-controller="KhachHang" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="KhachHangId" value="@Model.ID" />
+                    
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="fas fa-info-circle me-1"></i> Số điểm thay đổi có thể là số dương <strong>(+1000)</strong> để cộng, hoặc số âm <strong>(-1000)</strong> để trừ điểm. Phạt khách hàng vui lòng nhập số âm. Việc cộng/trừ này có thể thay đổi hạng thành viên.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Điểm hiện tại</label>
+                        <input type="text" class="form-control bg-light" value="@Model.DiemTichLuy.ToString("N0")" disabled readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="SoDiemThayDoi" class="form-label fw-bold text-danger">Số điểm cần (+)/(-)<span class="text-danger">*</span></label>
+                        <input type="number" class="form-control form-control-lg fw-bold" id="SoDiemThayDoi" name="SoDiemThayDoi" placeholder="Ví dụ: 5000 hoặc -2000" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="LyDo" class="form-label fw-bold border-bottom pb-1">Lý do điều chỉnh <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="LyDo" name="LyDo" rows="2" placeholder="Ví dụ: Tặng quà sinh nhật, Bồi thường đơn trễ, Phạt gian lận mã..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 rounded-bottom-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-save me-1"></i> Xác nhận
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

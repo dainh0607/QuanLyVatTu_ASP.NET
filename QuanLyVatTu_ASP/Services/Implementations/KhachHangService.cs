@@ -214,5 +214,71 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 .Include(x => x.HangThanhVien)
                 .FirstOrDefaultAsync(x => x.ID == id);
         }
+
+        public async Task<string?> DieuChinhDiemAsync(int khachHangId, int soDiemThayDoi, string lyDo)
+        {
+            if (string.IsNullOrWhiteSpace(lyDo))
+                return "Cần nhập lý do điều chỉnh điểm.";
+
+            if (soDiemThayDoi == 0)
+                return "Số điểm thay đổi phải khác 0.";
+
+            var kh = await _context.KhachHangs.FindAsync(khachHangId);
+            if (kh == null) return "Không tìm thấy khách hàng.";
+
+            // Backup điểm cũ
+            int oldDiemGiaTichLuy = kh.DiemGiaTichLuy ?? 0;
+            int oldDiemTichLuy = kh.DiemTichLuy ?? 0;
+
+            // Xử lý cộng/trừ 
+            // - DiemTichLuy: là số dư tài khoản dùng để chi tiêu (=> Không thể rớt xuống < 0)
+            // - DiemGiaTichLuy: là tổng số điểm tích lũy dùng để xếp hạng (=> Nếu trừ thì có bị giảm không? Thông thường điểm hạng chỉ tăng, nhưng nếu phạt gian lận thì có thể trừ)
+            
+            // Xử lý điểm chi tiêu (DiemTichLuy)
+            kh.DiemTichLuy = oldDiemTichLuy + soDiemThayDoi;
+            if (kh.DiemTichLuy < 0) kh.DiemTichLuy = 0; // Không cho phép điểm xài âm
+
+            // Xử lý điểm xét hạng (DiemGiaTichLuy)
+            kh.DiemGiaTichLuy = oldDiemGiaTichLuy + soDiemThayDoi;
+            if (kh.DiemGiaTichLuy < 0) kh.DiemGiaTichLuy = 0;
+
+            // --- Ghi log Lịch Sử Điểm ---
+            var lichSu = new QuanLyVatTu_ASP.Areas.Admin.Models.LichSuDiem
+            {
+                KhachHangId = kh.ID,
+                SoDiem = soDiemThayDoi, // Lưu dấu + hoặc -
+                LyDo = $"[Admin Điều chỉnh] {lyDo}",
+                NgayTao = DateTime.Now
+            };
+            await _context.LichSuDiem.AddAsync(lichSu);
+            await _context.SaveChangesAsync();
+            
+            // --- Gọi Update Tier ---
+            // Vì không thể resolve IDiemTichLuyService (tránh vòng lặp inject), 
+            // ta xử lý cập nhật hạng nhanh tại đây thay vì gọi IDiemTichLuyService.UpdateTierAsync
+            await UpdateTierLocalAsync(kh);
+
+            return null; // Success
+        }
+
+        private async Task UpdateTierLocalAsync(KhachHang khachHang)
+        {
+            var tiers = await _context.HangThanhViens.OrderBy(t => t.DiemToiThieu).ToListAsync();
+            HangThanhVien? newTier = null;
+            int totalDiem = khachHang.DiemGiaTichLuy ?? 0;
+
+            foreach (var t in tiers)
+            {
+                if (totalDiem >= t.DiemToiThieu) newTier = t;
+            }
+
+            if (newTier != null && khachHang.MaHangThanhVien != newTier.ID)
+            {
+                khachHang.MaHangThanhVien = newTier.ID;
+                khachHang.NgayLenHang = DateTime.Now;
+                khachHang.NgayHetHanHang = DateTime.Now.AddYears(1);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
