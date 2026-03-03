@@ -454,7 +454,7 @@
                                                 </a>
                                                 @{
                                                     var pResetStatuses = new[] { "chờ xác nhận", "đã xác nhận", "đang xử lý", "chờ thanh toán", "chờ đặt cọc", "công nợ" };
-                                                    var pReorderStatuses = new[] { "hoàn thành", "đã hủy", "đã giao" };
+                                                    var pReorderStatuses = new[] { "hoàn thành", "đã hủy", "đang giao hàng" };
                                                     var statusLower = order.TrangThai?.ToLower() ?? "";
                                                 }
                                                 @if (pResetStatuses.Contains(statusLower))
@@ -462,11 +462,14 @@
                                                     <button onclick="editOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #f59e0b; border-radius: 8px; color: #92400e; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                                         <i class="fas fa-edit"></i> Chỉnh sửa
                                                     </button>
-                                                    @if (statusLower == "chờ xác nhận" || statusLower == "chờ đặt cọc" || statusLower == "chờ thanh toán" || statusLower == "đã xác nhận")
+                                                    @if (statusLower == "chờ xác nhận" || statusLower == "chờ đặt cọc" || statusLower == "chờ thanh toán" || statusLower == "đã xác nhận" || statusLower == "đang xử lý")
                                                     {
-                                                        <button onclick="cancelUserOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #ef4444; border-radius: 8px; color: #b91c1c; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                                                            <i class="fas fa-times"></i> Hủy đơn
-                                                        </button>
+                                                        <form method="post" action="/Customer/CancelOrder" id="form-cancel-user-@order.ID" style="display:inline;">
+                                                            <input type="hidden" name="orderId" value="@order.ID" />
+                                                            <button type="button" onclick="confirmCancelUserOrder(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1.5px solid #ef4444; border-radius: 8px; color: #b91c1c; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                                                <i class="fas fa-times"></i> Hủy đơn
+                                                            </button>
+                                                        </form>
                                                     }
                                                 }
                                                 @if (pReorderStatuses.Contains(statusLower))
@@ -2076,30 +2079,18 @@
         });
     }
 
-    function cancelUserOrder(orderId) {
-        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Quá trình này không thể hoàn tác.')) {
-            return;
-        }
-
-        fetch('/Customer/CancelOrder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderId)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: data.message,
-                    timer: 1500,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                Swal.fire('Lỗi', data.message, 'error');
+    function confirmCancelUserOrder(orderId) {
+        Swal.fire({
+            title: 'Hủy đơn hàng?',
+            text: 'Bạn có chắc chắn muốn hủy đơn hàng này không? Quá trình không thể hoàn tác.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-times-circle"></i> Xác nhận hủy',
+            cancelButtonText: 'Đóng',
+            confirmButtonColor: '#ef4444'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-cancel-user-' + orderId).submit();
             }
         });
     }

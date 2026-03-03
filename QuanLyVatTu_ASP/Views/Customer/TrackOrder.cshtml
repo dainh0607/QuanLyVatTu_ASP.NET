@@ -60,21 +60,24 @@
                                 var resetStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc", "Công nợ" };
                                 var reorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đang giao hàng" };
                             }
-                            @if (resetStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
-                            {
-                                <button class="btn-order btn-order-reorder" onclick="editOrder(@Model.ID)">
-                                    <i class="fas fa-edit"></i> Chỉnh sửa
-                                </button>
-                            }
-                            @if (reorderStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
-                            {
-                                <form method="post" action="/GioHang/ReOrder" style="display:inline;">
-                                    <input type="hidden" name="orderId" value="@Model.ID" />
-                                    <button type="submit" class="btn-order btn-order-detail" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none;">
-                                        <i class="fas fa-undo"></i> Đặt lại
+                            <div class="d-flex align-items-center gap-2">
+                                @if (resetStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <button class="btn btn-warning text-white rounded-pill shadow-sm px-4 py-2" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; font-weight: 500;" onclick="editOrder(@Model.ID)">
+                                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
                                     </button>
-                                </form>
-                            }
+                                }
+
+                                @if (reorderStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <form method="post" action="/GioHang/ReOrder" style="display:inline;">
+                                        <input type="hidden" name="orderId" value="@Model.ID" />
+                                        <button type="submit" class="btn btn-primary text-white rounded-pill shadow-sm px-4 py-2" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; font-weight: 500;">
+                                            <i class="fas fa-undo me-1"></i> Đặt lại
+                                        </button>
+                                    </form>
+                                }
+                            </div>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -289,6 +292,25 @@
                     .then(data => {
                         if (data.success) {
                             Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message })
+                        }
+                    });
+                }
+            });
+        }
+
+        function confirmCancel(orderId) {
+            Swal.fire({
+                title: 'Hủy đơn hàng?',
+                text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-times-circle"></i> Xác nhận hủy',
+                cancelButtonText: 'Đóng',
+                confirmButtonColor: '#ef4444'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-cancel-' + orderId).submit();
+                }
             });
         }
 

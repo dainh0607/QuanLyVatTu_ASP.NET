@@ -256,7 +256,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 return View();
             }
 
-            var donHang = await _unitOfWork.DonHangRepository.GetByIdAsync(id.Value);
+            var donHang = await _unitOfWork.DonHangRepository.GetDonHangByIdAsync(id.Value);
             
             if (donHang == null)
             {
@@ -266,6 +266,8 @@ namespace QuanLyVatTu_ASP.Controllers
 
             return View(donHang);
         }
+
+
 
         /// <summary>
         /// Hiển thị danh sách đơn hàng của khách hàng
@@ -734,30 +736,45 @@ namespace QuanLyVatTu_ASP.Controllers
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> CancelOrder([FromBody] int orderId)
+        public async Task<IActionResult> CancelOrder([FromForm] int orderId)
         {
             var email = HttpContext.Session.GetString("Email");
-            if (string.IsNullOrEmpty(email)) return Json(new { success = false, message = "Vui lòng đăng nhập." });
+            string referer = Request.Headers["Referer"].ToString() ?? "/Customer/Orders";
+
+            if (string.IsNullOrEmpty(email)) 
+            {
+                TempData["Error"] = "Vui lòng đăng nhập.";
+                return Redirect(referer);
+            }
 
             var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
-            if (khachHang == null) return Json(new { success = false, message = "Không tìm thấy tài khoản." });
+            if (khachHang == null) 
+            {
+                TempData["Error"] = "Không tìm thấy tài khoản.";
+                return Redirect(referer);
+            }
 
             var donHang = await _context.DonHang.FirstOrDefaultAsync(d => d.ID == orderId && d.KhachHangId == khachHang.ID);
             if (donHang == null)
-                return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+            {
+                TempData["Error"] = "Không tìm thấy đơn hàng.";
+                return Redirect(referer);
+            }
 
             // Only allow cancellation for early statuses
-            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán" };
-            if (!allowedStatuses.Contains(donHang.TrangThai))
+            var allowedStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán", "Chờ xử lý", "Đang xử lý" };
+            if (!allowedStatuses.Any(s => s.Equals(donHang.TrangThai, StringComparison.OrdinalIgnoreCase)))
             {
-                return Json(new { success = false, message = "Không thể hủy đơn hàng ở trạng thái hiện tại. Vui lòng liên hệ CSKH." });
+                TempData["Error"] = "Không thể hủy đơn hàng ở trạng thái hiện tại.";
+                return Redirect(referer);
             }
 
             // Get ViewModel to update
             var updateModel = await _donHangService.GetByIdForEditAsync(orderId);
             if (updateModel == null) 
             {
-                 return Json(new { success = false, message = "Không tìm thấy dữ liệu để hủy đơn." });
+                 TempData["Error"] = "Không tìm thấy dữ liệu để hủy đơn.";
+                 return Redirect(referer);
             }
 
             updateModel.TrangThai = "Đã hủy";
@@ -765,10 +782,14 @@ namespace QuanLyVatTu_ASP.Controllers
             
             if (result)
             {
-                return Json(new { success = true, message = "Đã hủy đơn hàng thành công!" });
+                TempData["Success"] = "Đã hủy đơn hàng thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Đã xảy ra lỗi khi hủy đơn.";
             }
 
-            return Json(new { success = false, message = "Đã xảy ra lỗi khi hủy đơn." });
+            return Redirect(referer);
         }
 
         // ==========================================

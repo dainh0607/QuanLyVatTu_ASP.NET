@@ -627,8 +627,8 @@
                                 <span class="order-total-value">@(order.TongTien?.ToString("N0") ?? "0")đ</span>
                             </div>
                             <div class="order-actions">
-                                <a href="/Customer/TrackOrder?id=@order.ID" class="btn-order btn-order-detail">
-                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                <a href="/Customer/TrackOrder?id=@order.ID" class="btn btn-light rounded-pill shadow-sm px-3 py-2 text-dark fs-6" style="border: 1px solid #dee2e6; font-weight: 500;">
+                                    <i class="fas fa-eye me-1"></i> Xem chi tiết
                                 </a>
                                 @{
                                     var oResetStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc" };
@@ -636,14 +636,23 @@
                                 }
                                 @if (oResetStatuses.Any(s => s.Equals(order.TrangThai, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <button class="btn-order btn-order-reorder" onclick="resetOrder(@order.ID)">
-                                        <i class="fas fa-undo"></i> Đặt lại
+                                    <button class="btn btn-warning text-white rounded-pill shadow-sm px-3 py-2 ms-2 fs-6" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; font-weight: 500;" onclick="resetOrder(@order.ID)">
+                                        <i class="fas fa-undo me-1"></i> Đặt lại
                                     </button>
+                                }
+                                @if (order.TrangThai?.Equals("Chờ xác nhận", StringComparison.OrdinalIgnoreCase) == true || order.TrangThai?.Equals("Chờ xử lý", StringComparison.OrdinalIgnoreCase) == true)
+                                {
+                                    <form method="post" action="/Customer/CancelOrder" id="form-cancel-@order.ID" style="display:inline;">
+                                        <input type="hidden" name="orderId" value="@order.ID" />
+                                        <button type="button" class="btn btn-danger text-white rounded-pill shadow-sm px-3 py-2 ms-2 fs-6" style="background: linear-gradient(135deg, #ef4444, #dc2626); border: none; font-weight: 500;" onclick="confirmCancel(@order.ID)">
+                                            <i class="fas fa-times-circle me-1"></i> Hủy đơn
+                                        </button>
+                                    </form>
                                 }
                                 @if (oReorderStatuses.Any(s => s.Equals(order.TrangThai, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <button class="btn-order btn-order-detail" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none;" onclick="reorderCreate(@order.ID)">
-                                        <i class="fas fa-redo"></i> Mua lại
+                                    <button class="btn btn-primary text-white rounded-pill shadow-sm px-3 py-2 ms-2 fs-6" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; font-weight: 500;" onclick="reorderCreate(@order.ID)">
+                                        <i class="fas fa-redo me-1"></i> Mua lại
                                     </button>
                                 }
                             </div>
@@ -730,6 +739,23 @@
                     }
                 })
                 .catch(() => Swal.fire('Lỗi', 'Không thể kết nối server!', 'error'));
+            }
+        });
+    }
+
+    // Cancel Order by Form Submit
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Hủy đơn hàng?',
+            text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-times-circle"></i> Xác nhận hủy',
+            cancelButtonText: 'Đóng',
+            confirmButtonColor: '#ef4444'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-cancel-' + orderId).submit();
             }
         });
     }

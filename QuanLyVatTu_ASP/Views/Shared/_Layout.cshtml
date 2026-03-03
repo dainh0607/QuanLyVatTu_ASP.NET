@@ -176,7 +176,7 @@
                                             <h6 class="cart-item-name">@item.TenVatTu</h6>
                                             <div class="cart-item-meta">
                                                 <span class="cart-item-price">@item.DonGia.ToString("N0")₫</span>
-                                                <span class="cart-item-qty">x@item.SoLuong</span>
+                                                <span class="cart-item-qty">x@(item.SoLuong)</span>
                                             </div>
                                         </div>
                                         <button class="btn-remove-cart-item" title="Xóa sản phẩm" onclick="removeFromDropdown(@item.VatTuId)">
