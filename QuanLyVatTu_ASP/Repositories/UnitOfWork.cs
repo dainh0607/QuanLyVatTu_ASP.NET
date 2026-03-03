@@ -25,6 +25,7 @@ namespace QuanLyVatTu_ASP.Repositories
         public ILichSuSuDungVoucherRepository LichSuSuDungVoucherRepository { get; private set; }
         public ILichSuTichDiemRepository LichSuTichDiemRepository { get; private set; }
         public IHangThanhVienRepository HangThanhVienRepository { get; private set; }
+        public IThongBaoRepository ThongBaoRepository { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -48,6 +49,7 @@ namespace QuanLyVatTu_ASP.Repositories
             LichSuSuDungVoucherRepository = new LichSuSuDungVoucherRepository(_context);
             LichSuTichDiemRepository = new LichSuTichDiemRepository(_context);
             HangThanhVienRepository = new HangThanhVienRepository(_context);
+            ThongBaoRepository = new ThongBaoRepository(_context);
         }
 
         public int Save()

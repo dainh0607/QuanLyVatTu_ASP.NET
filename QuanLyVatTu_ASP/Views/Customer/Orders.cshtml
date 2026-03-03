@@ -671,6 +671,9 @@
 </div>
 
 @section Scripts {
+<!-- SweetAlert2 for notifications -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     // Filter functionality
     document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -731,11 +734,10 @@
         });
     }
 
-    // Reorder Create
     function reorderCreate(orderId) {
         Swal.fire({
             title: 'Mua lại đơn hàng?',
-            html: 'Hệ thống sẽ tạo <b>đơn hàng mới</b> với các sản phẩm từ đơn cũ.',
+            text: 'Các sản phẩm trong đơn này sẽ được thêm vào giỏ hàng của bạn.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: '<i class="fas fa-redo"></i> Mua lại',
@@ -743,33 +745,19 @@
             confirmButtonColor: '#3b82f6'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('/Customer/ReorderCreate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderId)
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đã tạo đơn hàng mới!',
-                            html: data.message,
-                            confirmButtonText: 'Xem đơn mới',
-                            showCancelButton: true,
-                            cancelButtonText: 'Ở lại'
-                        }).then((r) => {
-                            if (r.isConfirmed && data.newOrderId) {
-                                window.location.href = '/Customer/TrackOrder?id=' + data.newOrderId;
-                            } else {
-                                location.reload();
-                            }
-                        });
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Lỗi', 'Không thể kết nối server!', 'error'));
+                // Tạo form ẩn để gửi POST request đến Action ReOrder kết hợp redirect đến giỏ hàng
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/GioHang/ReOrder';
+                
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'orderId';
+                input.value = orderId;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
             }
         });
     }

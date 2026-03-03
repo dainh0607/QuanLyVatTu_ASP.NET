@@ -461,12 +461,9 @@
                                                 }
                                                 @if (pReorderStatuses.Contains(statusLower))
                                                 {
-                                                    <form method="post" action="/GioHang/ReOrder" style="display:inline;">
-                                                        <input type="hidden" name="orderId" value="@order.ID" />
-                                                        <button type="submit" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                                                            <i class="fas fa-undo"></i> Đặt lại
-                                                        </button>
-                                                    </form>
+                                                    <button onclick="reorderToCart(@order.ID)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                                        <i class="fas fa-undo"></i> Mua lại
+                                                    </button>
                                                 }
                                             </div>
                                         </div>
@@ -617,29 +614,7 @@
                     </div>
                 </section>
 
-                <section class="tab-panel" id="tab-notifications" style="display: none;">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h2 class="card-title">Thông báo hệ thống</h2>
-                        </div>
-                        <div class="card-body" style="text-align: center; padding: 60px;">
-                            <i class="fas fa-bell" style="font-size: 4rem; color: #e5e7eb;"></i>
-                            <p style="color: #6b7280; margin-top: 16px;">Không có thông báo mới</p>
-                        </div>
-                    </div>
-                </section>
 
-                <section class="tab-panel" id="tab-promotions" style="display: none;">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h2 class="card-title">Ưu đãi & Khuyến mãi</h2>
-                        </div>
-                        <div class="card-body" style="text-align: center; padding: 60px;">
-                            <i class="fas fa-tags" style="font-size: 4rem; color: #e5e7eb;"></i>
-                            <p style="color: #6b7280; margin-top: 16px;">Chưa có ưu đãi nào</p>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- TAB: VÍ VOUCHER -->
                 <section class="tab-panel" id="tab-voucher" style="display: none;">
@@ -750,62 +725,117 @@
                     </div>
                 </section>
 
-                <section class="tab-panel" id="tab-settings" style="display: none;">
+                <section class="tab-panel" id="tab-notifications" style="display: none;">
                     <div class="content-card">
                         <div class="card-header">
-                            <h2 class="card-title">Cài đặt thông báo</h2>
+                            <h2 class="card-title">Thông báo hệ thống</h2>
                         </div>
-                        <div class="card-body">
-                            <div class="checkbox-group" style="max-width: 500px;">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" checked>
-                                    <span>Nhận email cập nhật đơn hàng</span>
-                                </label>
-                                <label class="checkbox-option">
-                                    <input type="checkbox" checked>
-                                    <span>Nhận SMS khi đơn hàng thay đổi trạng thái</span>
-                                </label>
-                                <label class="checkbox-option">
-                                    <input type="checkbox">
-                                    <span>Nhận thông báo về sản phẩm mới</span>
-                                </label>
-                                <label class="checkbox-option">
-                                    <input type="checkbox" checked>
-                                    <span>Nhận email khuyến mãi hàng tuần</span>
-                                </label>
+                        <div class="card-body p-0">
+                            <div id="sysNotifList" class="profile-notif-container">
+                                <div style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                </div>
                             </div>
-                            <button type="button" class="btn-primary" style="margin-top: 24px;">
-                                <i class="fas fa-save"></i>
-                                Lưu cài đặt
-                            </button>
                         </div>
                     </div>
                 </section>
 
+                <section class="tab-panel" id="tab-promotions" style="display: none;">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Ưu đãi & Khuyến mãi</h2>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="promoNotifList" class="profile-notif-container">
+                                <div style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: CÀI ĐẶT THÔNG BÁO -->
+                <section class="tab-panel" id="tab-settings" style="display: none;">
+                    <style>
+                        .switch input:checked + .slider { background-color: #3b82f6 !important; }
+                        .switch input:not(:checked) + .slider { background-color: #d1d5db !important; }
+                        .switch .slider:before {
+                            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+                            background-color: white; transition: .4s; border-radius: 50%;
+                        }
+                        .switch input:checked + .slider:before { transform: translateX(20px); }
+                    </style>
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Cài đặt thông báo</h2>
+                            <p class="card-subtitle">Quản lý các loại thông báo bạn muốn nhận</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-list">
+                                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f3f4f6;">
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 1rem; color: #1f2937;">Thông báo đơn hàng</h4>
+                                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #6b7280;">Cập nhật khi đơn hàng được xác nhận, đang giao, hoàn thành</p>
+                                    </div>
+                                    <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                                        <input type="checkbox" id="toggleDonHang" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; transition: .4s; border-radius: 24px;"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f3f4f6;">
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 1rem; color: #1f2937;">Khuyến mãi & Ưu đãi</h4>
+                                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #6b7280;">Nhận thông tin về các chương trình giảm giá, voucher mới</p>
+                                    </div>
+                                    <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                                        <input type="checkbox" id="toggleKhuyenMai" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; transition: .4s; border-radius: 24px;"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0;">
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 1rem; color: #1f2937;">Trạng thái thành viên</h4>
+                                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #6b7280;">Cảnh báo khi sắp rớt hạng hoặc thăng hạng cấp bậc</p>
+                                    </div>
+                                    <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                                        <input type="checkbox" id="toggleHang" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; transition: .4s; border-radius: 24px;"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div style="margin-top: 24px;">
+                                <button class="btn-primary" onclick="saveOptions()">Lưu cài đặt</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: QUYỀN RIÊNG TƯ -->
                 <section class="tab-panel" id="tab-privacy" style="display: none;">
                     <div class="content-card">
                         <div class="card-header">
                             <h2 class="card-title">Quyền riêng tư</h2>
+                            <p class="card-subtitle">Quản lý dữ liệu cá nhân của bạn trên hệ thống</p>
                         </div>
                         <div class="card-body">
-                            <div class="checkbox-group" style="max-width: 500px;">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" checked>
-                                    <span>Hiển thị tên trong danh sách đánh giá</span>
-                                </label>
-                                <label class="checkbox-option">
-                                    <input type="checkbox">
-                                    <span>Cho phép nhà bán hàng liên hệ trực tiếp</span>
-                                </label>
-                                <label class="checkbox-option">
-                                    <input type="checkbox" checked>
-                                    <span>Lưu lịch sử tìm kiếm</span>
-                                </label>
+                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                    <i class="fas fa-shield-alt" style="color: #3b82f6; font-size: 1.5rem; margin-top: 2px;"></i>
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0; color: #1e3a8a;">Bảo vệ dữ liệu</h4>
+                                        <p style="margin: 0; font-size: 0.9rem; color: #1e40af;">Chúng tôi luôn tuân thủ các quy định bảo mật để bảo vệ thông tin cá nhân của bạn không bị chia sẻ trái phép.</p>
+                                    </div>
+                                </div>
                             </div>
-                            <button type="button" class="btn-primary" style="margin-top: 24px;">
-                                <i class="fas fa-save"></i>
-                                Lưu cài đặt
-                            </button>
+
+                            <div class="privacy-list">
+                                <div class="privacy-item" style="padding: 16px 0;">
+                                    <h4 style="margin: 0 0 8px 0; font-size: 1rem; color: #1f2937;">Tải xuống dữ liệu cá nhân</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #6b7280;">Xuất một bản sao chứa toàn bộ thông tin cá nhân và lịch sử đơn hàng của bạn.</p>
+                                    <button class="btn-secondary" onclick="exportPersonalData()" style="font-size: 0.85rem; padding: 6px 12px;">Yêu cầu lấy dữ liệu (PDF)</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -868,7 +898,19 @@
             // Update active state
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
+
+            // Update URL hash without causing page jump
+            history.replaceState(undefined, undefined, "#" + tabName);
         });
+    });
+    
+    // Hash change handler for external links (e.g. from Layout Bell Icon)
+    window.addEventListener('hashchange', function() {
+        const hashTab = window.location.hash.replace('#', '');
+        const navItem = document.querySelector(`.nav-item[data-tab="${hashTab}"]`);
+        if(navItem) {
+            navItem.click();
+        }
     });
 
     function switchTab(tabName) {
@@ -1048,8 +1090,57 @@
         });
     }
 
+    // ==========================================
+    // SETTINGS & PRIVACY FUNCTIONS
+    // ==========================================
+    function loadNotificationSettings() {
+        $.get('/Customer/GetNotificationSettings', function(res) {
+            if (res.success) {
+                const cbDonHang = document.getElementById('toggleDonHang');
+                const cbKhuyenMai = document.getElementById('toggleKhuyenMai');
+                const cbHang = document.getElementById('toggleHang');
+                if (cbDonHang) cbDonHang.checked = res.donHang;
+                if (cbKhuyenMai) cbKhuyenMai.checked = res.khuyenMai;
+                if (cbHang) cbHang.checked = res.hangThanhVien;
+            }
+        });
+    }
+
+    // Hook tab click
+    document.querySelectorAll('.nav-item[data-tab="settings"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadNotificationSettings, 100);
+        });
+    });
+
     function saveOptions() {
-        showToast('Đã lưu tùy chọn thành công!', 'success');
+        const data = {
+            donHang: document.getElementById('toggleDonHang').checked,
+            khuyenMai: document.getElementById('toggleKhuyenMai').checked,
+            hangThanhVien: document.getElementById('toggleHang').checked
+        };
+
+        fetch('/Customer/UpdateNotificationSettings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                showToast(res.message, 'success');
+                // Auto reload bell dropdown and tabs
+                if (typeof loadNotifications === 'function') loadNotifications();
+                if (typeof loadProfileNotifications === 'function') loadProfileNotifications();
+            } else {
+                showToast('Lỗi khi lưu cài đặt', 'error');
+            }
+        });
+    }
+
+    function exportPersonalData() {
+        showToast('Đang tạo và tải xuống file PDF...', 'success');
+        window.location.href = '/Customer/ExportPersonalData';
     }
 
     // --- Address Functions ---
@@ -1308,14 +1399,24 @@
     // Load addresses on switch to tab
     document.querySelectorAll('.nav-item[data-tab="address"]').forEach(item => {
         item.addEventListener('click', function() {
-            loadAddresses();
+            setTimeout(loadAddresses, 100);
         });
     });
 
-    // Check if initial tab is address (if url has hash)
-    if(window.location.hash === '#address') {
-        loadAddresses();
-    }
+    // Handle initial hash routing correctly
+    document.addEventListener('DOMContentLoaded', function() {
+        if(window.location.hash) {
+            const hashTab = window.location.hash.replace('#', '');
+            const navItem = document.querySelector(`.nav-item[data-tab="${hashTab}"]`);
+            if(navItem) {
+                setTimeout(() => navItem.click(), 100); // Small delay to let UI render completely
+            } else {
+                switchTab('profile');
+            }
+        } else {
+            switchTab('profile');
+        }
+    });
 
 
     // Change Password Form
@@ -1410,19 +1511,30 @@
     // --- Reorder To Cart Function (Client-side Wrapper if needed, but mostly Form Submit now) ---
     // Kept generic if called via JS
     function reorderToCart(orderId) {
-         // Create a form and submit it
-         var form = document.createElement('form');
-         form.method = 'POST';
-         form.action = '/GioHang/ReOrder';
-         
-         var input = document.createElement('input');
-         input.type = 'hidden';
-         input.name = 'orderId';
-         input.value = orderId;
-         
-         form.appendChild(input);
-         document.body.appendChild(form);
-         form.submit();
+        Swal.fire({
+            title: 'Mua lại đơn hàng?',
+            text: 'Các sản phẩm trong đơn này sẽ được thêm vào giỏ hàng của bạn.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Tạo form ẩn để gửi POST request đến Action ReOrder (Action đang mong chờ 1 POST với FormData)
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/GioHang/ReOrder';
+                
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'orderId';
+                input.value = orderId;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
 
     // Toggle Password Visibility
@@ -1721,6 +1833,60 @@
     });
 
     // ==========================================
+    // NOTIFICATIONS TABS
+    // ==========================================
+    function loadProfileNotifications() {
+        $.get('/Customer/GetNotifications', function(res) {
+            if (res.success) {
+                const sysContainer = document.getElementById('sysNotifList');
+                const promoContainer = document.getElementById('promoNotifList');
+                let sysHtml = '';
+                let promoHtml = '';
+
+                res.data.forEach(n => {
+                    const isPromo = n.loaiThongBao === 'Voucher' || n.loaiThongBao === 'KhuyenMai';
+                    
+                    let iconClass = 'fa-info-circle text-primary';
+                    let bgColor = '#f8f9fa';
+                    if (n.loaiThongBao === 'Voucher') { iconClass = 'fa-ticket text-warning'; bgColor = '#fff8e1'; }
+                    else if (n.loaiThongBao === 'KhuyenMai') { iconClass = 'fa-gift text-danger'; bgColor = '#ffebee'; }
+                    else if (n.loaiThongBao === 'HangThanhVien') { iconClass = 'fa-medal text-success'; bgColor = '#e8f5e9'; }
+                    else if (n.loaiThongBao === 'DonHang') { iconClass = 'fa-box-open text-info'; bgColor = '#e3f2fd'; }
+                    
+                    const html = `
+                        <div class="notification-item" style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 16px; align-items: start; background-color: ${n.daDoc ? '#fff' : '#f0f7ff'}; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='${n.daDoc ? '#fff' : '#f0f7ff'}'" onclick="handleNotificationClick(event, ${n.id}, '${n.linkDich || ''}')">
+                            <div style="font-size: 1.5rem; margin-top: 4px; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: ${bgColor}; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <i class="fa-solid ${iconClass}"></i>
+                            </div>
+                            <div style="flex-grow: 1; position: relative;">
+                                ${!n.daDoc ? '<span style="position: absolute; top: 5px; right: 0; width: 10px; height: 10px; background-color: #ef4444; border-radius: 50%;"></span>' : ''}
+                                <div style="font-weight: ${n.daDoc ? '600' : '700'}; color: ${n.daDoc ? '#374151' : '#1d4ed8'}; font-size: 1.05rem; margin-bottom: 6px; padding-right: 15px;">${n.tieuDe}</div>
+                                <div style="color: #4b5563; font-size: 0.95rem; margin-bottom: 8px; line-height: 1.5;">${n.noiDung}</div>
+                                <div style="color: #9ca3af; font-size: 0.85rem;"><i class="fa-regular fa-clock me-1"></i>${n.ngayTao}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (isPromo) promoHtml += html;
+                    else sysHtml += html;
+                });
+
+                if (!sysHtml) sysHtml = '<div style="text-align: center; padding: 60px; color: #9ca3af;"><i class="fa-regular fa-bell-slash" style="font-size: 3rem; margin-bottom: 16px; color: #e5e7eb;"></i><p>Bạn chưa có thông báo hệ thống nào.</p></div>';
+                if (!promoHtml) promoHtml = '<div style="text-align: center; padding: 60px; color: #9ca3af;"><i class="fa-solid fa-tags" style="font-size: 3rem; margin-bottom: 16px; color: #e5e7eb;"></i><p>Hiện không có ưu đãi hay khuyến mãi nào.</p></div>';
+
+                if(sysContainer) sysContainer.innerHTML = sysHtml;
+                if(promoContainer) promoContainer.innerHTML = promoHtml;
+            }
+        });
+    }
+
+    document.querySelectorAll('.nav-item[data-tab="notifications"], .nav-item[data-tab="promotions"]').forEach(el => {
+        el.addEventListener('click', function() {
+            setTimeout(loadProfileNotifications, 100);
+        });
+    });
+
+    // ==========================================
     // VOUCHER WALLET FUNCTIONS
     // ==========================================
     function loadVoucherWallet() {
@@ -1742,30 +1908,39 @@
                 document.getElementById('noVoucherMsg').style.display = 'none';
                 let html = '';
                 res.data.forEach(v => {
-                    const isDisabled = v.trangThaiTrongVi !== 'AVAILABLE' || v.daHetLuot;
+                    // Cập nhật logic đánh giá: Ưu tiên trạng thái ĐÃ SỬ DỤNG trước khi xét ĐÃ HẾT HẠN
+                    const isUsed = v.trangThaiTrongVi === 'USED';
+                    const isExpired = !isUsed && (v.trangThaiTrongVi === 'EXPIRED' || !v.conHan);
+                    const isOutOfStock = !v.daLuu && v.daHetLuot;
+                    const isDisabled = isUsed || isExpired || isOutOfStock || v.trangThaiTrongVi !== 'AVAILABLE';
                     const opacity = isDisabled ? 'opacity: 0.5;' : '';
-                    const statusBadge = v.sapHetHan
+                    
+                    // Nếu chưa hết hạn, chưa dùng và sắp hết hạn -> hiện badge
+                    const statusBadge = (v.sapHetHan && !isExpired && !isUsed && v.trangThaiTrongVi === 'AVAILABLE')
                         ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">⏰ Sắp hết hạn</span>'
-                        : '';
-                    const statusText = v.trangThaiTrongVi === 'AVAILABLE' ? '✅ Khả dụng'
-                        : v.trangThaiTrongVi === 'USED' ? '🔒 Đã dùng'
-                        : '⏳ Hết hạn';
+                        : (isExpired ? '<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">❌ Đã hết hạn</span>' : '');
+                        
+                    // Ghi đè trạng thái hiển thị rõ ràng hơn cho người dùng (Ưu tiên USED)
+                    const statusText = isUsed ? '🔒 Đã sử dụng'
+                        : isExpired ? '❌ Đã hết hạn'
+                        : isOutOfStock ? '🚫 Hết lượt'
+                        : '✅ Khả dụng';
 
                     const discountText = v.loaiGiamGia === 'PERCENT'
                         ? `Giảm ${v.giaTriGiam}%` + (v.soTienGiamToiDa ? ` (tối đa ${Number(v.soTienGiamToiDa).toLocaleString('vi-VN')}₫)` : '')
                         : `Giảm ${Number(v.giaTriGiam).toLocaleString('vi-VN')}₫`;
 
                     html += `
-                        <div style="border: 1.5px solid ${isDisabled ? '#e5e7eb' : '#6366f1'}; border-radius: 12px; padding: 16px; ${opacity} transition: all 0.2s;">
+                        <div style="border: 1.5px solid ${isDisabled ? '#e5e7eb' : '#6366f1'}; border-radius: 12px; padding: 16px; ${opacity} transition: all 0.2s; position: relative; overflow: hidden;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-weight: 700; color: #6366f1; font-size: 1rem;">${v.maVoucher}</span>
+                                <span style="font-weight: 700; color: ${isDisabled ? '#9ca3af' : '#6366f1'}; font-size: 1rem;">${v.maVoucher}</span>
                                 ${statusBadge}
                             </div>
-                            <div style="font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 6px;">${discountText}</div>
+                            <div style="font-size: 1.1rem; font-weight: 600; color: ${isDisabled ? '#9ca3af' : '#111827'}; margin-bottom: 6px;">${discountText}</div>
                             <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 4px;">${v.moTa || ''}</div>
                             <div style="font-size: 0.8rem; color: #9ca3af;">Đơn tối thiểu: ${Number(v.giaTriDonHangToiThieu).toLocaleString('vi-VN')}₫</div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
-                                <span style="font-size: 0.8rem; color: ${isDisabled ? '#ef4444' : '#10b981'}; font-weight: 500;">${statusText}</span>
+                                <span style="font-size: 0.8rem; color: ${isExpired ? '#ef4444' : (isDisabled ? '#6b7280' : '#10b981')}; font-weight: 500;">${statusText}</span>
                                 <span style="font-size: 0.75rem; color: #9ca3af;">HSD: ${v.thoiGianKetThuc}</span>
                             </div>
                         </div>`;
@@ -1794,24 +1969,43 @@
 
                 let html = '';
                 res.data.forEach(v => {
+                    // Logic cho danh sách mã hiển thị 
+                    const isExpired = !v.conHan;
+                    const isOutOfStock = v.tongSoLuong <= v.soLuongDaDung;
+                    // Vouchers trong kho công khai thường không có trạng thái USED (nếu có user đã lưu nó vào ví, tuỳ logic backend). Nhưng nếu có thì check isUsed
+                    const isUsed = v.trangThaiTrongVi === 'USED'; 
+                    const isDisabled = v.daLuu || isExpired || isOutOfStock || isUsed;
+                    const opacity = isDisabled ? 'opacity: 0.5;' : '';
+
                     const discountText = v.loaiGiamGia === 'PERCENT'
                         ? `Giảm ${v.giaTriGiam}%` + (v.soTienGiamToiDa ? ` (tối đa ${Number(v.soTienGiamToiDa).toLocaleString('vi-VN')}₫)` : '')
                         : `Giảm ${Number(v.giaTriGiam).toLocaleString('vi-VN')}₫`;
 
-                    const btnHtml = v.daLuu
-                        ? '<button disabled style="padding: 6px 14px; background: #e5e7eb; border: none; border-radius: 8px; color: #6b7280; font-size: 0.85rem; cursor: not-allowed;">✓ Đã lưu</button>'
-                        : `<button onclick="saveVoucher(${v.id})" style="padding: 6px 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Lưu mã</button>`;
+                    const btnHtml = isUsed
+                        ? '<button disabled style="padding: 6px 14px; background: #e5e7eb; border: none; border-radius: 8px; color: #6b7280; font-size: 0.85rem; font-weight: 500; cursor: not-allowed;">🔒 Đã sử dụng</button>'
+                        : isExpired 
+                        ? '<button disabled style="padding: 6px 14px; background: #fee2e2; border: none; border-radius: 8px; color: #b91c1c; font-size: 0.85rem; font-weight: 500; cursor: not-allowed;">❌ Đã hết hạn</button>'
+                        : isOutOfStock 
+                        ? '<button disabled style="padding: 6px 14px; background: #fee2e2; border: none; border-radius: 8px; color: #b91c1c; font-size: 0.85rem; font-weight: 500; cursor: not-allowed;">🚫 Hết lượt</button>'
+                        : v.daLuu
+                        ? '<button disabled style="padding: 6px 14px; background: #e5e7eb; border: none; border-radius: 8px; color: #6b7280; font-size: 0.85rem; font-weight: 500; cursor: not-allowed;">✓ Đã lưu</button>'
+                        : `<button onclick="saveVoucher(${v.id})" style="padding: 6px 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">Lưu mã</button>`;
+                        
+                    // Tuyệt đối không có "Sắp hết hạn" nếu nó thực tế ẩn khả năng dùng
+                    const statusBadge = (!isExpired && !isUsed && !isOutOfStock && !v.daLuu && v.sapHetHan) 
+                        ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">⏰ Sắp hết hạn</span>' 
+                        : '';
 
                     html += `
-                        <div style="border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                        <div style="border: 1.5px solid ${isDisabled ? '#e5e7eb' : '#e5e7eb'}; border-radius: 12px; padding: 16px; ${opacity}">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-weight: 700; color: #6366f1;">${v.maVoucher}</span>
-                                ${v.sapHetHan ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">⏰ Sắp hết hạn</span>' : ''}
+                                <span style="font-weight: 700; color: ${isDisabled ? '#9ca3af' : '#6366f1'};">${v.maVoucher}</span>
+                                ${statusBadge}
                             </div>
-                            <div style="font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 6px;">${discountText}</div>
+                            <div style="font-size: 1.1rem; font-weight: 600; color: ${isDisabled ? '#9ca3af' : '#111827'}; margin-bottom: 6px;">${discountText}</div>
                             <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 8px;">Đơn tối thiểu: ${Number(v.giaTriDonHangToiThieu).toLocaleString('vi-VN')}₫ | Còn ${v.tongSoLuong - v.soLuongDaDung} lượt</div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 0.75rem; color: #9ca3af;">HSD: ${v.thoiGianKetThuc}</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <span style="font-size: 0.75rem; color: ${isExpired ? '#ef4444' : '#9ca3af'};">HSD: ${v.thoiGianKetThuc}</span>
                                 ${btnHtml}
                             </div>
                         </div>`;

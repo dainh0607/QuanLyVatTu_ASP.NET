@@ -11,12 +11,14 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         private readonly AppDbContext _context;
         private readonly IVoucherService _voucherService;
         private readonly IDiemTichLuyService _diemTichLuyService;
+        private readonly IThongBaoService _thongBaoService;
 
-        public DonHangService(AppDbContext context, IVoucherService voucherService, IDiemTichLuyService diemTichLuyService)
+        public DonHangService(AppDbContext context, IVoucherService voucherService, IDiemTichLuyService diemTichLuyService, IThongBaoService thongBaoService)
         {
             _context = context;
             _voucherService = voucherService;
             _diemTichLuyService = diemTichLuyService;
+            _thongBaoService = thongBaoService;
         }
 
         public async Task<DonHangIndexViewModel> GetAllPagingAsync(string keyword, string status, int page, int pageSize)
@@ -195,6 +197,16 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                         // Không cho phép quay lui trạng thái
                         return false;
                     }
+
+                    // Tự động sinh thông báo cho khách hàng khi thay đổi trạng thái
+                    string title = "Cập nhật đơn hàng " + (entity.MaHienThi ?? $"#{entity.ID}");
+                    string message = $"Đơn hàng của bạn đã được chuyển sang trạng thái: {newStatus}.";
+                    await _thongBaoService.CreateOrderNotificationAsync(
+                        entity.KhachHangId,
+                        title,
+                        message,
+                        entity.ID
+                    );
                 }
 
             decimal datCocCu = entity.SoTienDatCoc ?? 0;

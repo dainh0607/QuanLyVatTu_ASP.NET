@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302012136_AddThongBaoSystem")]
+    partial class AddThongBaoSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -536,24 +539,12 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<bool>("NhanThongBaoDonHang")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NhanThongBaoHangThanhVien")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NhanThongBaoKhuyenMai")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SoDienThoai")
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("TaiKhoan")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
-
-                    b.Property<bool>("TrangThaiKhoa")
-                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -820,9 +811,6 @@ namespace QuanLyVatTu_ASP.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<bool>("DaDoc")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("DaXoa")
                         .HasColumnType("bit");
 
                     b.Property<int?>("KhachHangId")

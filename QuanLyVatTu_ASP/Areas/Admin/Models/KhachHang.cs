@@ -57,6 +57,11 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column("NgayHetHanHang", TypeName = "datetime")]
         public DateTime? NgayHetHanHang { get; set; }
 
+        public bool NhanThongBaoDonHang { get; set; } = true;
+        public bool NhanThongBaoKhuyenMai { get; set; } = true;
+        public bool NhanThongBaoHangThanhVien { get; set; } = true;
+        public bool TrangThaiKhoa { get; set; } = false;
+
         [ForeignKey("MaHangThanhVien")]
         public virtual HangThanhVien? HangThanhVien { get; set; }
 

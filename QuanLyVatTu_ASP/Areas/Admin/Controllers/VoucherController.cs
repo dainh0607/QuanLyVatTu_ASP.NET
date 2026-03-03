@@ -11,10 +11,12 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     public class VoucherController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly QuanLyVatTu_ASP.Services.Interfaces.IThongBaoService _thongBaoService;
 
-        public VoucherController(AppDbContext context)
+        public VoucherController(AppDbContext context, QuanLyVatTu_ASP.Services.Interfaces.IThongBaoService thongBaoService)
         {
             _context = context;
+            _thongBaoService = thongBaoService;
         }
 
         // GET: Admin/Voucher
@@ -75,6 +77,31 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
 
                 _context.Add(voucher);
                 await _context.SaveChangesAsync();
+                
+                // Phát thông báo Khuyến mãi cho TOÀN BỘ khách hàng (hoặc Khách có hạng cụ thể)
+                // Hiện tại bảng KhachHang có Id. Ta có thể query ID và tạo Notification cho từng người
+                // Hoặc insert 1 Record ThongBao với KhachHangId = NULL (Global).
+                // Do thiết kế yêu cầu "Nhắm mục tiêu đúng Hạng" và "Teaser", ta sẽ quét KhachHang.
+                
+                var allCustomers = await _context.KhachHangs.Include(k => k.HangThanhVien).ToListAsync();
+                foreach (var kh in allCustomers)
+                {
+                    bool isVIP = kh.MaHangThanhVien > 1; 
+                    
+                    if (isVIP)
+                    {
+                        var tieuDe = $"🔥 Voucher mới: Giảm {voucher.GiaTriGiam}{(voucher.LoaiGiamGia == "PERCENT" ? "%" : "đ")}!";
+                        var noiDung = $"Chúng tôi vừa tung ra mã ưu đãi {voucher.MaVoucher}. Hãy nhanh tay lưu vào ví trước khi hết lượt nhé!";
+                        await _thongBaoService.CreateVoucherNotificationAsync(kh.ID, tieuDe, noiDung, "/Customer/Profile#promotions");
+                    }
+                    else
+                    {
+                        var tieuDe = $"✨ Sắp đạt hạng VIP để nhận mã {voucher.MaVoucher}!";
+                        var noiDung = $"Tài khoản của bạn sắp đủ điều kiện thăng hạng để mở khóa mã ưu đãi khổng lồ {voucher.MaVoucher}. Hãy tiếp tục mua sắm nhé!";
+                        await _thongBaoService.CreateVoucherNotificationAsync(kh.ID, tieuDe, noiDung, "/Customer/Profile#promotions");
+                    }
+                }
+
                 TempData["SuccessMessage"] = "Tạo Voucher thành công!";
                 return RedirectToAction(nameof(Index));
             }

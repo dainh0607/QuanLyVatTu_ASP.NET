@@ -43,6 +43,7 @@ namespace QuanLyVatTu_ASP.DataAccess
         public DbSet<LichSuSuDungVoucher> LichSuSuDungVouchers { get; set; }
         public DbSet<HangThanhVien> HangThanhViens { get; set; }
         public DbSet<LichSuTichDiem> LichSuTichDiems { get; set; }
+        public DbSet<ThongBao> ThongBaos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
