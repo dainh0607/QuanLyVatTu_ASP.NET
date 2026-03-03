@@ -2,11 +2,7 @@
 @model List<CartItem>
 @{
     ViewData["Title"] = "Giỏ hàng của bạn";
-
-    
-    // Sử dụng Model thực tế
     var cartItems = Model ?? new List<CartItem>();
-    
     decimal subtotal = cartItems.Sum(x => x.ThanhTien);
     decimal discount = 0;
     decimal total = subtotal - discount;
@@ -14,7 +10,6 @@
 
 <div class="cart-page py-5" style="background-color: var(--md-sys-color-surface);">
     <div class="container-fluid px-4 px-lg-5">
-        
         @if (cartItems == null || cartItems.Count == 0)
         {
             <!-- Empty Cart State -->

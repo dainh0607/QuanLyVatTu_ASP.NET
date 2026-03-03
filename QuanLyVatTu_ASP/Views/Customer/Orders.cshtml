@@ -11,10 +11,10 @@
     {
         return trangThai?.ToLower() switch
         {
-            "đã giao" or "da giao" or "hoàn thành" => "#10b981",
-            "đang giao" or "dang giao" => "#3b82f6",
-            "đang xử lý" or "dang xu ly" or "chờ xác nhận" => "#f59e0b",
-            "đã hủy" or "da huy" => "#ef4444",
+            "hoàn thành" => "#10b981",
+            "đang giao hàng" => "#3b82f6",
+            "đang xử lý" or "chờ xác nhận" or "đã xác nhận" => "#f59e0b",
+            "đã hủy" => "#ef4444",
             _ => "#6b7280"
         };
     }
@@ -23,10 +23,10 @@
     {
         return trangThai?.ToLower() switch
         {
-            "đã giao" or "da giao" or "hoàn thành" => "fa-check-circle",
-            "đang giao" or "dang giao" => "fa-truck",
-            "đang xử lý" or "dang xu ly" or "chờ xác nhận" => "fa-clock",
-            "đã hủy" or "da huy" => "fa-times-circle",
+            "hoàn thành" => "fa-check-circle",
+            "đang giao hàng" => "fa-truck",
+            "đang xử lý" or "chờ xác nhận" or "đã xác nhận" => "fa-clock",
+            "đã hủy" => "fa-times-circle",
             _ => "fa-box"
         };
     }
@@ -490,8 +490,8 @@
             if (Model != null && Model.Any())
             {
                 pendingCount = Model.Count(d => d.TrangThai?.ToLower().Contains("chờ") == true || d.TrangThai?.ToLower().Contains("xử lý") == true);
-                shippingCount = Model.Count(d => d.TrangThai?.ToLower().Contains("giao") == true && !(d.TrangThai?.ToLower().Contains("đã giao") == true));
-                completedCount = Model.Count(d => d.TrangThai?.ToLower().Contains("đã giao") == true || d.TrangThai?.ToLower().Contains("hoàn thành") == true);
+                shippingCount = Model.Count(d => d.TrangThai?.ToLower() == "đang giao hàng");
+                completedCount = Model.Count(d => d.TrangThai?.ToLower() == "hoàn thành");
                 cancelledCount = Model.Count(d => d.TrangThai?.ToLower().Contains("hủy") == true);
             }
         }
@@ -632,7 +632,7 @@
                                 </a>
                                 @{
                                     var oResetStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc" };
-                                    var oReorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đã giao" };
+                                    var oReorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đang giao hàng" };
                                 }
                                 @if (oResetStatuses.Any(s => s.Equals(order.TrangThai, StringComparison.OrdinalIgnoreCase)))
                                 {
@@ -692,9 +692,9 @@
                     order.style.display = 'block';
                 } else if (filter === 'pending' && (status.includes('chờ') || status.includes('xử lý'))) {
                     order.style.display = 'block';
-                } else if (filter === 'shipping' && status.includes('giao') && !status.includes('đã giao')) {
+                } else if (filter === 'shipping' && status.includes('đang giao hàng')) {
                     order.style.display = 'block';
-                } else if (filter === 'completed' && (status.includes('đã giao') || status.includes('hoàn thành'))) {
+                } else if (filter === 'completed' && status.includes('hoàn thành')) {
                     order.style.display = 'block';
                 } else if (filter !== 'all') {
                     order.style.display = 'none';

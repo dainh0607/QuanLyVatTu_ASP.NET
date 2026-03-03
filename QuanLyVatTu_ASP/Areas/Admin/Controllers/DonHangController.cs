@@ -137,9 +137,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                 var donHangGoc = await _donHangService.GetByIdForEditAsync(id);
                 if (donHangGoc == null) return NotFound();
 
-                // 1. Restriction: Cannot edit if "Đã xác nhận" ( Confirmed) or "Đã thanh toán" (Paid) - per user request
-                // Also including "Đã giao" and "Đã hủy" as final states usually shouldn't be edited freely.
-                var lockedStatuses = new[] { "Đã thanh toán", "Đã giao", "Đã hủy", "Đã xác nhận" };
+                // 1. Restriction: Cannot edit if "Hoàn thành" or "Đang giao hàng" - per user request
+                // Also including "Đã hủy" and "Đã xác nhận" as states that shouldn't be edited freely.
+                var lockedStatuses = new[] { "Hoàn thành", "Đang giao hàng", "Đã hủy", "Đã xác nhận" };
                 if (lockedStatuses.Contains(donHangGoc.TrangThai))
                 {
                      // Exception: Allow changing Locked -> Locked (e.g. Confirmed -> Paid) or specific transitions?
@@ -178,7 +178,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                      // For "Đã xác nhận", if they try to revert to "Chờ xác nhận" -> Block.
                 }
 
-                if (donHangGoc.TrangThai == "Đã thanh toán" || donHangGoc.TrangThai == "Đã giao")
+                if (donHangGoc.TrangThai == "Hoàn thành" || donHangGoc.TrangThai == "Đang giao hàng")
                 {
                      ModelState.AddModelError("", $"Đơn hàng đang ở trạng thái '{donHangGoc.TrangThai}' và không được phép chỉnh sửa.");
                      await LoadDropdownData(model.KhachHangId, model.NhanVienId);

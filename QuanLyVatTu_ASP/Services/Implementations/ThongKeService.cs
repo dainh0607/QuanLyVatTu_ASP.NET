@@ -64,7 +64,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             // 3. Tính toán aggregate trực tiếp trên database (tối ưu hiệu suất)
             var totalRevenue = await query.SumAsync(x => x.TongTien ?? 0);
             var totalOrders = await query.CountAsync();
-            var paidOrders = await query.CountAsync(x => x.TrangThai == "Hoàn thành" || x.TrangThai == "Đã thanh toán");
+            var paidOrders = await query.CountAsync(x => x.TrangThai == "Hoàn thành");
 
             // 4. Chỉ load dữ liệu chi tiết cho danh sách hiển thị (có phân trang nếu cần)
             var rawData = await query
@@ -174,7 +174,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var khachHangList = new SelectList(khachHangs, "ID", "HoTen", selectedKhachHang);
 
             var trangThais = new List<string> {
-                "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Hoàn thành", "Đã hủy", "Đã thanh toán", "Chưa thanh toán"
+                "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Đang giao hàng", "Hoàn thành", "Đã hủy"
             };
 
             var phuongThucs = new List<string> {

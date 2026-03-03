@@ -58,7 +58,7 @@
                             </span>
                             @{
                                 var resetStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Chờ thanh toán", "Chờ đặt cọc", "Công nợ" };
-                                var reorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đã giao" };
+                                var reorderStatuses = new[] { "Hoàn thành", "Đã hủy", "Đang giao hàng" };
                             }
                             @if (resetStatuses.Any(s => s.Equals(Model.TrangThai, StringComparison.OrdinalIgnoreCase)))
                             {
@@ -174,9 +174,9 @@
                                     </div>
                                 </div>
                             }
-                            @if (Model.TrangThai == "Đang giao" || Model.TrangThai == "Đã giao")
+                            @if (Model.TrangThai == "Đang giao hàng" || Model.TrangThai == "Hoàn thành")
                             {
-                                <div class="timeline-item @(Model.TrangThai == "Đã giao" ? "completed" : "")">
+                                <div class="timeline-item @(Model.TrangThai == "Hoàn thành" ? "completed" : "")">
                                     <div class="timeline-icon bg-primary">
                                         <i class="fas fa-shipping-fast"></i>
                                     </div>
@@ -185,14 +185,14 @@
                                     </div>
                                 </div>
                             }
-                            @if (Model.TrangThai == "Đã giao")
+                            @if (Model.TrangThai == "Hoàn thành")
                             {
                                 <div class="timeline-item completed">
                                     <div class="timeline-icon bg-success">
                                         <i class="fas fa-check-double"></i>
                                     </div>
                                     <div class="timeline-content">
-                                        <strong>Đã giao hàng</strong>
+                                        <strong>Hoàn thành</strong>
                                     </div>
                                 </div>
                             }
@@ -256,11 +256,11 @@
     {
         return status switch
         {
-            "Chờ xử lý" => "bg-warning text-dark",
-            "Đang xử lý" => "bg-info",
-            "Đang giao" => "bg-primary",
-            "Đã giao" => "bg-success",
-            "Hủy" => "bg-danger",
+            "Chờ xử lý" or "Chờ xác nhận" => "bg-warning text-dark",
+            "Đang xử lý" or "Đã xác nhận" => "bg-info",
+            "Đang giao hàng" => "bg-primary",
+            "Hoàn thành" => "bg-success",
+            "Hủy" or "Đã hủy" => "bg-danger",
             _ => "bg-secondary"
         };
     }

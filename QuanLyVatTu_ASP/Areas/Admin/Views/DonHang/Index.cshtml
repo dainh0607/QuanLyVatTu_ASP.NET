@@ -40,7 +40,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted small mb-1">Hoàn thành</h6>
-                    <h4 class="mb-0 fw-bold">@Model.Items.Count(i => i.TrangThai == "Đã giao" || i.TrangThai == "Đã thanh toán")</h4>
+                    <h4 class="mb-0 fw-bold">@Model.Items.Count(i => i.TrangThai == "Hoàn thành")</h4>
                 </div>
             </div>
         </div>
@@ -87,10 +87,8 @@
                         <li><a class="dropdown-item" asp-action="Index" asp-route-status="Chờ xác nhận" asp-route-keyword="@ViewBag.Keyword">Chờ xác nhận</a></li>
                         <li><a class="dropdown-item" asp-action="Index" asp-route-status="Đã xác nhận" asp-route-keyword="@ViewBag.Keyword">Đã xác nhận</a></li>
                         <li><a class="dropdown-item" asp-action="Index" asp-route-status="Đang xử lý" asp-route-keyword="@ViewBag.Keyword">Đang xử lý</a></li>
-                        <li><a class="dropdown-item" asp-action="Index" asp-route-status="Đã giao" asp-route-keyword="@ViewBag.Keyword">Đã giao</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" asp-action="Index" asp-route-status="Chưa thanh toán" asp-route-keyword="@ViewBag.Keyword">Chưa thanh toán</a></li>
-                        <li><a class="dropdown-item" asp-action="Index" asp-route-status="Đã thanh toán" asp-route-keyword="@ViewBag.Keyword">Đã thanh toán</a></li>
+                        <li><a class="dropdown-item" asp-action="Index" asp-route-status="Đang giao hàng" asp-route-keyword="@ViewBag.Keyword">Đang giao hàng</a></li>
+                        <li><a class="dropdown-item" asp-action="Index" asp-route-status="Hoàn thành" asp-route-keyword="@ViewBag.Keyword">Hoàn thành</a></li>
                     </ul>
                 </div>
                 <a asp-action="Create" class="btn btn-primary rounded-pill px-3 d-flex align-items-center gap-2 shadow-sm">
@@ -179,12 +177,12 @@
                              @{
                                 var statusClass = (item.TrangThai ?? "").Trim().ToLower() switch
                                 {
-                                    "đã giao" => "bg-success-subtle text-success",
-                                    "đã hoàn thành" => "bg-success-subtle text-success",
-                                    "đã thanh toán" => "bg-success-subtle text-success",
+                                    "đang giao hàng" => "bg-info-subtle text-info",
+                                    "hoàn thành" => "bg-success-subtle text-success",
                                     "đã hủy" => "bg-danger-subtle text-danger",
-                                    "chờ xử lý" => "bg-warning-subtle text-warning",
-                                    "đang xử lý" => "bg-info-subtle text-info",
+                                    "chờ xử lý" or "chờ xác nhận" => "bg-warning-subtle text-warning",
+                                    "đang xử lý" => "bg-primary-subtle text-primary",
+                                    "đã xác nhận" => "bg-info-subtle text-info",
                                     _ => "bg-secondary-subtle text-secondary"
                                 };
                             }
@@ -202,7 +200,7 @@
                                             <i class="fas fa-eye me-2 text-primary"></i> Xem chi tiết
                                         </a>
                                     </li>
-                                    @if (item.TrangThai != "Đã thanh toán" && item.TrangThai != "Đã giao" && item.TrangThai != "Đã hủy")
+                                    @if (item.TrangThai != "Hoàn thành" && item.TrangThai != "Đang giao hàng" && item.TrangThai != "Đã hủy")
                                     {
                                         <li>
                                             <a class="dropdown-item py-2" asp-action="Edit" asp-route-id="@item.ID">

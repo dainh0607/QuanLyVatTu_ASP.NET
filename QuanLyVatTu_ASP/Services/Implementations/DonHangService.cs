@@ -43,10 +43,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrEmpty(status) && status != "Tất cả")
             {
-                if (status == "Chưa thanh toán")
+                if (status == "Chưa hoàn thành")
                 {
-                    // Lọc các đơn chưa có trạng thái "Đã thanh toán"
-                    query = query.Where(x => x.TrangThai != "Đã thanh toán");
+                    // Lọc các đơn chưa có trạng thái "Hoàn thành"
+                    query = query.Where(x => x.TrangThai != "Hoàn thành");
                 }
                 else
                 {
@@ -159,7 +159,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
                     if (newStatus == "Đã hủy")
                     {
-                        if (currentStatus == "Đã giao" || currentStatus == "Đã thanh toán")
+                        if (currentStatus == "Đang giao hàng" || currentStatus == "Hoàn thành")
                         {
                              return false; 
                         }
@@ -183,11 +183,11 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                         await _voucherService.HandleOrderCancelVoucherAsync(id, currentStatus);
                         await _diemTichLuyService.RefundPointsAsync(id);
                     }
-                    else if (newStatus == "Đã giao")
+                    else if (newStatus == "Hoàn thành")
                     {
                         if (newLevel < currentLevel) return false;
 
-                        // [NEW] Tích điểm + Xét nâng hạng khi giao thành công
+                        // [NEW] Tích điểm + Xét nâng hạng khi hoàn thành đơn hàng
                         decimal finalAmount = entity.TongTienThucTra ?? entity.TongTien ?? 0;
                         await _diemTichLuyService.EarnPointsAsync(entity.KhachHangId, id, finalAmount);
                         await _diemTichLuyService.EvaluateTierUpgradeAsync(entity.KhachHangId);
@@ -304,8 +304,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 "Chờ xác nhận" => 1,
                 "Đã xác nhận" => 2,
                 "Đang xử lý" => 3,
-                "Đã giao" => 4,
-                "Đã thanh toán" => 5,
+                "Đang giao hàng" => 4,
+                "Hoàn thành" => 5,
                 "Đã hủy" => 100, // Status cuối
                 _ => 0
             };

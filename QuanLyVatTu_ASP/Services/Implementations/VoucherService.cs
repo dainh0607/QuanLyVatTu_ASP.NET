@@ -185,7 +185,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
             else
             {
-                // -------- HỦY MUỘN (Đang xử lý / Đã giao): Thiêu hủy mã --------
+                // -------- HỦY MUỘN (Đang xử lý / Đang giao hàng): Thiêu hủy mã --------
                 lichSu.TrangThaiSuDung = "BURNED";
 
                 if (viVoucher != null)

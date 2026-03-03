@@ -29,7 +29,7 @@
         public decimal TongTien { get; set; }
         public string TrangThai { get; set; } = string.Empty;
 
-        public bool DaThanhToan => TrangThai == "Hoàn thành" || TrangThai == "Đã thanh toán";
+        public bool DaThanhToan => TrangThai == "Hoàn thành";
     }
 
     public class ProductStatisticItem

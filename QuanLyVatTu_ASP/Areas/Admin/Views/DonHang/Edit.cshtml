@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Trạng thái</label>
-                                    @if (Model.TrangThai == "Đã giao")
+                                    @if (Model.TrangThai == "Hoàn thành")
                                     {
                                         <input asp-for="TrangThai" class="form-control form-control-lg rounded-3 bg-success text-white opacity-75" readonly />
                                     }
@@ -49,9 +49,8 @@
                                             <option value="Chờ xác nhận">Chờ xác nhận</option>
                                             <option value="Đã xác nhận">Đã xác nhận</option>
                                             <option value="Đang xử lý">Đang xử lý</option>
-                                            <option value="Đã giao">Đã giao</option>
-                                            <option value="chưa thanh toán">chưa thanh toán</option>
-                                            <option value="Đã thanh toán">Đã thanh toán</option>
+                                            <option value="Đang giao hàng">Đang giao hàng</option>
+                                            <option value="Hoàn thành">Hoàn thành</option>
                                             <option value="Đã hủy">Đã hủy</option>
                                         </select>
                                     }
@@ -140,11 +139,9 @@
             const statusLevels = {
                 'Chờ xác nhận': 1,
                 'Đã xác nhận': 2,
-                'chưa thanh toán': 2, // Coi như ngang hàng Đã xác nhận? Hoặc thấp hơn? Để tạm
                 'Đang xử lý': 3,
-                'Đã giao': 4,
-                'Đã thanh toán': 5,
-                'Đã hoàn thành': 5,
+                'Đang giao hàng': 4,
+                'Hoàn thành': 5,
                 'Đã hủy': 100
             };
 
@@ -162,9 +159,9 @@
                          $(this).prop('disabled', true);
                     }
 
-                    // 2. Đặc biệt: Đã giao/Đã thanh toán thì không được chọn Đã hủy
+                    // 2. Đặc biệt: Hoàn thành/Đang giao hàng thì không được chọn Đã hủy
                     if (optionStatus === 'Đã hủy') {
-                        if (currentStatus === 'Đã giao' || currentStatus === 'Đã thanh toán' || currentStatus === 'Đã hoàn thành') {
+                        if (currentStatus === 'Đang giao hàng' || currentStatus === 'Hoàn thành') {
                              $(this).prop('disabled', true);
                         }
                     }

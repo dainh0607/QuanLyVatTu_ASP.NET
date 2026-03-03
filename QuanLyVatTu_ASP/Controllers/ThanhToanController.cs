@@ -616,7 +616,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 }
                 else if (donHang.TrangThai == "Chờ thanh toán")
                 {
-                     donHang.TrangThai = "Đã thanh toán";
+                     donHang.TrangThai = "Hoàn thành";
                      donHang.GhiChu += " | Đã thanh toán (Giả lập).";
                 }
 

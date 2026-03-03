@@ -19,7 +19,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         }
 
         // ==========================================
-        // 1. Tích điểm (EARN) — Gọi khi đơn "Đã giao thành công"
+        // 1. Tích điểm (EARN) — Gọi khi đơn "Hoàn thành"
         // ==========================================
         public async Task<ServiceResult> EarnPointsAsync(int khachHangId, int donHangId, decimal finalAmount)
         {
@@ -186,7 +186,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var oneYearAgo = DateTime.Now.AddDays(-365);
             var totalSpent = await _context.DonHang
                 .Where(d => d.KhachHangId == khachHangId
-                         && (d.TrangThai == "Đã giao" || d.TrangThai == "Đã thanh toán" || d.TrangThai == "Hoàn thành")
+                         && d.TrangThai == "Hoàn thành"
                          && d.NgayDat >= oneYearAgo)
                 .SumAsync(d => d.TongTienThucTra ?? d.TongTien ?? 0);
 

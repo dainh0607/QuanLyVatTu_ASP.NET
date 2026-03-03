@@ -86,7 +86,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var donHang = await _context.DonHang.FindAsync(maDonHang);
             if(donHang == null) return "Đơn hàng không tồn tại";
 
-            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đang giao hàng" || donHang.TrangThai == "Hoàn thành")
                 return "Không thể thay đổi chi tiết khi Đơn hàng ở trạng thái này.";
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -138,7 +138,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (soLuong < 1) return "Số lượng phải ≥ 1";
             var donHang = await _context.DonHang.FindAsync(maDonHang);
             if (donHang == null) return "Đơn không tồn tại";
-            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đang giao hàng" || donHang.TrangThai == "Hoàn thành")
                 return "Không thể thay đổi chi tiết đơn hàng lúc này.";
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -183,7 +183,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (selectedIds == null || selectedIds.Count == 0) return "Chưa chọn vật tư nào để xóa";
             var donHang = await _context.DonHang.FindAsync(maDonHang);
             if (donHang == null) return "Đơn không tồn tại";
-            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đã giao" || donHang.TrangThai == "Đã thanh toán")
+            if(donHang.TrangThai == "Đã hủy" || donHang.TrangThai == "Đang giao hàng" || donHang.TrangThai == "Hoàn thành")
                 return "Không thể xóa chi tiết đơn hàng ở trạng thái này.";
 
             using var transaction = await _context.Database.BeginTransactionAsync();
