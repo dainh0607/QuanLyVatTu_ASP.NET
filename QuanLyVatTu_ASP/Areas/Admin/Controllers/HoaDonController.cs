@@ -62,9 +62,9 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Quản trị")
             {
-                TempData["Error"] = "Chỉ Admin mới có quyền xóa hóa đơn.";
+                TempData["Error"] = "Chỉ Quản trị viên mới có quyền xóa hóa đơn.";
                 return RedirectToAction(nameof(Index));
             }
 

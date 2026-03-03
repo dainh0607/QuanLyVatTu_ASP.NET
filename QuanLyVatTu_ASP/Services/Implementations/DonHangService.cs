@@ -125,6 +125,21 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 NgayTao = DateTime.Now
             };
 
+            // === NGHIỆP VỤ ĐẶT CỌC: Đơn >= 5 triệu bắt buộc cọc 10% ===
+            decimal tongTien = entity.TongTien ?? 0;
+            if (tongTien >= 5000000)
+            {
+                decimal tienCocToiThieu = tongTien * 0.1m;
+                // Nếu Admin chưa nhập đủ tiền cọc thì auto set
+                if ((entity.SoTienDatCoc ?? 0) < tienCocToiThieu)
+                {
+                    entity.SoTienDatCoc = tienCocToiThieu;
+                }
+                entity.TrangThai = "Chờ đặt cọc";
+                entity.PhuongThucDatCoc = string.IsNullOrEmpty(entity.PhuongThucDatCoc) ? "Chuyển khoản (QR)" : entity.PhuongThucDatCoc;
+                entity.GhiChu = (entity.GhiChu ?? "") + " | Đơn hàng >= 5tr, bắt buộc cọc 10%.";
+            }
+
             _context.DonHang.Add(entity);
             await _context.SaveChangesAsync();
         }
@@ -217,13 +232,15 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             decimal datCocCu = entity.SoTienDatCoc ?? 0;
             decimal datCocMoi = model.SoTienDatCoc ?? 0;
-            decimal tienCocToiThieu = (entity.TongTien ?? 0) * 0.1M;
+            decimal tongTien = entity.TongTien ?? 0;
+            decimal tienCocToiThieu = tongTien >= 5000000 ? tongTien * 0.1M : 0;
 
             if (datCocMoi < datCocCu)
             {
                 return false;
             }
-            if (model.TrangThai == "Đã xác nhận" && datCocMoi < tienCocToiThieu)
+            // Nghiệp vụ: Đơn >= 5 triệu phải cọc >= 10%, bất kể trạng thái
+            if (tongTien >= 5000000 && datCocMoi < tienCocToiThieu)
             {
                 return false;
             }

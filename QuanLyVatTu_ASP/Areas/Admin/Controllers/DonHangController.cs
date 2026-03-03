@@ -193,6 +193,20 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                      return View(model);
                 }
 
+                // === NGHIỆP VỤ ĐẶT CỌC: Đơn >= 5 triệu bắt buộc cọc 10% (kiểm tra TRƯỚC khi save) ===
+                decimal tongTienDon = donHangGoc.TongTien ?? 0;
+                if (tongTienDon >= 5000000)
+                {
+                    decimal tienCocToiThieu = tongTienDon * 0.1M;
+                    if ((model.SoTienDatCoc ?? 0) < tienCocToiThieu)
+                    {
+                        ModelState.AddModelError("SoTienDatCoc",
+                            $"Đơn hàng >= 5.000.000đ bắt buộc đặt cọc tối thiểu 10% ({tienCocToiThieu:N0} đ). Hiện tại chỉ có {(model.SoTienDatCoc ?? 0):N0} đ.");
+                        await LoadDropdownData(model.KhachHangId, model.NhanVienId);
+                        return View(model);
+                    }
+                }
+
                 var success = await _donHangService.UpdateAsync(id, model);
                 if (!success)
                 {
@@ -202,13 +216,6 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                     // Tải lại dropdown và trả về View
                     await LoadDropdownData(model.KhachHangId, model.NhanVienId);
                     return View(model);
-                }
-                decimal tienCocToiThieu = (donHangGoc.TongTien ?? 0) * 0.1M;
-
-                if (model.TrangThai == "Đã xác nhận" && model.SoTienDatCoc < tienCocToiThieu)
-                {
-                    ModelState.AddModelError("TrangThai",
-                                             $"Để chuyển sang 'Đã xác nhận', khách hàng phải đặt cọc đủ 10% giá trị đơn hàng ({tienCocToiThieu:N0} đ). Hiện tại chỉ có {model.SoTienDatCoc:N0} đ.");
                 }
 
                 TempData["Success"] = "Cập nhật đơn hàng thành công";
