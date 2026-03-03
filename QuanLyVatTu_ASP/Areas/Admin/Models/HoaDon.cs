@@ -78,7 +78,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Column(TypeName = "nvarchar(500)")]
         public string? DiaChiNguoiBan { get; set; }
 
-        /// <summary>Thuế suất VAT (ví dụ: 10)</summary>
+        /// Thuế suất VAT (ví dụ: 10)
         [Column(TypeName = "decimal(5,2)")]
         public decimal? ThueSuat { get; set; }
 

@@ -20,6 +20,8 @@ namespace QuanLyVatTu_ASP.Repositories
 
         Task AddAsync(T entity);
 
+        Task AddRangeAsync(IEnumerable<T> entities);
+
         void Update(T entity);
 
         void Delete(T entity);

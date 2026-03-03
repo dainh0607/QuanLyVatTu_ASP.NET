@@ -105,7 +105,9 @@ namespace QuanLyVatTu_ASP.Controllers
 
             ViewBag.Cart = cart;
             ViewBag.IsBuyNow = isBuyNow;
-            ViewBag.Total = cart.Sum(x => x.ThanhTien);
+            decimal total = cart.Sum(x => x.ThanhTien);
+            ViewBag.Total = total;
+            ViewBag.MaxDiemDuocPhep = Math.Floor(total * 0.5m); // 50% max
 
             // === VOUCHER & POINTS DATA (Script D + Section 4) ===
             var availableVouchers = await _unitOfWork.ViVoucherRepository.GetAvailableAsync(khachHang.ID);
@@ -368,8 +370,17 @@ namespace QuanLyVatTu_ASP.Controllers
                 int diemThucDung = 0;
                 if (soDiemSuDung > 0)
                 {
-                    // Không cho trừ quá số tiền còn lại
-                    diemThucDung = (int)Math.Min(soDiemSuDung, afterDiscount);
+                    // Giới hạn tối đa 50% tổng tiền đơn hàng
+                    int maxDiemDuocPhep = (int)Math.Floor(tongTien * 0.5m);
+
+                    // Không cho trừ quá số tiền còn lại VÀ không vượt rào 50%
+                    diemThucDung = Math.Min(soDiemSuDung, Math.Min((int)afterDiscount, maxDiemDuocPhep));
+
+                    if (soDiemSuDung > maxDiemDuocPhep)
+                    {
+                        TempData["Warning"] = (TempData["Warning"]?.ToString() ?? "") + $" | Bạn chỉ được dùng tối đa {maxDiemDuocPhep:N0} điểm (50% giá trị đơn hàng).";
+                    }
+
                     if (diemThucDung > 0)
                     {
                         var redeemResult = await _diemTichLuyService.RedeemPointsAsync(

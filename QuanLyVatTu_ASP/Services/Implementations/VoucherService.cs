@@ -172,7 +172,11 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             var viVoucher = await _unitOfWork.ViVoucherRepository
                 .GetByKhachHangAndVoucherAsync(lichSu.MaKhachHang, lichSu.MaVoucherGoc);
 
-            if (trangThaiDonHang == "Chờ xác nhận")
+            // Hủy sớm: tất cả trạng thái trước khi đơn bắt đầu xử lý thực sự
+            var earlyCancelStatuses = new[] { "Chờ xác nhận", "Đã xác nhận", "Chờ đặt cọc", "Chờ thanh toán", "Chờ xử lý" };
+            bool isEarlyCancellation = earlyCancelStatuses.Contains(trangThaiDonHang);
+
+            if (isEarlyCancellation)
             {
                 // -------- HỦY SỚM: Hoàn mã --------
                 lichSu.TrangThaiSuDung = "REFUNDED";
@@ -196,7 +200,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             await _unitOfWork.SaveAsync();
 
-            return ServiceResult.Ok(trangThaiDonHang == "Chờ xác nhận"
+            return ServiceResult.Ok(isEarlyCancellation
                 ? "Mã voucher đã được hoàn lại vào ví."
                 : "Mã voucher đã bị thiêu hủy.");
         }

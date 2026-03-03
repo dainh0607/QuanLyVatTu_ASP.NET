@@ -17,5 +17,7 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task<string> GetNextMaHienThiAsync();
 
         Task<QuanLyVatTu_ASP.Areas.Admin.Models.KhachHang?> GetByIdAsync(int id);
+
+        Task<string?> DieuChinhDiemAsync(int khachHangId, int soDiemThayDoi, string lyDo);
     }
 }

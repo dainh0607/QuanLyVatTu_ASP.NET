@@ -104,6 +104,18 @@
                 </div>
             }
 
+            @* === Thông báo Broadcast: Quản trị, Nhân viên === *@
+            @if (currentRole == "Quản trị" || currentRole == "Nhân viên")
+            {
+                <div class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongBaoAdmin" ? "active" : "")"
+                       asp-area="Admin" asp-controller="ThongBaoAdmin" asp-action="Index">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <span>Thông báo khách hàng</span>
+                    </a>
+                </div>
+            }
+
             @* === Nhân viên: chỉ Quản trị === *@
             @if (currentRole == "Quản trị")
             {
@@ -166,10 +178,18 @@
                  </a>
                  <div class="dropdown">
                     <div class="user-profile" data-bs-toggle="dropdown">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=00639b&color=fff" 
-                             class="rounded-circle" width="32" height="32" alt="Admin">
+                        @{
+                            var avatarUrl = Context.Session.GetString("AvatarUrl");
+                            var userName = Context.Session.GetString("UserName") ?? "Admin";
+                            var avatarSrc = !string.IsNullOrEmpty(avatarUrl) 
+                                ? avatarUrl 
+                                : $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userName)}&background=00639b&color=fff";
+                        }
+                        <img src="@avatarSrc" 
+                             class="rounded-circle" width="32" height="32" alt="@userName"
+                             onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(userName)&background=00639b&color=fff'">
                         <div class="d-none d-sm-block">
-                            <span class="d-block small fw-bold">Administrator</span>
+                            <span class="d-block small fw-bold">@userName</span>
                         </div>
                     </div>
                  </div>

@@ -74,6 +74,11 @@ namespace QuanLyVatTu_ASP.Repositories
             await _dbSet.AddAsync(entity);
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+        }
+
         public void Update(T entity)
         {
             _dbSet.Attach(entity);

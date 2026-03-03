@@ -74,6 +74,7 @@ namespace QuanLyVatTu_ASP.Controllers
                  HttpContext.Session.SetString("UserName", nhanVien.HoTen);
                  HttpContext.Session.SetString("Email", nhanVien.Email ?? "");
                  HttpContext.Session.SetString("Role", nhanVien.VaiTro); // "Quản trị", "Nhân viên", "Kế toán", "Thủ kho"
+                 HttpContext.Session.SetString("AvatarUrl", nhanVien.AnhDaiDien ?? "");
                  
                  // Chuyển hướng vào trang quản lý
                  return RedirectToRoute("AdminDonHang");

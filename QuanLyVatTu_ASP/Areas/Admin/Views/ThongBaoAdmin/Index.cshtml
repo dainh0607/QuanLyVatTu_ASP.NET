@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Quản lý Thông Báo";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Quản lý Thông báo</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Gửi Thông Báo Hàng Loạt</li>
+    </ol>
+
+    <div class="row">
+        <!-- Form Gửi Thông Báo -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded-4 border-0 mb-4">
+                <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-bullhorn me-2"></i>Soạn thông báo mới</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Broadcast" asp-controller="ThongBaoAdmin" method="post">
+                        
+                        <div class="mb-3">
+                            <label for="DoiTuongNhan" class="form-label fw-bold">1. Đối tượng nhận thông báo <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="DoiTuongNhan" name="DoiTuongNhan" required>
+                                @foreach (var item in ViewBag.DoiTuongNhan)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <div class="form-text text-muted"><i class="fas fa-info-circle"></i> Thông báo chỉ được gửi cho các khách hàng chưa tắt tính năng "Nhận thông báo Khuyến mãi".</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="TieuDe" class="form-label fw-bold">2. Tiêu đề thông báo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="TieuDe" name="TieuDe" placeholder="Ví dụ: 🔥 SIÊU SALE GIỮA THÁNG - FREESHIP MỌI ĐƠN HÀNG" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="NoiDung" class="form-label fw-bold">3. Nội dung <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="NoiDung" name="NoiDung" rows="4" placeholder="Nhập nội dung thông báo. Có thể sử dụng biểu tượng cảm xúc để hấp dẫn hơn..." required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="LinkDich" class="form-label fw-bold">4. Đường dẫn đính kèm (URL) <span class="text-muted fw-normal">(Không bắt buộc)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-link"></i></span>
+                                <input type="text" class="form-control" id="LinkDich" name="LinkDich" placeholder="Ví dụ: /SanPham/KhuyenMai hoặc https://...">
+                            </div>
+                            <div class="form-text">Khách hàng nhấp vào thông báo sẽ được chuyển hướng thẳng tới link này.</div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="reset" class="btn btn-light rounded-pill px-4">Xóa form</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" onclick="return confirm('Bạn có chắc chắn muốn gửi thông báo này tới tập khách hàng đã chọn? Lệnh này không thể hoàn tác.');">
+                                <i class="fas fa-paper-plane me-2"></i>Gửi ngay
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hướng dẫn / Mẹo -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4 bg-light rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Mẹo gửi thông báo hiệu quả</h6>
+                    <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                        <li><strong>Cá nhân hóa theo Hạng:</strong> Nên gửi thông báo riêng biệt cho tập khách hàng VIP/Gold với ưu đãi tốt hơn để kích thích mua sắm.</li>
+                        <li><strong>Tránh Spam:</strong> Không nên lạm dụng gửi quá nhiều thông báo trong 1 ngày, sẽ khiến khách hàng khó chịu và dễ dàng tắt "Nhận thông báo".</li>
+                        <li><strong>Dẫn link chính xác:</strong> Luôn luôn nhớ chèn Link (ví dụ trỏ về trang sản phẩm đang Sale) để tăng tỷ lệ chuyển đổi.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 border-start border-4 border-info rounded-3">
+                <div class="card-body p-3">
+                    <p class="mb-0 text-muted small"><strong><i class="fas fa-info-circle"></i> Hệ thống Notification:</strong></p>
+                    <p class="mb-0 mt-1 small">Mọi tin nhắn phát sóng từ đây đều mang nhãn <code>KhuyenMai</code>. Nó sẽ xuất hiện trên thanh chuông đỏ của khách hàng ở trang web.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

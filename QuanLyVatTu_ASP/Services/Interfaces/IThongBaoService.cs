@@ -13,5 +13,6 @@ namespace QuanLyVatTu_ASP.Services.Interfaces
         Task CreateVoucherNotificationAsync(int khachHangId, string tieuDe, string noiDung, string? linkDich = null);
         Task CreateTierNotificationAsync(int khachHangId, string tieuDe, string noiDung, string? linkDich = null);
         Task CreateOrderNotificationAsync(int khachHangId, string tieuDe, string noiDung, int donHangId);
+        Task BroadcastNotificationAsync(string tieuDe, string noiDung, string? linkDich, string doiTuongNhan);
     }
 }
