@@ -110,6 +110,37 @@
                 }
             </a>
 
+            <!-- Notifications (Bell) Menu -->
+            @if (!string.IsNullOrEmpty(Context.Session.GetString("UserName")))
+            {
+                <div class="notification-wrapper dropdown position-relative">
+                    <a href="#" class="icon-btn text-secondary notification-icon dropdown-toggle border-0 bg-transparent" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 1.2rem;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="notificationBadge" style="font-size: 0.6rem;">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 notification-menu" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto; background-color: #ffffff !important;">
+                        <div class="d-flex justify-content-between align-items-center p-3 border-bottom rounded-top-4" style="background-color: #f8f9fa;">
+                            <h6 class="mb-0 fw-bold" style="color: #212529;"><i class="fa-solid fa-bell text-primary me-2"></i>Thông báo</h6>
+                            <button class="btn btn-sm btn-link text-decoration-none p-0" id="markAllReadBtn" style="font-size: 0.85rem;" onclick="markAllNotificationsAsRead(event)">Đánh dấu đã đọc</button>
+                        </div>
+                        <div class="notification-list" id="notificationList" style="background-color: #ffffff;">
+                            <div class="text-center p-4 py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                <p class="mb-0 small" style="color: #6c757d;">Đang tải...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        .notification-menu .dropdown-item-notify { transition: background-color 0.2s; white-space: normal; padding: 12px 16px; border-bottom: 1px solid #dee2e6; display: block; text-decoration: none; color: #212529 !important; background-color: #ffffff; }
+                        .notification-menu .dropdown-item-notify:hover { background-color: #f8f9fa !important; }
+                        .notification-menu .dropdown-item-notify.unread { background-color: #f0f7ff !important; }
+                        .notification-menu .dropdown-item-notify.unread .ntitle { font-weight: bold; color: #0d6efd !important; }
+                        .notification-action i { transition: color 0.2s; color: #6c757d; }
+                        .notification-action i:hover { color: #dc3545 !important; }
+                    </style>
+                </div>
+            }
+
             <!-- Cart -->
             <div class="cart-dropdown-wrapper position-relative">
                 <a href="/GioHang/GioHang" class="icon-link cart-icon text-secondary" title="Giỏ hàng" style="font-size: 1.2rem; text-decoration: none;">
@@ -402,6 +433,95 @@
         var messageModal = null;
         var confirmModal = null;
 
+        // Notification Fetch Logic
+        function loadNotifications() {
+            if (!$('#notificationDropdown').length) return; // User not logged in
+
+            $.get('/Customer/GetNotifications', function(res) {
+                if (res.success) {
+                    var badge = $('#notificationBadge');
+                    var list = $('#notificationList');
+                    
+                    if (res.unreadCount > 0) {
+                        badge.text(res.unreadCount).removeClass('d-none');
+                    } else {
+                        badge.addClass('d-none');
+                    }
+
+                    list.empty();
+
+                    if (!res.data || res.data.length === 0) {
+                        list.html('<div class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-2 mb-2"></i><p class="mb-0 small">Chưa có thông báo nào</p></div>');
+                        return;
+                    }
+
+                    res.data.forEach(function(n) {
+                        var iconClass = 'fa-solid fa-circle-info text-primary';
+                        if (n.loaiThongBao === 'Voucher') iconClass = 'fa-solid fa-ticket text-warning';
+                        else if (n.loaiThongBao === 'KhuyenMai') iconClass = 'fa-solid fa-gift text-danger';
+                        else if (n.loaiThongBao === 'HangThanhVien') iconClass = 'fa-solid fa-medal text-success';
+                        else if (n.loaiThongBao === 'DonHang') iconClass = 'fa-solid fa-box-open text-info';
+                        
+                        var unreadClass = n.daDoc ? '' : 'unread';
+                        var targetLink = n.linkDich || 'javascript:void(0)';
+                        
+                        var html = `
+                            <div class="dropdown-item-notify d-flex align-items-start gap-3 position-relative ${unreadClass}" id="notif-${n.id}">
+                                <div class="mt-1" style="font-size: 1.2rem;"><i class="${iconClass}"></i></div>
+                                <div class="flex-grow-1" style="cursor: pointer;" onclick="handleNotificationClick(event, ${n.id}, '${targetLink}')">
+                                    <div class="ntitle text-dark mb-1" style="font-size: 0.9rem;">${n.tieuDe}</div>
+                                    <div class="text-muted small mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${n.noiDung}</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;"><i class="fa-regular fa-clock me-1"></i>${n.ngayTao}</div>
+                                </div>
+                                <button class="btn btn-sm btn-link text-muted p-0 ms-2 notification-action position-absolute top-0 end-0 m-2 mt-3" onclick="deleteNotification(event, ${n.id})" title="Xóa">
+                                    <i class="fa-solid fa-xmark fs-5"></i>
+                                </button>
+                            </div>
+                        `;
+                        list.append(html);
+                    });
+                }
+            });
+        }
+
+        window.handleNotificationClick = function(e, id, link) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Mark as read first
+            $.post('/Customer/MarkNotificationAsRead/' + id, function() {
+                if (link && link !== 'javascript:void(0)') {
+                    window.location.href = link;
+                } else {
+                    $(`#notif-${id}`).removeClass('unread');
+                    loadNotifications(); // Refresh badge
+                }
+            });
+        }
+
+        window.deleteNotification = function(e, id) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            $.ajax({
+                url: '/Customer/DeleteNotification/' + id,
+                type: 'DELETE',
+                success: function(res) {
+                    if (res.success) {
+                        $(`#notif-${id}`).fadeOut(300, function() { $(this).remove(); loadNotifications(); });
+                    }
+                }
+            });
+        }
+
+        window.markAllNotificationsAsRead = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $.post('/Customer/MarkAllNotificationsAsRead', function() {
+                loadNotifications();
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
             const menuToggle = document.getElementById('mobileMenuToggle');
@@ -475,6 +595,9 @@
                     // Preview logic
                 });
             }
+
+            // Load notifications on init
+            loadNotifications();
         });
 
         // Global Helper Functions attached to window

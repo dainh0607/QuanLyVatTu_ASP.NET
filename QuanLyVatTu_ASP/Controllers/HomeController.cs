@@ -31,6 +31,19 @@ namespace QuanLyVatTu_ASP.Controllers
             return View();
         }
 
+        public IActionResult Welcome()
+        {
+            return View();
+        }
+
+        [HttpGet("/TestDB")]
+        public IActionResult TestDB([FromServices] QuanLyVatTu_ASP.DataAccess.AppDbContext db)
+        {
+            var users = db.KhachHangs.Select(k => new { k.ID, k.HoTen, k.MaHangThanhVien, k.NgayHetHanHang }).ToList();
+            var notifs = db.ThongBaos.OrderByDescending(t => t.ID).Take(10).ToList();
+            return Json(new { users, notifs });
+        }
+
         [HttpPost]
         public IActionResult Contact(string fullName, string email, string phone, string content)
         {

@@ -7,6 +7,9 @@ using QuanLyVatTu_ASP.Repositories.Interfaces;
 using QuanLyVatTu_ASP.Models;
 using QuanLyVatTu_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace QuanLyVatTu_ASP.Controllers
 {
@@ -17,15 +20,17 @@ namespace QuanLyVatTu_ASP.Controllers
         private readonly IVoucherService _voucherService;
         private readonly IDiemTichLuyService _diemService;
         private readonly IDonHangService _donHangService;
+        private readonly IThongBaoService _thongBaoService;
 
         public CustomerController(IUnitOfWork unitOfWork, DataAccess.AppDbContext context,
-            IVoucherService voucherService, IDiemTichLuyService diemService, IDonHangService donHangService)
+            IVoucherService voucherService, IDiemTichLuyService diemService, IDonHangService donHangService, IThongBaoService thongBaoService)
         {
             _unitOfWork = unitOfWork;
             _context = context;
             _voucherService = voucherService;
             _diemService = diemService;
             _donHangService = donHangService;
+            _thongBaoService = thongBaoService;
         }
         public async Task<IActionResult> Profile()
         {
@@ -794,7 +799,8 @@ namespace QuanLyVatTu_ASP.Controllers
                 v.ThoiGianLuuMa,
                 SoLuongDaDung = v.VoucherGoc?.SoLuongDaDung ?? 0,
                 TongSoLuong = v.VoucherGoc?.TongSoLuong ?? 0,
-                SapHetHan = v.VoucherGoc != null && (v.VoucherGoc.ThoiGianKetThuc - DateTime.Now).TotalDays <= 3,
+                ConHan = v.VoucherGoc != null && v.VoucherGoc.ThoiGianKetThuc > DateTime.Now,
+                SapHetHan = v.VoucherGoc != null && v.VoucherGoc.ThoiGianKetThuc > DateTime.Now && Math.Ceiling((v.VoucherGoc.ThoiGianKetThuc - DateTime.Now).TotalDays) <= 3,
                 DaHetLuot = v.VoucherGoc != null && v.VoucherGoc.SoLuongDaDung >= v.VoucherGoc.TongSoLuong
             });
 
@@ -827,7 +833,8 @@ namespace QuanLyVatTu_ASP.Controllers
                     v.SoLuongDaDung,
                     v.TongSoLuong,
                     DaLuu = alreadySaved,
-                    SapHetHan = (v.ThoiGianKetThuc - DateTime.Now).TotalDays <= 3
+                    ConHan = v.ThoiGianKetThuc > DateTime.Now,
+                    SapHetHan = v.ThoiGianKetThuc > DateTime.Now && Math.Ceiling((v.ThoiGianKetThuc - DateTime.Now).TotalDays) <= 3
                 });
             }
 
@@ -868,7 +875,7 @@ namespace QuanLyVatTu_ASP.Controllers
             khachHang = await _unitOfWork.KhachHangRepository.GetByIdAsync(khachHang.ID);
 
             // Load tier info
-            var tier = khachHang.MaHangThanhVien.HasValue
+            var tier = khachHang!.MaHangThanhVien.HasValue
                 ? await _unitOfWork.HangThanhVienRepository.GetByIdAsync(khachHang.MaHangThanhVien.Value)
                 : null;
 
@@ -912,5 +919,173 @@ namespace QuanLyVatTu_ASP.Controllers
             });
         }
 
+        // ==========================================
+        //         SYSTEM NOTIFICATIONS APIs
+        // ==========================================
+
+        [HttpGet("Customer/GetNotifications")]
+        public async Task<IActionResult> GetNotifications()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            var notifications = await _thongBaoService.GetUserNotificationsAsync(khachHangId, 20);
+            var unreadCount = await _thongBaoService.GetUnreadCountAsync(khachHangId);
+
+            var result = notifications.Select(n => new
+            {
+                n.ID,
+                n.TieuDe,
+                n.NoiDung,
+                n.LoaiThongBao,
+                n.LinkDich,
+                n.DaDoc,
+                NgayTao = n.NgayTao.ToString("dd/MM/yyyy HH:mm")
+            }).ToList();
+
+            return Json(new { success = true, data = result, unreadCount });
+        }
+
+        [HttpPost("Customer/MarkNotificationAsRead/{id}")]
+        public async Task<IActionResult> MarkNotificationAsRead(int id)
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            await _thongBaoService.MarkAsReadAsync(id, khachHangId);
+            return Json(new { success = true });
+        }
+
+        [HttpPost("Customer/MarkAllNotificationsAsRead")]
+        public async Task<IActionResult> MarkAllNotificationsAsRead()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            if (khachHangId.HasValue)
+            {
+                await _thongBaoService.MarkAllAsReadAsync(khachHangId.Value);
+            }
+            return Json(new { success = true });
+        }
+
+        [HttpDelete("Customer/DeleteNotification/{id}")]
+        public async Task<IActionResult> DeleteNotification(int id)
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+            await _thongBaoService.DeleteNotificationAsync(id, khachHangId);
+            return Json(new { success = true });
+        }
+
+        // ==========================================
+        // SETTINGS & PRIVACY APIs
+        // ==========================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetNotificationSettings()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            return Json(new { 
+                success = true,
+                donHang = khachHang.NhanThongBaoDonHang,
+                khuyenMai = khachHang.NhanThongBaoKhuyenMai,
+                hangThanhVien = khachHang.NhanThongBaoHangThanhVien
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateNotificationSettings([FromBody] NotificationSettingsModel model)
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _unitOfWork.KhachHangRepository.GetByEmailAsync(email);
+            if (khachHang == null) return NotFound();
+
+            khachHang.NhanThongBaoDonHang = model.DonHang;
+            khachHang.NhanThongBaoKhuyenMai = model.KhuyenMai;
+            khachHang.NhanThongBaoHangThanhVien = model.HangThanhVien;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Đã lưu cài đặt thông báo" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportPersonalData()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var khachHang = await _context.KhachHangs
+                .Include(k => k.LichSuTichDiems)
+                .Include(k => k.ViVoucherKhachHangs)
+                    .ThenInclude(v => v.VoucherGoc)
+                .FirstOrDefaultAsync(k => k.Email == email);
+
+            if (khachHang == null) return NotFound();
+
+            var orders = await _context.DonHang.Where(d => d.KhachHangId == khachHang.ID).ToListAsync();
+
+            using (var ms = new MemoryStream())
+            {
+                var doc = new Document(PageSize.A4, 25, 25, 30, 30);
+                PdfWriter.GetInstance(doc, ms);
+                doc.Open();
+
+                var fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "arial.ttf");
+                Font normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
+                Font boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 14);
+
+                if (System.IO.File.Exists(fontPath))
+                {
+                    BaseFont bf = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                    normalFont = new Font(bf, 12);
+                    boldFont = new Font(bf, 14, Font.BOLD);
+                }
+
+                doc.Add(new Paragraph("THONG TIN CA NHAN - PERSONAL DATA", boldFont) { Alignment = Element.ALIGN_CENTER });
+                doc.Add(new Paragraph("\n"));
+
+                doc.Add(new Paragraph($"Ho ten: {khachHang.HoTen}", normalFont));
+                doc.Add(new Paragraph($"Email: {khachHang.Email}", normalFont));
+                doc.Add(new Paragraph($"So dien thoai: {khachHang.SoDienThoai ?? "N/A"}", normalFont));
+                var diaChiStr = string.Join(", ", new[] { khachHang.SoNhaTenDuong, khachHang.PhuongXa, khachHang.TinhThanhPho }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                doc.Add(new Paragraph($"Dia chi: {(string.IsNullOrEmpty(diaChiStr) ? "N/A" : diaChiStr)}", normalFont));
+                doc.Add(new Paragraph($"Diem tich luy: {khachHang.DiemTichLuy}", normalFont));
+                doc.Add(new Paragraph($"Ngay tao tai khoan: {khachHang.NgayTao:dd/MM/yyyy}", normalFont));
+                doc.Add(new Paragraph("\n"));
+
+                doc.Add(new Paragraph("LICH SU DON HANG", boldFont));
+                foreach(var o in orders)
+                {
+                    var sum = o.TongTienThucTra ?? o.TongTien ?? 0;
+                    doc.Add(new Paragraph($"- Don {o.MaHienThi} ({o.TrangThai}): {sum:N0} VND (Ngay {o.NgayDat:dd/MM/yyyy})", normalFont));
+                }
+                
+                doc.Add(new Paragraph("\n"));
+                doc.Add(new Paragraph("LICH SU TICH DIEM", boldFont));
+                foreach(var p in khachHang.LichSuTichDiems)
+                {
+                    doc.Add(new Paragraph($"- {p.LoaiGiaoDich} {p.SoDiem} diem (Ngay {p.NgayTao:dd/MM/yyyy})", normalFont));
+                }
+
+                doc.Add(new Paragraph("\n"));
+                doc.Add(new Paragraph("VOUCHER CUA BAN", boldFont));
+                foreach(var v in khachHang.ViVoucherKhachHangs)
+                {
+                    doc.Add(new Paragraph($"- Voucher {v.VoucherGoc?.MaVoucher} ({v.TrangThaiTrongVi}) (Ngay {v.ThoiGianLuuMa:dd/MM/yyyy})", normalFont));
+                }
+
+                doc.Close();
+                return File(ms.ToArray(), "application/pdf", $"DuLieuCaNhan_{khachHang.MaHienThi}.pdf");
+            }
+        }
+    }
+
+    public class NotificationSettingsModel
+    {
+        public bool DonHang { get; set; }
+        public bool KhuyenMai { get; set; }
+        public bool HangThanhVien { get; set; }
     }
 }

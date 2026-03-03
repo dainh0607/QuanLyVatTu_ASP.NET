@@ -21,6 +21,7 @@ namespace QuanLyVatTu_ASP.Repositories
         ILichSuSuDungVoucherRepository LichSuSuDungVoucherRepository { get; }
         ILichSuTichDiemRepository LichSuTichDiemRepository { get; }
         IHangThanhVienRepository HangThanhVienRepository { get; }
+        IThongBaoRepository ThongBaoRepository { get; }
 
         int Save();
         Task<int> SaveAsync(); // Thêm phương thức async

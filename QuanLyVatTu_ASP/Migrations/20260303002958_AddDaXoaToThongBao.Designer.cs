@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyVatTu_ASP.DataAccess;
 
@@ -11,9 +12,11 @@ using QuanLyVatTu_ASP.DataAccess;
 namespace QuanLyVatTu_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260303002958_AddDaXoaToThongBao")]
+    partial class AddDaXoaToThongBao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,7 +173,7 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Property<string>("BinhLuan")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ChatLuongSanPham")
+                    b.Property<int>("ChatLuongSanPham")
                         .HasColumnType("int");
 
                     b.Property<int>("LuotThich")
@@ -493,6 +496,10 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("DiaChi")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<int>("DiemTichLuy")
                         .HasColumnType("int")
                         .HasColumnName("DiemTichLuy");
@@ -541,24 +548,12 @@ namespace QuanLyVatTu_ASP.Migrations
                     b.Property<bool>("NhanThongBaoKhuyenMai")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PhuongXa")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("SoDienThoai")
                         .HasColumnType("varchar(10)");
-
-                    b.Property<string>("SoNhaTenDuong")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("TaiKhoan")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("TinhThanhPho")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("TrangThaiKhoa")
                         .HasColumnType("bit");

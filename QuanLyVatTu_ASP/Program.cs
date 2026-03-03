@@ -26,6 +26,7 @@ builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<IChiTietHoaDonRepository, ChiTietHoaDonRepository>();
 builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
 builder.Services.AddScoped<IChiTietGioHangRepository, ChiTietGioHangRepository>();
+builder.Services.AddScoped<IThongBaoRepository, ThongBaoRepository>();
 
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
@@ -41,9 +42,11 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 // Voucher & Points Services
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IDiemTichLuyService, DiemTichLuyService>();
+builder.Services.AddScoped<IThongBaoService, ThongBaoService>();
 
 // Background Job - Quét rớt hạng hàng đêm
 builder.Services.AddHostedService<TierDowngradeJob>();
+builder.Services.AddHostedService<VoucherExpiryJob>();
 
 
 // Cấu hình Authentication

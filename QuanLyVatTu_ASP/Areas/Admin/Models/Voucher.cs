@@ -8,7 +8,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
         [Required(ErrorMessage = "Mã voucher không được để trống")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Mã voucher phải từ 3 đến 50 ký tự")]
         [Column("MaVoucher", TypeName = "varchar(50)")]
-        public string MaVoucher { get; set; }
+        public string MaVoucher { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng chọn loại giảm giá")]
         [Column("LoaiGiamGia", TypeName = "varchar(20)")]

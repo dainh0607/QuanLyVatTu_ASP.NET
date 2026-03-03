@@ -130,7 +130,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (khachHangId.HasValue && khachHangId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.KhachHangId == khachHangId);
 
             var topProductsData = await topProductsQuery
-                .GroupBy(x => new { x.MaVatTu, x.VatTu.HinhAnh, x.VatTu.TenVatTu, x.VatTu.SoLuongTon, TenLoai = x.VatTu.LoaiVatTu.TenLoaiVatTu, TenNcc = x.VatTu.NhaCungCap.TenNhaCungCap })
+                .GroupBy(x => new { x.MaVatTu, x.VatTu.HinhAnh, x.VatTu.TenVatTu, x.VatTu.SoLuongTon, TenLoai = x.VatTu.LoaiVatTu != null ? x.VatTu.LoaiVatTu.TenLoaiVatTu : null, TenNcc = x.VatTu.NhaCungCap != null ? x.VatTu.NhaCungCap.TenNhaCungCap : null })
                 .Select(g => new
                 {
                     VatTuId = g.Key.MaVatTu,

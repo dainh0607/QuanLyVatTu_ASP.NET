@@ -50,10 +50,10 @@ namespace QuanLyVatTu_ASP.Controllers
                 return gioHang.ChiTietGioHangs.Select(ct => new CartItem
                 {
                     VatTuId = ct.MaVatTu,
-                    TenVatTu = ct.VatTu?.TenVatTu,
+                    TenVatTu = ct.VatTu?.TenVatTu ?? string.Empty,
                     DonGia = ct.VatTu?.GiaBan ?? 0,
                     SoLuong = ct.SoLuong,
-                    DonViTinh = ct.VatTu?.DonViTinh,
+                    DonViTinh = ct.VatTu?.DonViTinh ?? string.Empty,
                     HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
                 }).ToList();
             }
@@ -237,7 +237,7 @@ namespace QuanLyVatTu_ASP.Controllers
 
                 if (editingOrderId.HasValue)
                 {
-                    donHang = await _unitOfWork.DonHangRepository.GetByIdAsync(editingOrderId.Value);
+                    donHang = await _unitOfWork.DonHangRepository.GetByIdAsync(editingOrderId.Value)!;
                     if (donHang != null && donHang.KhachHangId == khachHang.ID)
                     {
                         isEditMode = true;
@@ -308,6 +308,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 foreach (var item in cart)
                 {
                     var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(item.VatTuId, tracking: true);
+                    if (vatTu == null) continue;
                     vatTu.SoLuongTon -= item.SoLuong;
                     _unitOfWork.VatTuRepository.Update(vatTu);
 
