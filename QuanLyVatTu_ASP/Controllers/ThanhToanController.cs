@@ -239,9 +239,10 @@ namespace QuanLyVatTu_ASP.Controllers
 
                 if (editingOrderId.HasValue)
                 {
-                    donHang = await _unitOfWork.DonHangRepository.GetByIdAsync(editingOrderId.Value)!;
-                    if (donHang != null && donHang.KhachHangId == khachHang.ID)
+                    var fetchedDonHang = await _unitOfWork.DonHangRepository.GetByIdAsync(editingOrderId.Value);
+                    if (fetchedDonHang != null && fetchedDonHang.KhachHangId == khachHang.ID)
                     {
+                        donHang = fetchedDonHang;
                         isEditMode = true;
                         donHang.NgayDat = DateTime.Now;
                         donHang.TrangThai = initialStatus;

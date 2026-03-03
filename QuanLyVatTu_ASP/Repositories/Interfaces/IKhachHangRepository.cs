@@ -14,5 +14,6 @@ namespace QuanLyVatTu_ASP.Repositories.Interfaces
         Task<KhachHang?> UpdateAsync(KhachHang khachHang);
         KhachHang? GetByLogin(string email, string password);
         void Add(KhachHang khachHang);
+        Task<IEnumerable<KhachHang>> GetAllAsync();
     }
 }

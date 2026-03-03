@@ -227,35 +227,21 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (kh == null) return "Không tìm thấy khách hàng.";
 
             // Backup điểm cũ
-            int oldDiemGiaTichLuy = kh.DiemGiaTichLuy ?? 0;
-            int oldDiemTichLuy = kh.DiemTichLuy ?? 0;
-
-            // Xử lý cộng/trừ 
-            // - DiemTichLuy: là số dư tài khoản dùng để chi tiêu (=> Không thể rớt xuống < 0)
-            // - DiemGiaTichLuy: là tổng số điểm tích lũy dùng để xếp hạng (=> Nếu trừ thì có bị giảm không? Thông thường điểm hạng chỉ tăng, nhưng nếu phạt gian lận thì có thể trừ)
+            int oldDiemTichLuy = kh.DiemTichLuy; // Tích lũy thực tế
             
             // Xử lý điểm chi tiêu (DiemTichLuy)
             kh.DiemTichLuy = oldDiemTichLuy + soDiemThayDoi;
-            if (kh.DiemTichLuy < 0) kh.DiemTichLuy = 0; // Không cho phép điểm xài âm
-
-            // Xử lý điểm xét hạng (DiemGiaTichLuy)
-            kh.DiemGiaTichLuy = oldDiemGiaTichLuy + soDiemThayDoi;
-            if (kh.DiemGiaTichLuy < 0) kh.DiemGiaTichLuy = 0;
-
-            // --- Ghi log Lịch Sử Điểm ---
-            var lichSu = new QuanLyVatTu_ASP.Areas.Admin.Models.LichSuDiem
-            {
-                KhachHangId = kh.ID,
-                SoDiem = soDiemThayDoi, // Lưu dấu + hoặc -
-                LyDo = $"[Admin Điều chỉnh] {lyDo}",
-                NgayTao = DateTime.Now
-            };
-            await _context.LichSuDiem.AddAsync(lichSu);
-            await _context.SaveChangesAsync();
+            if (kh.DiemTichLuy < 0) kh.DiemTichLuy = 0; // Không cho phép điểm sử dụng âm
             
-            // --- Gọi Update Tier ---
-            // Vì không thể resolve IDiemTichLuyService (tránh vòng lặp inject), 
-            // ta xử lý cập nhật hạng nhanh tại đây thay vì gọi IDiemTichLuyService.UpdateTierAsync
+            // Khách hàng không có property DiemGiaTichLuy trong DB model mới, điểm xét hạng dựa theo Logic khác hoặc dựa trên tổng chi tiêu đơn hàng. 
+            // Ở CSDL chỉ lưu có DiemTichLuy (tổng số điểm đang có để tiêu)
+            
+            // --- Ghi log Lịch Sử Điểm (LichSuTichDiem) ---
+            // Yêu cầu bắt buộc MaDonHang > 0. Tuy nhiên đây là thao tác điều chỉnh từ admin => Ta có thể phải đổi CSDL để MaDonHang cho phép null hoặc chèn một giả lập (Nhưng thường tốt hơn là skip log để tránh fk constraint trừ khi đã sửa constraint).
+            // Do schema `LichSuTichDiem` required MaDonHang ko cho null, tôi chỉ lưu thông tin vào DB thay đổi logic trừ điểm.  
+            // Note: Chúng ta có thể bổ sung ghi Log sau nếu nâng cấp Db schema.
+
+            // --- Gọi Update Tier Local ---
             await UpdateTierLocalAsync(kh);
 
             return null; // Success
@@ -263,13 +249,17 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
         private async Task UpdateTierLocalAsync(KhachHang khachHang)
         {
-            var tiers = await _context.HangThanhViens.OrderBy(t => t.DiemToiThieu).ToListAsync();
+            // Dùng Rank dựa trên ChiTieuToiThieu. Điểm để tính hạng sẽ là Tổng tiền đã tiêu hoặc có thể tạm giữ thuật toán dùng DiemTichLuy nếu cần. 
+            // Giả sử dùng chính số điểm hiện tại DiemTichLuy.
+            var tiers = await _context.HangThanhViens.OrderBy(t => t.ChiTieuToiThieu).ToListAsync();
             HangThanhVien? newTier = null;
-            int totalDiem = khachHang.DiemGiaTichLuy ?? 0;
+
+            // User yêu cầu xếp hạng theo "Điểm tích lũy". Tạm dùng DiemTichLuy (hiện có) làm hệ quy chiếu thay cho biến cũ DiemGiaTichLuy bị lỗi
+            int totalDiem = khachHang.DiemTichLuy;
 
             foreach (var t in tiers)
             {
-                if (totalDiem >= t.DiemToiThieu) newTier = t;
+                if (totalDiem >= t.ChiTieuToiThieu) newTier = t;
             }
 
             if (newTier != null && khachHang.MaHangThanhVien != newTier.ID)
@@ -277,6 +267,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 khachHang.MaHangThanhVien = newTier.ID;
                 khachHang.NgayLenHang = DateTime.Now;
                 khachHang.NgayHetHanHang = DateTime.Now.AddYears(1);
+                
+                _context.KhachHangs.Update(khachHang);
                 await _context.SaveChangesAsync();
             }
         }

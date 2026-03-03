@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using QuanLyVatTu.Areas.Admin.Controllers;
 using QuanLyVatTu_ASP.Services.Interfaces;
+using QuanLyVatTu_ASP.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
@@ -10,19 +11,19 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
     public class ThongBaoAdminController : AdminBaseController
     {
         private readonly IThongBaoService _thongBaoService;
-        private readonly IHangThanhVienService _hangThanhVienService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ThongBaoAdminController(IThongBaoService thongBaoService, IHangThanhVienService hangThanhVienService)
+        public ThongBaoAdminController(IThongBaoService thongBaoService, IUnitOfWork unitOfWork)
         {
             _thongBaoService = thongBaoService;
-            _hangThanhVienService = hangThanhVienService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             // Lấy danh sách hạng để đưa vào Dropdown lọc khách nhận
-            var tiers = await _hangThanhVienService.GetAllAsync();
+            var tiers = await _unitOfWork.HangThanhVienRepository.GetAllAsync();
             
             var tierOptions = new List<SelectListItem>
             {

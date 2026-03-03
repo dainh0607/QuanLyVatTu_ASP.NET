@@ -138,7 +138,8 @@ namespace QuanLyVatTu_ASP.Services.Implementations
         }
         public async Task BroadcastNotificationAsync(string tieuDe, string noiDung, string? linkDich, string doiTuongNhan)
         {
-            var query = _unitOfWork.KhachHangRepository.GetAll();
+            var allUsers = await _unitOfWork.KhachHangRepository.GetAllAsync();
+            var query = allUsers.AsQueryable();
 
             // Nếu không phải là "ALL" (Gửi tất cả) thì phải lọc theo ID hạng thành viên
             if (doiTuongNhan != "ALL")
@@ -150,10 +151,10 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             }
 
             // Lấy danh sách khách hàng hợp lệ (Chưa xóa và đồng ý nhận thông báo Khuyến mãi)
-            var targetUsers = await query
+            var targetUsers = query
                 .Where(x => x.NhanThongBaoKhuyenMai == true)
                 .Select(x => x.ID)
-                .ToListAsync();
+                .ToList();
 
             if (!targetUsers.Any()) return; // Không có ai thỏa mãn
 

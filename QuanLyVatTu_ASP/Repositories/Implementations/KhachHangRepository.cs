@@ -96,5 +96,10 @@ namespace QuanLyVatTu_ASP.Repositories.Implementations
             }
             return existingUser;
         }
+
+        public async Task<IEnumerable<KhachHang>> GetAllAsync()
+        {
+            return await _context.KhachHangs.ToListAsync();
+        }
     }
 }
