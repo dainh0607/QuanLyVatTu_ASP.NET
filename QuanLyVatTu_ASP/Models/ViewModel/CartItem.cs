@@ -12,6 +12,11 @@
         public int SoLuong { get; set; }
         
         /// <summary>
+        /// Số lượng tồn kho hiện tại (dùng để giới hạn trên UI)
+        /// </summary>
+        public int SoLuongTon { get; set; }
+        
+        /// <summary>
         /// Đơn vị tính (Cái, Bao, Thùng, Cây, Kg, m²...)
         /// </summary>
         public string DonViTinh { get; set; } = "Cái";

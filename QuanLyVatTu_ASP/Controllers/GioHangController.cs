@@ -188,6 +188,12 @@ namespace QuanLyVatTu_ASP.Controllers
                     {
                          if (quantity > 0)
                          {
+                             // Kiểm tra số lượng tồn kho
+                             var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
+                             int maxStock = vatTu?.SoLuongTon ?? 0;
+                             if (maxStock > 0 && quantity > maxStock)
+                                 quantity = maxStock;
+
                              item.SoLuong = quantity;
                              _unitOfWork.ChiTietGioHangRepository.Update(item);
                              lineTotal = (decimal)(item.SoLuong * (item.VatTu?.GiaBan ?? 0));
@@ -208,6 +214,12 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     if (quantity > 0)
                     {
+                        // Kiểm tra số lượng tồn kho
+                        var vatTu = await _unitOfWork.VatTuRepository.GetByIdAsync(productId);
+                        int maxStock = vatTu?.SoLuongTon ?? 0;
+                        if (maxStock > 0 && quantity > maxStock)
+                            quantity = maxStock;
+
                         item.SoLuong = quantity;
                         HttpContext.Session.Set(CART_KEY, cart);
                         lineTotal = item.ThanhTien;
@@ -268,6 +280,7 @@ namespace QuanLyVatTu_ASP.Controllers
                     TenVatTu = ct.VatTu?.TenVatTu ?? "",
                     DonGia = ct.VatTu?.GiaBan ?? 0,
                     SoLuong = ct.SoLuong,
+                    SoLuongTon = ct.VatTu?.SoLuongTon ?? 0,
                     DonViTinh = ct.VatTu?.DonViTinh ?? "",
                     HinhAnh = !string.IsNullOrEmpty(ct.VatTu?.HinhAnh) ? ct.VatTu.HinhAnh : $"https://placehold.co/120x120?text={Uri.EscapeDataString(ct.VatTu?.TenVatTu ?? "SP")}"
                 }).ToList();
