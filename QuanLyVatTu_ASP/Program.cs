@@ -90,13 +90,6 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// =====================================================
-// Seed hình ảnh VatTu từ wwwroot/images/vattu vào DB
-// ForceUpdateAllImagesAsync: cập nhật toàn bộ (kể cả đã có ảnh)
-// SeedImagesAsync: chỉ cập nhật VatTu chưa có ảnh
-// =====================================================
-await VatTuImageSeeder.ForceUpdateAllImagesAsync(app.Services);
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
