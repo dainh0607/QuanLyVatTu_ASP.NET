@@ -274,89 +274,6 @@
                         </div>
                     </div>
 
-                    <!-- Tùy chọn mua hàng -->
-                    <div class="content-card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <h2 class="card-title">Tùy chọn mua hàng</h2>
-                                <p class="card-subtitle">Thiết lập tùy chọn giao nhận phù hợp với bạn</p>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="options-grid">
-                                <!-- Phương thức nhận hàng -->
-                                <div class="option-group">
-                                    <h4 class="option-group-title">Phương thức nhận hàng ưu tiên</h4>
-                                    <div class="radio-group">
-                                        <label class="radio-option selected">
-                                            <input type="radio" name="phuongThucNhan" value="giaotannoi" checked>
-                                            <span>🚚 Giao hàng tận nơi</span>
-                                        </label>
-                                        <label class="radio-option">
-                                            <input type="radio" name="phuongThucNhan" value="nhantaikho">
-                                            <span>🏪 Nhận tại kho</span>
-                                        </label>
-                                        <label class="radio-option">
-                                            <input type="radio" name="phuongThucNhan" value="dinhky">
-                                            <span>📅 Giao theo lịch định kỳ</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Thời gian giao hàng -->
-                                <div class="option-group">
-                                    <h4 class="option-group-title">Thời gian giao hàng mong muốn</h4>
-                                    <select class="form-select">
-                                        <option value="sang" selected>Buổi sáng (7h - 12h)</option>
-                                        <option value="chieu">Buổi chiều (13h - 18h)</option>
-                                        <option value="linhhoat">Linh hoạt</option>
-                                    </select>
-                                </div>
-
-                                <!-- Yêu cầu đặc biệt -->
-                                <div class="option-group">
-                                    <h4 class="option-group-title">Yêu cầu đặc biệt</h4>
-                                    <div class="checkbox-group">
-                                        <label class="checkbox-option">
-                                            <input type="checkbox" checked>
-                                            <span>📋 Cần hóa đơn VAT</span>
-                                        </label>
-                                        <label class="checkbox-option">
-                                            <input type="checkbox" checked>
-                                            <span>📄 Yêu cầu CO/CQ cho vật tư</span>
-                                        </label>
-                                        <label class="checkbox-option">
-                                            <input type="checkbox" checked>
-                                            <span>🔔 Nhận thông báo khuyến mãi</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Hạn mức công nợ -->
-                                <div class="option-group">
-                                    <h4 class="option-group-title">Hạn mức công nợ</h4>
-                                    <div class="credit-limit-section">
-                                        <div class="credit-header">
-                                            <span class="credit-label">Hạn mức tối đa</span>
-                                            <span class="credit-value">50.000.000đ</span>
-                                        </div>
-                                        <div class="credit-progress">
-                                            <div class="credit-progress-bar" style="width: 30%;"></div>
-                                        </div>
-                                        <div class="credit-stats">
-                                            <span>Đã sử dụng: 15.000.000đ</span>
-                                            <span>Còn lại: 35.000.000đ</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="button" class="btn-primary" style="margin-top: 24px;" onclick="saveOptions()">
-                                <i class="fas fa-save"></i>
-                                Lưu tùy chọn
-                            </button>
-                        </div>
-                    </div>
                 </section>
 
                 <!-- TAB: ĐỔI MẬT KHẨU -->
@@ -883,7 +800,7 @@
             </div>
             <div style="display: flex; gap: 12px;">
                 <button class="btn-secondary" onclick="closeMapModal()">Hủy</button>
-                <button class="btn-primary" onclick="confirmLocation()">
+                <button class="btn-primary" onclick="confirmLocationAndSave()">
                     <i class="fas fa-check"></i>
                     Xác nhận vị trí
                 </button>
@@ -971,6 +888,13 @@
     let marker;
     let selectedLat = null;
     let selectedLng = null;
+    let fetchTimeout;
+    // Store parsed address components from reverse geocoding
+    let parsedAddressComponents = {
+        soNhaTenDuong: '',
+        phuongXa: '',
+        tinhThanhPho: ''
+    };
 
     function openAddressModal() {
         document.getElementById('mapModal').classList.add('active');
@@ -983,14 +907,12 @@
 
     function initMap() {
         if (!map) {
-            // Default to Ho Chi Minh City
             map = L.map('leaflet-map').setView([10.8231, 106.6297], 13);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Add marker on click
             map.on('click', function(e) {
                 setMarker(e.latlng.lat, e.latlng.lng);
             });
@@ -998,7 +920,68 @@
         setTimeout(() => map.invalidateSize(), 100);
     }
 
-    // Need to rewrite setMarker to handle skipReverseGeocode
+    // Reverse geocoding: fetch address from coordinates and parse into components
+    function fetchAddressFromCoords(lat, lng) {
+        if (fetchTimeout) clearTimeout(fetchTimeout);
+        
+        fetchTimeout = setTimeout(() => {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=vi`;
+            
+            fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.address) {
+                    const addr = data.address;
+                    
+                    // Parse: Số nhà / Tên đường / Khu phố
+                    const streetParts = [];
+                    if (addr.house_number) streetParts.push(addr.house_number);
+                    if (addr.road) streetParts.push(addr.road);
+                    if (addr.hamlet) streetParts.push(addr.hamlet);
+                    if (addr.neighbourhood) streetParts.push(addr.neighbourhood);
+                    parsedAddressComponents.soNhaTenDuong = [...new Set(streetParts)].join(', ');
+                    
+                    // Parse: Phường / Xã / Thị trấn (+ Quận / Huyện)
+                    const wardParts = [];
+                    if (addr.quarter) wardParts.push(addr.quarter);
+                    if (addr.suburb) wardParts.push(addr.suburb);
+                    if (addr.village) wardParts.push(addr.village);
+                    if (addr.town) wardParts.push(addr.town);
+                    if (addr.city_district) wardParts.push(addr.city_district);
+                    if (addr.county) wardParts.push(addr.county);
+                    parsedAddressComponents.phuongXa = [...new Set(wardParts)].join(', ');
+                    
+                    // Parse: Tỉnh / Thành phố
+                    const cityParts = [];
+                    if (addr.city) cityParts.push(addr.city);
+                    else if (addr.state) cityParts.push(addr.state);
+                    else if (addr.province) cityParts.push(addr.province);
+                    parsedAddressComponents.tinhThanhPho = [...new Set(cityParts)].join(', ');
+                    
+                    // Build full display address for search input
+                    const allParts = [];
+                    if (parsedAddressComponents.soNhaTenDuong) allParts.push(parsedAddressComponents.soNhaTenDuong);
+                    if (parsedAddressComponents.phuongXa) allParts.push(parsedAddressComponents.phuongXa);
+                    if (parsedAddressComponents.tinhThanhPho) allParts.push(parsedAddressComponents.tinhThanhPho);
+                    const fullAddress = allParts.length > 0 ? allParts.join(', ') : (data.display_name || '');
+                    
+                    const input = document.getElementById('mapSearchInput');
+                    if (input) input.value = fullAddress;
+                    
+                    // Update location display in footer
+                    const locDisplay = document.getElementById('selectedLocation');
+                    if (locDisplay) {
+                        locDisplay.innerHTML = `<i class="fas fa-map-pin"></i> <span>${fullAddress}</span>`;
+                    }
+                } else if (data && data.display_name) {
+                    const input = document.getElementById('mapSearchInput');
+                    if (input) input.value = data.display_name;
+                }
+            })
+            .catch(err => console.error('Geocoding error:', err));
+        }, 500);
+    }
+
     function setMarker(lat, lng, skipReverseGeocode = false) {
         selectedLat = lat;
         selectedLng = lng;
@@ -1013,12 +996,21 @@
             const pos = e.target.getLatLng();
             selectedLat = pos.lat;
             selectedLng = pos.lng;
-            updateLocationDisplay(pos.lat, pos.lng);
-            fetchAddressFromCoords(pos.lat, pos.lng); // Always reverse geocode on drag
+            const si = document.getElementById('mapSearchInput');
+            if (si) si.value = 'Đang tải địa chỉ...';
+            fetchAddressFromCoords(pos.lat, pos.lng);
         });
 
-        updateLocationDisplay(lat, lng);
+        // Update footer display
+        const locDisplay = document.getElementById('selectedLocation');
+        if (locDisplay) {
+            locDisplay.innerHTML = `<i class="fas fa-map-pin"></i> <span>Tọa độ: ${lat.toFixed(6)}, ${lng.toFixed(6)}</span>`;
+        }
+        
         if (!skipReverseGeocode) {
+            // Immediately show loading in search input so user sees instant feedback
+            const searchInput = document.getElementById('mapSearchInput');
+            if (searchInput) searchInput.value = 'Đang tải địa chỉ...';
             fetchAddressFromCoords(lat, lng);
         }
     }
@@ -1028,19 +1020,18 @@
         setTimeout(() => {
             if (map) {
                 map.setView([lat, lng], 16);
-                setMarker(lat, lng, true); // Skip reverse geocoding when viewing existing address to keep input clean/or just show logic
-                // Actually showing existing address name might be better?
+                setMarker(lat, lng, false);
             }
         }, 300);
     }
 
     function confirmLocation() {
-        if (selectedLat && selectedLng) {
-            showToast('Đã chọn vị trí thành công!', 'success');
-            closeMapModal();
-        } else {
+        if (!selectedLat || !selectedLng) {
             showToast('Vui lòng chọn vị trí trên bản đồ', 'error');
+            return;
         }
+        showToast('Đã chọn vị trí thành công!', 'success');
+        closeMapModal();
     }
 
     // Toast notifications
@@ -1235,13 +1226,30 @@
     function setDefaultAddress(id) {
         $.post('/Customer/SetDefaultAddress', { id: id }, function(res) {
             if (res.success) {
-                // Update profile textbox
-                const diaChiInput = document.getElementById('diaChi');
-                if(diaChiInput) diaChiInput.value = res.newAddress;
+                // Parse the address string and fill profile fields
+                // Address format: "Số nhà Đường, Phường/Xã, Quận/Huyện, Tỉnh/TP"
+                const fullAddress = res.newAddress || '';
+                const parts = fullAddress.split(',').map(p => p.trim());
                 
-                // Reload list
+                const soNhaTenDuongInput = document.getElementById('soNhaTenDuong');
+                const phuongXaInput = document.getElementById('phuongXa');
+                const tinhThanhPhoInput = document.getElementById('tinhThanhPho');
+                
+                if (parts.length >= 3) {
+                    // 3+ parts: first = street, middle = ward/district, last = city
+                    if (soNhaTenDuongInput) soNhaTenDuongInput.value = parts[0];
+                    if (phuongXaInput) phuongXaInput.value = parts.slice(1, -1).join(', ');
+                    if (tinhThanhPhoInput) tinhThanhPhoInput.value = parts[parts.length - 1];
+                } else if (parts.length === 2) {
+                    if (soNhaTenDuongInput) soNhaTenDuongInput.value = parts[0];
+                    if (tinhThanhPhoInput) tinhThanhPhoInput.value = parts[1];
+                } else {
+                    if (soNhaTenDuongInput) soNhaTenDuongInput.value = fullAddress;
+                }
+                
+                // Reload address list to update badges
                 loadAddresses();
-                showToast('Đã đổi địa chỉ mặc định', 'success');
+                showToast('Đã đổi địa chỉ mặc định và cập nhật vào hồ sơ', 'success');
             } else {
                 showToast(res.message, 'error');
             }
@@ -1261,26 +1269,19 @@
         });
     }
 
-    // Confirm location from Map Modal -> Save Address
-    function confirmLocation() {
+    // Confirm location from Map Modal -> Save Address + Fill Profile Fields
+    function confirmLocationAndSave() {
         if (!selectedLat || !selectedLng) {
             showToast('Vui lòng chọn vị trí trên bản đồ', 'error');
             return;
         }
 
         const addressInput = document.getElementById('mapSearchInput'); 
-        // Force reading value again to ensure it's fresh
         const addressStr = addressInput ? addressInput.value : '';
-        
-        // Auto-fill address details from Map result
-        // If user wants to edit, they can do it in the prompt or we can skip prompt if addressStr is good enough
-        // "khi tới sân vận động rồi khách hàng chọn nhà riêng hay văn phòng thì trên ô text box sẽ thêm các chữ cho địa chỉ chi tiết thật đúng"
-        // Interpretation: The `addressStr` from Nominatim is usually full. Maybe just ask for specific building/floor?
         
         const refinedAddress = prompt("Xác nhận địa chỉ chi tiết:", addressStr);
         if (refinedAddress === null) return; 
 
-        // Get Name/Phone from hidden inputs or current user info
         const currentName = document.getElementById('hoTen')?.value || '';
         const currentPhone = document.getElementById('soDienThoai')?.value || '';
 
@@ -1291,9 +1292,6 @@
         if (phone === null) return;
 
         const type = confirm("Đây là địa chỉ Văn phòng? (OK = Văn phòng, Cancel = Nhà riêng)") ? "Văn phòng" : "Nhà riêng";
-
-        // Prepend Type to Address if desired? The user said "thêm các chữ cho địa chỉ chi tiết". 
-        // Or maybe just saving the refined address is enough.
         
         const data = {
             diaChi: refinedAddress,
@@ -1309,6 +1307,21 @@
             data.macDinh = true;
         }
 
+        // Auto-fill profile address fields from parsed map components
+        const soNhaTenDuongInput = document.getElementById('soNhaTenDuong');
+        const phuongXaInput = document.getElementById('phuongXa');
+        const tinhThanhPhoInput = document.getElementById('tinhThanhPho');
+        
+        if (soNhaTenDuongInput && parsedAddressComponents.soNhaTenDuong) {
+            soNhaTenDuongInput.value = parsedAddressComponents.soNhaTenDuong;
+        }
+        if (phuongXaInput && parsedAddressComponents.phuongXa) {
+            phuongXaInput.value = parsedAddressComponents.phuongXa;
+        }
+        if (tinhThanhPhoInput && parsedAddressComponents.tinhThanhPho) {
+            tinhThanhPhoInput.value = parsedAddressComponents.tinhThanhPho;
+        }
+
         fetch('/Customer/AddAddress', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1319,11 +1332,7 @@
             if (res.success) {
                 closeMapModal();
                 loadAddresses();
-                if(data.macDinh) {
-                     const diaChiInput = document.getElementById('diaChi');
-                     if(diaChiInput) diaChiInput.value = refinedAddress;
-                }
-                showToast('Thêm địa chỉ thành công', 'success');
+                showToast('Thêm địa chỉ thành công! Thông tin địa chỉ đã được cập nhật vào hồ sơ.', 'success');
             } else {
                 showToast(res.message, 'error');
             }
@@ -1332,56 +1341,11 @@
 
     // --- Forward Geocoding (Search Box -> Map) ---
     let searchTimeout;
-    let fetchTimeout; // Declared for fetchAddressFromCoords
     const searchInput = document.getElementById('mapSearchInput');
     if(searchInput) {
         searchInput.addEventListener('input', function(e) {
             const query = e.target.value;
             if (query.length < 5) return;
-            function fetchAddressFromCoords(lat, lng) {
-                if (fetchTimeout) clearTimeout(fetchTimeout);
-                
-                fetchTimeout = setTimeout(() => {
-                    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
-                    
-                    fetch(url)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data && data.address) {
-                            // Construct a detailed address string "Google Maps style"
-                            // House Number, Road, Suburb/Neighborhood, City/State
-                            const addr = data.address;
-                            const parts = [];
-                            
-                            if (addr.house_number) parts.push(addr.house_number);
-                            if (addr.road) parts.push(addr.road);
-                            if (addr.hamlet) parts.push(addr.hamlet);
-                            if (addr.village) parts.push(addr.village);
-                            if (addr.suburb) parts.push(addr.suburb);
-                            if (addr.neighbourhood) parts.push(addr.neighbourhood);
-                            if (addr.quarter) parts.push(addr.quarter);
-                            if (addr.city_district) parts.push(addr.city_district);
-                            if (addr.city) parts.push(addr.city);
-                            else if (addr.province) parts.push(addr.province);
-                            
-                            // Filter duplicates and join
-                            const fullAddress = [...new Set(parts)].join(", ");
-                            
-                            // Fallback to display_name if construction failed basically
-                            const finalAddress = fullAddress.length > 5 ? fullAddress : data.display_name;
-
-                            const input = document.getElementById('mapSearchInput');
-                            if (input) {
-                                input.value = finalAddress;
-                            }
-                        } else if (data && data.display_name) {
-                             const input = document.getElementById('mapSearchInput');
-                             if (input) input.value = data.display_name;
-                        }
-                    })
-                    .catch(err => console.error('Geocoding error:', err));
-                }, 500); // Shorter debounce
-            }
 
             if (searchTimeout) clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -1396,9 +1360,7 @@
                         
                         if (map) {
                             map.flyTo([lat, lon], 16);
-                            setMarker(lat, lon); // Update marker and selected location
-                            // Note: setMarker calls fetchAddressFromCoords which might overwrite input? 
-                            // We should probably pass a flag to setMarker to skip reverse geocode if triggered by search
+                            setMarker(lat, lon);
                         }
                     }
                 })
@@ -1406,9 +1368,6 @@
             }, 1000);
         });
     }
-
-    // Updated setMarker to accept skipReverseGeocode flag
-    const originalSetMarker = setMarker; // Store old if needed, but easier to rewrite
 
 
     // Load addresses on switch to tab

@@ -43,7 +43,6 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IDiemTichLuyService, DiemTichLuyService>();
 builder.Services.AddScoped<IThongBaoService, ThongBaoService>();
-builder.Services.AddScoped<IHangThanhVienService, HangThanhVienService>();
 builder.Services.AddScoped<IHangThanhVienRepository, HangThanhVienRepository>();
 
 // Background Job - Quét rớt hạng hàng đêm
@@ -97,7 +96,6 @@ var app = builder.Build();
 // ForceUpdateAllImagesAsync: cập nhật toàn bộ (kể cả đã có ảnh)
 // SeedImagesAsync: chỉ cập nhật VatTu chưa có ảnh
 // =====================================================
-await VatTuImageSeeder.ForceUpdateAllImagesAsync(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {
