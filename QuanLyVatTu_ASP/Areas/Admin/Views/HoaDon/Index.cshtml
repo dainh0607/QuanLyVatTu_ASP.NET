@@ -6,6 +6,20 @@
 }
 
 <div class="container-fluid py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
     <div class="card shadow-sm mb-4 border-0 rounded-4 overflow-hidden">
         <div class="card-body py-3">
             <div class="row align-items-center g-3">
@@ -77,11 +91,6 @@
                                         <div class="d-flex justify-content-center align-items-center gap-3">
                                             @if (item.HoaDonId != null)
                                             {
-                                                <!-- Edit (Placeholder) -->
-                                                <a href="#" class="btn btn-link p-0 text-decoration-none" title="Chỉnh sửa (Chưa hỗ trợ)" onclick="alert('Tính năng chỉnh sửa hóa đơn đang phát triển'); return false;">
-                                                    <i class="bi bi-pencil" style="color: #0d6efd; font-size: 1.1rem;"></i>
-                                                </a>
-
                                                 <!-- View -->
                                                 <a asp-action="Details" asp-route-id="@item.HoaDonId" 
                                                    class="btn btn-link p-0 text-decoration-none" title="Xem chi tiết">
@@ -89,7 +98,7 @@
                                                 </a>
 
                                                 <!-- Delete -->
-                                                @if (Context.Session.GetString("Role") == "Quản trị")
+                                                @if ((bool)(ViewBag.IsAdmin ?? false))
                                                 {
                                                     <form asp-action="Delete" asp-route-id="@item.HoaDonId" method="post" class="d-inline"
                                                           onsubmit="return confirm('Xác nhận xóa hóa đơn này?');">

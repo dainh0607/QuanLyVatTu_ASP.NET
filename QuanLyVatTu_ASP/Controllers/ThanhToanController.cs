@@ -229,12 +229,12 @@ namespace QuanLyVatTu_ASP.Controllers
 
                 // Initial Status determination (will be refined in Step 4)
                 string initialStatus = "Chờ xử lý";
-                string initialDepositMethod = "COD";
+                string initialPaymentMethod = "Thanh toán khi nhận hàng (COD)";
                 
                 if (paymentMethod == "bank") 
                 {
                     initialStatus = "Chờ thanh toán";
-                    initialDepositMethod = "Chuyển khoản";
+                    initialPaymentMethod = "Chuyển khoản";
                 }
 
                 if (editingOrderId.HasValue)
@@ -248,7 +248,7 @@ namespace QuanLyVatTu_ASP.Controllers
                         donHang.TrangThai = initialStatus;
                         donHang.GhiChu = ghiChu;
                         donHang.TongTien = 0;
-                        donHang.PhuongThucDatCoc = initialDepositMethod;
+                        donHang.PhuongThucThanhToan = initialPaymentMethod;
                         donHang.SoTienDatCoc = 0; // Reset
                         donHang.NgayDatCoc = null;
                     }
@@ -262,7 +262,7 @@ namespace QuanLyVatTu_ASP.Controllers
                             TrangThai = initialStatus,
                             GhiChu = ghiChu,
                             TongTien = 0,
-                            PhuongThucDatCoc = initialDepositMethod
+                            PhuongThucThanhToan = initialPaymentMethod
                         };
                         await _unitOfWork.DonHangRepository.AddAsync(donHang);
                     }
@@ -277,7 +277,7 @@ namespace QuanLyVatTu_ASP.Controllers
                         TrangThai = initialStatus,
                         GhiChu = ghiChu,
                         TongTien = 0,
-                        PhuongThucDatCoc = initialDepositMethod
+                        PhuongThucThanhToan = initialPaymentMethod
                     };
                     await _unitOfWork.DonHangRepository.AddAsync(donHang);
                 }
@@ -411,7 +411,7 @@ namespace QuanLyVatTu_ASP.Controllers
                 {
                     donHang.SoTienDatCoc = tongTienThucTra * 0.1m; 
                     donHang.TrangThai = "Chờ đặt cọc";
-                    donHang.PhuongThucDatCoc = "Chuyển khoản (QR)";
+                    donHang.PhuongThucThanhToan = "Chuyển khoản (QR)";
                     donHang.GhiChu += " | Đơn hàng >= 5tr, bắt buộc cọc 10%.";
                 }
                 else
@@ -430,7 +430,7 @@ namespace QuanLyVatTu_ASP.Controllers
                     TongTien = donHang.TongTien,
                     SoTienDatCoc = donHang.SoTienDatCoc,
                     TrangThai = donHang.TrangThai,
-                    PhuongThucDatCoc = donHang.PhuongThucDatCoc
+                    PhuongThucThanhToan = donHang.PhuongThucThanhToan
                 };
                 TempData["DonHangJson"] = Newtonsoft.Json.JsonConvert.SerializeObject(donHangSafe);
                 

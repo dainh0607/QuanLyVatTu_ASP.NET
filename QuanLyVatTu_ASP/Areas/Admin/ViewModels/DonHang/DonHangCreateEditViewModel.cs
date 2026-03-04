@@ -28,8 +28,8 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
 
         public decimal TiềnCọcTốiThiểu => (TongTien ?? 0) * 0.1M;
 
-        [Display(Name = "Phương thức đặt cọc")]
-        public string? PhuongThucDatCoc { get; set; }
+        [Display(Name = "Phương thức thanh toán")]
+        public string? PhuongThucThanhToan { get; set; }
 
         [Display(Name = "Ngày đặt cọc")]
         public DateTime? NgayDatCoc { get; set; }

@@ -48,7 +48,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
 
             if (!string.IsNullOrEmpty(paymentMethod) && paymentMethod != "Tất cả")
             {
-                query = query.Where(x => x.PhuongThucDatCoc == paymentMethod);
+                query = query.Where(x => x.PhuongThucThanhToan == paymentMethod);
             }
 
             if (nhanVienId.HasValue && nhanVienId > 0)
@@ -125,7 +125,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             if (fromDate.HasValue) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NgayDat.Date >= fromDate.Value.Date);
             if (toDate.HasValue) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NgayDat.Date <= toDate.Value.Date);
             if (!string.IsNullOrEmpty(status) && status != "Tất cả") topProductsQuery = topProductsQuery.Where(x => x.DonHang.TrangThai == status);
-            if (!string.IsNullOrEmpty(paymentMethod) && paymentMethod != "Tất cả") topProductsQuery = topProductsQuery.Where(x => x.DonHang.PhuongThucDatCoc == paymentMethod);
+            if (!string.IsNullOrEmpty(paymentMethod) && paymentMethod != "Tất cả") topProductsQuery = topProductsQuery.Where(x => x.DonHang.PhuongThucThanhToan == paymentMethod);
             if (nhanVienId.HasValue && nhanVienId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.NhanVienId == nhanVienId);
             if (khachHangId.HasValue && khachHangId > 0) topProductsQuery = topProductsQuery.Where(x => x.DonHang.KhachHangId == khachHangId);
 

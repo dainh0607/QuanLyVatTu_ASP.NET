@@ -726,7 +726,7 @@ namespace QuanLyVatTu_ASP.Controllers
             donHang.TrangThai = "Chờ xác nhận";
             donHang.TongTien = 0;
             donHang.SoTienDatCoc = null;
-            donHang.PhuongThucDatCoc = null;
+            donHang.PhuongThucThanhToan = null;
             donHang.NgayDatCoc = null;
             donHang.GhiChu = null;
 

@@ -67,16 +67,17 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Phương thức thanh toán <span class="text-danger">*</span></label>
                                     @if(Model.TrangThai == "Đã hủy") {
-                                         <input type="text" class="form-control form-control-lg rounded-3 bg-light" value="@Model.PhuongThucDatCoc" readonly />
-                                         <input type="hidden" asp-for="PhuongThucDatCoc" />
+                                         <input type="text" class="form-control form-control-lg rounded-3 bg-light" value="@Model.PhuongThucThanhToan" readonly />
+                                         <input type="hidden" asp-for="PhuongThucThanhToan" />
                                     } else {
-                                        <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3" id="PhuongThucDatCoc" required>
+                                        <select asp-for="PhuongThucThanhToan" class="form-select form-select-lg rounded-3" id="PhuongThucThanhToan" required>
                                             <option value="">-- Chọn phương thức --</option>
-                                            <option value="Tiền mặt">Tiền mặt</option>
+                                            <option value="Thanh toán khi nhận hàng (COD)">Thanh toán khi nhận hàng (COD)</option>
                                             <option value="Chuyển khoản">Chuyển khoản</option>
+                                            <option value="Tiền mặt">Tiền mặt</option>
                                         </select>
                                     }
-                                    <span asp-validation-for="PhuongThucDatCoc" class="text-danger"></span>
+                                    <span asp-validation-for="PhuongThucThanhToan" class="text-danger"></span>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Ngày đặt cọc</label>

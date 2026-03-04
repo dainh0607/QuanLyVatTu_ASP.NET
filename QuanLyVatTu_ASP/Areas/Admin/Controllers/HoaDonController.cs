@@ -21,6 +21,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
         {
             var model = await _hoaDonService.GetOrdersForIndexAsync(keyword, page, 15);
             ViewBag.Keyword = keyword;
+            ViewBag.IsAdmin = HttpContext.Session.GetString("Role") == "Quản trị";
             return View(model);
         }
 

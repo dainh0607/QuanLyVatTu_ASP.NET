@@ -87,55 +87,70 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     return ("Đơn hàng này đã được xuất hóa đơn!", 0);
                 }
 
-                // 3. Kiểm tra tỷ lệ đặt cọc (Logic nghiệp vụ)
+                // 3. Kiểm tra tỷ lệ đặt cọc
                 decimal tyLe = (donHang.TongTien ?? 0) > 0 ? ((donHang.SoTienDatCoc ?? 0) / (donHang.TongTien ?? 0)) : 0;
                 if (tyLe < 0.1m)
                 {
                     return ($"Chưa đủ điều kiện! Khách mới cọc {tyLe:P0}. Cần tối thiểu 10%.", 0);
                 }
 
-                // 4. Tạo Header Hóa đơn
+                // 4. Lấy MaNhanVien hợp lệ (ưu tiên từ đơn hàng, fallback lấy NV đầu tiên trong DB)
+                int maNhanVien = donHang.NhanVienId ?? 0;
+                if (maNhanVien == 0 || !await _context.NhanViens.AnyAsync(nv => nv.ID == maNhanVien))
+                {
+                    var nhanVienDau = await _context.NhanViens.OrderBy(nv => nv.ID).Select(nv => nv.ID).FirstOrDefaultAsync();
+                    if (nhanVienDau == 0) return ("Không tìm thấy nhân viên nào trong hệ thống.", 0);
+                    maNhanVien = nhanVienDau;
+                }
+
+                // 5. Tính toán thuế trước khi lưu
+                decimal tongTienTruocThue = donHang.TongTien ?? 0;
+                decimal tyLeThue = 10m;
+                decimal tienThue = Math.Round(tongTienTruocThue * tyLeThue / 100m, 2);
+                decimal tongTienSauThue = tongTienTruocThue + tienThue;
+
+                // 6. Tạo Header Hóa đơn
                 var hoaDon = new HoaDon
                 {
                     MaDonHang = donHang.ID,
-                    MaNhanVien = donHang.NhanVienId ?? 1, // Mặc định 1 nếu null (cần cẩn thận chỗ này tùy data thật)
+                    MaNhanVien = maNhanVien,
                     MaKhachHang = donHang.KhachHangId,
                     NgayLap = DateTime.Now,
-                    TongTienTruocThue = donHang.TongTien ?? 0,
-                    TyLeThueGTGT = 10,
+                    TongTienTruocThue = tongTienTruocThue,
+                    TyLeThueGTGT = tyLeThue,
+                    TienThueGTGT = tienThue,
+                    TongTienSauThue = tongTienSauThue,
                     ChietKhau = 0,
                     SoTienDatCoc = donHang.SoTienDatCoc ?? 0,
-                    PhuongThucThanhToan = donHang.PhuongThucDatCoc,
+                    PhuongThucThanhToan = donHang.PhuongThucThanhToan,
                     TrangThai = "Đã xuất"
                 };
 
-                // Lưu lần 1 để lấy ID Hóa đơn
                 _context.HoaDons.Add(hoaDon);
                 await _context.SaveChangesAsync();
 
-                // 5. Tạo Chi tiết hóa đơn (Copy từ Chi tiết đơn hàng)
+                // 7. Tạo Chi tiết hóa đơn
+                // KHÔNG gán ThanhTien vì là computed column ([SoLuong] * [DonGia])
                 var chiTietHoaDons = donHang.ChiTietDonHangs.Select(ct => new ChiTietHoaDon
                 {
-                    MaHoaDon = hoaDon.ID, // ID vừa sinh ra ở trên
+                    MaHoaDon = hoaDon.ID,
                     MaVatTu = ct.MaVatTu,
                     SoLuong = ct.SoLuong ?? 0,
-                    DonGia = ct.DonGia ?? 0,
-                    ThanhTien = (ct.DonGia ?? 0) * (ct.SoLuong ?? 0)
+                    DonGia = ct.DonGia ?? 0
+                    // ThanhTien: DB tự tính = [SoLuong] * [DonGia]
                 }).ToList();
 
-                // Lưu lần 2
                 _context.ChiTietHoaDons.AddRange(chiTietHoaDons);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-
-                // Trả về thành công (Error = null) và ID mới
                 return (null, hoaDon.ID);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return ($"Đã xảy ra lỗi nghiêm trọng khi ghi HD: {ex.Message}", 0);
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                return ($"Lỗi khi tạo hóa đơn: {innerMsg}", 0);
             }
         }
 

@@ -42,11 +42,12 @@
                                     <span asp-validation-for="NgayDat" class="text-danger"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Phương thức đặt cọc</label>
-                                    <select asp-for="PhuongThucDatCoc" class="form-select form-select-lg rounded-3">
+                                    <label class="form-label fw-semibold">Phương thức thanh toán</label>
+                                    <select asp-for="PhuongThucThanhToan" class="form-select form-select-lg rounded-3">
                                         <option value="">-- Chọn phương thức --</option>
-                                        <option value="Tiền mặt">Tiền mặt</option>
+                                        <option value="Thanh toán khi nhận hàng (COD)">Thanh toán khi nhận hàng (COD)</option>
                                         <option value="Chuyển khoản">Chuyển khoản</option>
+                                        <option value="Tiền mặt">Tiền mặt</option>
                                     </select>
                                 </div>
                             </div>

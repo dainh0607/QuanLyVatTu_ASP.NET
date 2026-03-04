@@ -25,7 +25,7 @@
 
     <!-- SIDEBAR -->
     <aside class="admin-sidebar" id="adminSidebar">
-        <div class="logo d-flex justify-content-center mb-4">
+        <div class="logo d-flex justify-content-center mb-3">
             <a href="/" class="logo-icon-text d-flex align-items-center gap-2 text-decoration-none">
                 <img src="/images/khachhang/Logo.jpg" alt="VatTu Store" style="height: 90px; object-fit: contain; border-radius: 30%;" />
             </a>
@@ -111,7 +111,7 @@
                     <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongBaoAdmin" ? "active" : "")"
                        asp-area="Admin" asp-controller="ThongBaoAdmin" asp-action="Index">
                         <i class="fa-solid fa-bullhorn"></i>
-                        <span>Thông báo khách hàng</span>
+                        <span>Thông báo khách</span>
                     </a>
                 </div>
             }

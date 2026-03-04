@@ -25,7 +25,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Models
 
         [Column(TypeName = "nvarchar(50)")]
         [MaxLength(50)]
-        public string? PhuongThucDatCoc { get; set; }
+        public string? PhuongThucThanhToan { get; set; }
 
         [Column(TypeName = "datetime")]
         public DateTime? NgayDatCoc { get; set; }

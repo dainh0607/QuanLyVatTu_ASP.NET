@@ -69,7 +69,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     NgayDat = x.NgayDat,
                     TongTien = x.TongTien ?? 0,
                     SoTienDatCoc = x.SoTienDatCoc ?? 0,
-                    PhuongThucDatCoc = x.PhuongThucDatCoc,
+                    PhuongThucThanhToan = x.PhuongThucThanhToan,
                     NgayDatCoc = x.NgayDatCoc,
                     TrangThai = string.IsNullOrWhiteSpace(x.TrangThai) ? "Chờ xác nhận" : x.TrangThai,
                     GhiChu = x.GhiChu,
@@ -101,7 +101,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 NgayDat = entity.NgayDat,
                 TongTien = entity.TongTien,
                 SoTienDatCoc = entity.SoTienDatCoc,
-                PhuongThucDatCoc = entity.PhuongThucDatCoc,
+                PhuongThucThanhToan = entity.PhuongThucThanhToan,
                 NgayDatCoc = entity.NgayDatCoc,
                 TrangThai = entity.TrangThai ?? "Chờ xác nhận",
                 GhiChu = entity.GhiChu
@@ -118,7 +118,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                 NgayDat = model.NgayDat,
                 TongTien = model.TongTien,
                 SoTienDatCoc = model.SoTienDatCoc,
-                PhuongThucDatCoc = model.PhuongThucDatCoc,
+                PhuongThucThanhToan = model.PhuongThucThanhToan,
                 NgayDatCoc = (model.NgayDatCoc.HasValue && model.NgayDatCoc.Value.Year < 1753) ? null : model.NgayDatCoc,
                 TrangThai = model.TrangThai ?? "Chờ xác nhận",
                 GhiChu = model.GhiChu,
@@ -136,7 +136,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
                     entity.SoTienDatCoc = tienCocToiThieu;
                 }
                 entity.TrangThai = "Chờ đặt cọc";
-                entity.PhuongThucDatCoc = string.IsNullOrEmpty(entity.PhuongThucDatCoc) ? "Chuyển khoản (QR)" : entity.PhuongThucDatCoc;
+                entity.PhuongThucThanhToan = string.IsNullOrEmpty(entity.PhuongThucThanhToan) ? "Chuyển khoản (QR)" : entity.PhuongThucThanhToan;
                 entity.GhiChu = (entity.GhiChu ?? "") + " | Đơn hàng >= 5tr, bắt buộc cọc 10%.";
             }
 
@@ -265,7 +265,7 @@ namespace QuanLyVatTu_ASP.Services.Implementations
             
             entity.SoTienDatCoc = datCocMoi;
 
-            entity.PhuongThucDatCoc = model.PhuongThucDatCoc;
+            entity.PhuongThucThanhToan = model.PhuongThucThanhToan;
             entity.NgayDatCoc = model.NgayDatCoc;
             entity.TrangThai = model.TrangThai ?? "Chờ xác nhận";
             entity.GhiChu = model.GhiChu;

@@ -288,7 +288,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.Controllers
                     NgayDat = donHang.NgayDat,
                     TongTien = donHang.TongTien,
                     SoTienDatCoc = donHang.SoTienDatCoc,
-                    PhuongThucDatCoc = donHang.PhuongThucDatCoc,
+                    PhuongThucThanhToan = donHang.PhuongThucThanhToan,
                     NgayDatCoc = donHang.NgayDatCoc,
                     TrangThai = "Đã hủy",
                     GhiChu = donHang.GhiChu

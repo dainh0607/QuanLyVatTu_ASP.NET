@@ -23,7 +23,7 @@ namespace QuanLyVatTu_ASP.Areas.Admin.ViewModels
             public DateTime NgayDat { get; set; }
             public decimal TongTien { get; set; }
             public decimal? SoTienDatCoc { get; set; }
-            public string? PhuongThucDatCoc { get; set; }
+            public string? PhuongThucThanhToan { get; set; }
             public DateTime? NgayDatCoc { get; set; }
             public string TrangThai { get; set; } = "Chờ xác nhận";
             public string? GhiChu { get; set; }

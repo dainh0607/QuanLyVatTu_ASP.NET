@@ -248,7 +248,7 @@ namespace QuanLyVatTu_ASP.Migrations
                         .HasColumnType("int")
                         .HasColumnName("MaNhanVien");
 
-                    b.Property<string>("PhuongThucDatCoc")
+                    b.Property<string>("PhuongThucThanhToan")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
