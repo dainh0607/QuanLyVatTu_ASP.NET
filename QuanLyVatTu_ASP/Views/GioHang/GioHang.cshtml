@@ -82,8 +82,8 @@
                                                     <div class="input-group input-group-sm d-inline-flex flex-nowrap" style="width: 100px;">
                                                         <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.VatTuId, -1)">-</button>
                                                         <input type="number" class="form-control text-center qty-input border-secondary" 
-                                                               value="@item.SoLuong" min="1" max="99" readonly 
-                                                               data-item-id="@item.VatTuId" data-price="@item.DonGia">
+                                                               value="@item.SoLuong" min="1" max="@item.SoLuongTon" readonly 
+                                                               data-item-id="@item.VatTuId" data-price="@item.DonGia" data-max="@item.SoLuongTon">
                                                         <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.VatTuId, 1)">+</button>
                                                     </div>
                                                 </td>
@@ -175,10 +175,14 @@
         function updateQuantity(productId, change) {
             const input = document.querySelector(`input[data-item-id="${productId}"]`);
             let currentQty = parseInt(input.value);
+            let maxStock = parseInt(input.dataset.max) || 99;
             let newQty = currentQty + change;
             
             if (newQty < 1) newQty = 1;
-            if (newQty > 99) newQty = 99;
+            if (newQty > maxStock) {
+                showGlobalMessage(`Số lượng tối đa trong kho là ${maxStock}`, 'Thông báo', 'warning');
+                newQty = maxStock;
+            }
             
             input.value = newQty;
             

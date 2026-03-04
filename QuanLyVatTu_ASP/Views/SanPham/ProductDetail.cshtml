@@ -163,20 +163,6 @@
                                   class="border active-thumb cursor-pointer" 
                                   style="width: 82px; height: 82px; object-fit: cover; border-radius: 8px;"
                                   onclick="changeImage(this)" alt="Thumb">
-                            
-                            <!-- Related Thumbs (Mock or actual logic) -->
-                            @if (ViewBag.RelatedProducts != null)
-                            {
-                                int limit = 0;
-                                foreach (var item in (IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>)ViewBag.RelatedProducts)
-                                {
-                                    if(limit++ > 3) break;
-                                    <img src="@GetProductImage(item.ID, item.HinhAnh, item.TenVatTu)" 
-                                         class="border cursor-pointer opacity-75 hover-opacity-100" 
-                                         style="width: 82px; height: 82px; object-fit: cover; border-radius: 8px;"
-                                         onclick="changeImage(this)" alt="@item.TenVatTu">
-                                }
-                            }
                         </div>
                     </div>
                 </div>
