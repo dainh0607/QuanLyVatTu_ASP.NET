@@ -43,6 +43,8 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IDiemTichLuyService, DiemTichLuyService>();
 builder.Services.AddScoped<IThongBaoService, ThongBaoService>();
+builder.Services.AddScoped<IHangThanhVienService, HangThanhVienService>();
+builder.Services.AddScoped<IHangThanhVienRepository, HangThanhVienRepository>();
 
 // Background Job - Quét rớt hạng hàng đêm
 builder.Services.AddHostedService<TierDowngradeJob>();
