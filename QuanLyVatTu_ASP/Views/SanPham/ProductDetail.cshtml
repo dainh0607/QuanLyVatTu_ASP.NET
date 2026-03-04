@@ -2,33 +2,15 @@
 @{
     ViewData["Title"] = Model.TenVatTu;
 
-    // Danh sách ảnh có sẵn trong folder wwwroot/user/images
-    var availableImages = new string[] {
-        "/user/images/Máy khoan cầm tay mẫu 1.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 2.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 3.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 4.jpg",
-        "/user/images/Máy cắt - Uốn.jpg",
-        "/user/images/Máy cắt bê tông KC16 (Không động cơ).jpg",
-        "/user/images/Máy cắt sắt thủy lực cầm tay RC-25.jpg",
-        "/user/images/Máy làm nền.jpg",
-        "/user/images/Máy mài sàn bê tông DMS250.jpg",
-        "/user/images/Máy xoa nền đôi Conmec (Ngồi lái).jpg",
-        "/user/images/Máy xoa nền đơn Honda GX160.jpg",
-        "/user/images/Máy đầm cóc Mikasa MT55.jpg",
-        "/user/images/Máy đầm dùi chạy điện Jinlong 1.5KW.jpg",
-        "/user/images/Máy đầm.jpg",
-        "/user/images/Đầm bàn PC60.jpg"
-    };
-
-    // Helper function để lấy ảnh cho sản phẩm (xoay vòng theo ID)
-    Func<int, string?, string> GetProductImage = (productId, existingImage) => {
+    // Helper function để lấy ảnh cho sản phẩm
+    // Ưu tiên trường HinhAnh trong DB, nếu không có thì fallback vào /images/vattu/{TenVatTu}.jpg
+    Func<int, string?, string?, string> GetProductImage = (productId, existingImage, tenVatTu) => {
         if (!string.IsNullOrEmpty(existingImage)) return existingImage;
-        return availableImages[productId % availableImages.Length];
+        return $"/images/vattu/{tenVatTu}.jpg";
     };
 
     // Lấy ảnh cho sản phẩm hiện tại
-    var mainProductImage = GetProductImage(Model.ID, Model.HinhAnh);
+    var mainProductImage = GetProductImage(Model.ID, Model.HinhAnh, Model.TenVatTu);
 }
 <style>
     /* Custom Shopee-like Styles */
@@ -189,7 +171,7 @@
                                 foreach (var item in (IEnumerable<QuanLyVatTu_ASP.Areas.Admin.Models.VatTu>)ViewBag.RelatedProducts)
                                 {
                                     if(limit++ > 3) break;
-                                    <img src="@GetProductImage(item.ID, item.HinhAnh)" 
+                                    <img src="@GetProductImage(item.ID, item.HinhAnh, item.TenVatTu)" 
                                          class="border cursor-pointer opacity-75 hover-opacity-100" 
                                          style="width: 82px; height: 82px; object-fit: cover; border-radius: 8px;"
                                          onclick="changeImage(this)" alt="@item.TenVatTu">
@@ -454,7 +436,7 @@
                             <div class="card h-100 border-0 shadow-sm hover-shadow transition-all rounded-4 overflow-hidden">
                                 <a href="/SanPham/ProductDetail/@item.ID" class="text-decoration-none text-dark">
                                     <div class="position-relative bg-white rounded-4 m-2 border border-light">
-                                        <img src="@GetProductImage(item.ID, item.HinhAnh)" 
+                                        <img src="@GetProductImage(item.ID, item.HinhAnh, item.TenVatTu)" 
                                              class="card-img-top p-2" alt="@item.TenVatTu" style="height: 180px; object-fit: contain;">
                                         @if(item.HinhAnh == null) {
                                             <!-- Fallback visible if image broken handled by error event ideally -->

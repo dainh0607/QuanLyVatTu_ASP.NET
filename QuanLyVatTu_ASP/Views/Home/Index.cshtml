@@ -91,10 +91,10 @@
                 foreach(var cat in featureCategories)
                 {
                     <div class="col-md-3 col-6">
-                        <a href="/SanPham?loaiId=@cat.ID" class="card h-100 border-0 shadow-none text-decoration-none category-card" style="background: transparent;">
+                        <a href="/SanPham?loaiIds=@cat.ID" class="card h-100 border-0 shadow-none text-decoration-none category-card" style="background: transparent;">
                             <div class="card-img-wrapper rounded-circle bg-white shadow-sm mb-3 mx-auto position-relative overflow-hidden d-flex align-items-center justify-content-center" 
                                  style="width: 140px; height: 140px; transition: transform 0.3s;">
-                                <img src="/user/images/@($"{cat.TenLoaiVatTu}.jpg")" 
+                                <img src="/images/vattu/@($"{cat.TenLoaiVatTu}.jpg")" 
                                      onerror="this.src='https://placehold.co/200?text=@(cat.TenLoaiVatTu.Substring(0,1))'"
                                      class="img-fluid p-3" alt="@cat.TenLoaiVatTu">
                             </div>
@@ -132,7 +132,7 @@
                             <!-- Image -->
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center p-4 overflow-hidden" style="height: 240px; border-radius: 12px 12px 0 0;">
                                 <a href="@Url.Action("ProductDetail", "SanPham", new { id = product.ID })">
-                                    <img src="@(string.IsNullOrEmpty(product.HinhAnh) ? $"/user/images/{product.TenVatTu}.jpg" : product.HinhAnh)" 
+                                    <img src="@(string.IsNullOrEmpty(product.HinhAnh) ? $"/images/vattu/{product.TenVatTu}.jpg" : product.HinhAnh)" 
                                          alt="@product.TenVatTu" 
                                          class="img-fluid" style="max-height: 180px; transition: transform 0.3s ease;">
                                 </a>

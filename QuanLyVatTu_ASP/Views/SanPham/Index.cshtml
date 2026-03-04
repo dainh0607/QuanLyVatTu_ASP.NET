@@ -2,29 +2,11 @@
 @{
     ViewData["Title"] = "Danh mục sản phẩm";
 
-    // Danh sách ảnh có sẵn trong folder wwwroot/user/images
-    var availableImages = new string[] {
-        "/user/images/Máy khoan cầm tay mẫu 1.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 2.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 3.jpg",
-        "/user/images/Máy khoan cầm tay mẫu 4.jpg",
-        "/user/images/Máy cắt - Uốn.jpg",
-        "/user/images/Máy cắt bê tông KC16 (Không động cơ).jpg",
-        "/user/images/Máy cắt sắt thủy lực cầm tay RC-25.jpg",
-        "/user/images/Máy làm nền.jpg",
-        "/user/images/Máy mài sàn bê tông DMS250.jpg",
-        "/user/images/Máy xoa nền đôi Conmec (Ngồi lái).jpg",
-        "/user/images/Máy xoa nền đơn Honda GX160.jpg",
-        "/user/images/Máy đầm cóc Mikasa MT55.jpg",
-        "/user/images/Máy đầm dùi chạy điện Jinlong 1.5KW.jpg",
-        "/user/images/Máy đầm.jpg",
-        "/user/images/Đầm bàn PC60.jpg"
-    };
-
-    // Helper function để lấy ảnh cho sản phẩm (xoay vòng theo index)
-    Func<int, string?, string> GetProductImage = (index, existingImage) => {
+    // Helper function để lấy ảnh cho sản phẩm
+    // Ưu tiên trường HinhAnh trong DB, nếu không có thì fallback vào /images/vattu/{TenVatTu}.jpg
+    Func<int, string?, string?, string> GetProductImage = (index, existingImage, tenVatTu) => {
         if (!string.IsNullOrEmpty(existingImage)) return existingImage;
-        return availableImages[index % availableImages.Length];
+        return $"/images/vattu/{tenVatTu}.jpg";
     };
     
     // Helper to get names for active filters
@@ -159,7 +141,7 @@
                         for (int i = 0; i < productList.Count; i++)
                         {
                             var product = productList[i];
-                            var productImage = GetProductImage(i, product.HinhAnh);
+                            var productImage = GetProductImage(i, product.HinhAnh, product.TenVatTu);
                             <div class="col">
                                 <div class="card md-card h-100 border-0 position-relative" style="transition: transform 0.2s, box-shadow 0.2s;">
                                      <div class="position-relative overflow-hidden bg-light rounded-top" style="height: 220px; border-radius: 12px 12px 0 0;">
